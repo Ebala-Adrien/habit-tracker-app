@@ -1,16 +1,19 @@
-import { View, Text, TextInput, Switch, Pressable, Button } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import { View, Text, TextInput, Switch, Pressable } from "react-native";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import constants from "./constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import { useRouter } from "expo-router";
 
 // Validation schema
 const schema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string(),
-  isRepetitive: Yup.boolean(),
+  isRepetitive: Yup.boolean().default(true),
 });
 
 type Days = {
@@ -24,6 +27,8 @@ type Days = {
 };
 
 export default function CreateHabit() {
+  const router = useRouter();
+
   const {
     control,
     handleSubmit,
@@ -50,6 +55,42 @@ export default function CreateHabit() {
   };
 
   const [daysState, setDaysState] = useState<Days>(days);
+  const maxFrequencyWeek = 7;
+  const maxFrequencyMonth = 30;
+  const [maxFrequency, setMaxFrequency] = useState<number>(maxFrequencyWeek);
+  const [frequency, setFrequency] = useState<number>(maxFrequency);
+  const isMaxFrequency = frequency === maxFrequency;
+
+  // Can remove any in the future
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    try {
+      await addDoc(collection(db, "habit"), {
+        ...data,
+        frequency: !data.isRepetitive
+          ? undefined
+          : repetition === "Daily"
+          ? daysState
+          : {
+              repetition,
+              frequency,
+            },
+      });
+
+      router.push("/");
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (repetition === "Weekly") {
+      setMaxFrequency(maxFrequencyWeek);
+      setFrequency(maxFrequencyWeek);
+    } else {
+      setMaxFrequency(maxFrequencyMonth);
+      setFrequency(maxFrequencyMonth);
+    }
+  }, [repetition]);
 
   return (
     <View>
@@ -74,6 +115,19 @@ export default function CreateHabit() {
           />
         )}
       />
+      {errors["title"] && (
+        <Text
+          style={{
+            color: constants.colorError,
+            marginHorizontal: constants.padding,
+            marginBottom: constants.padding,
+            paddingHorizontal: constants.padding,
+          }}
+        >
+          {errors["title"].message}
+        </Text>
+      )}
+
       <Controller
         name="description"
         control={control}
@@ -145,6 +199,7 @@ export default function CreateHabit() {
             justifyContent: "space-between",
             backgroundColor: constants.colorPrimary,
             borderRadius: 10,
+            marginBottom: constants.padding * 3,
           }}
         >
           {repetitions.map((f) => (
@@ -228,7 +283,104 @@ export default function CreateHabit() {
             </View>
           </View>
         ) : (
-          <Text>"Test"</Text>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: constants.padding,
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: constants.fontWeight,
+                }}
+              >
+                Frequency
+              </Text>
+              <Text>
+                {isMaxFrequency
+                  ? "Everyday"
+                  : `${frequency} times per ${
+                      repetition === "Weekly" ? "week" : "month"
+                    }`}
+              </Text>
+            </View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                borderColor: "transparent", // The element is spaced correctly when I add a border
+                borderWidth: 0.1,
+                gap: constants.padding,
+              }}
+            >
+              <Pressable
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                disabled={frequency === 1}
+                onPress={() => setFrequency(frequency - 1)}
+              >
+                <Text
+                  style={{
+                    fontWeight: "700",
+                    backgroundColor: frequency === 1 ? "lightgreen" : "lime",
+                    color: frequency === 1 ? "white" : "green",
+                    padding: constants.padding,
+                    borderRadius: 5,
+                    textAlign: "center",
+                    minWidth: constants.padding * 3,
+                  }}
+                >
+                  -
+                </Text>
+              </Pressable>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: constants.mediumFontSize,
+                  }}
+                >
+                  {frequency}
+                </Text>
+              </View>
+              <Pressable
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                disabled={isMaxFrequency}
+                onPress={() => setFrequency(frequency + 1)}
+              >
+                <Text
+                  style={{
+                    fontWeight: "700",
+                    backgroundColor: isMaxFrequency ? "lightgreen" : "lime",
+                    color: isMaxFrequency ? "white" : "green",
+                    padding: constants.padding,
+                    borderRadius: 5,
+                    textAlign: "center",
+                    minWidth: constants.padding * 3,
+                  }}
+                >
+                  +
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         )}
       </View>
 
@@ -242,6 +394,7 @@ export default function CreateHabit() {
           borderRadius: 10,
           padding: constants.padding,
         }}
+        onPress={handleSubmit(onSubmit)}
       >
         <Text
           style={{
