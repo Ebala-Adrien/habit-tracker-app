@@ -8,6 +8,7 @@ import _ from "lodash";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
+import { Days, days } from "./data";
 
 // Validation schema
 const schema = Yup.object().shape({
@@ -15,16 +16,6 @@ const schema = Yup.object().shape({
   description: Yup.string(),
   isRepetitive: Yup.boolean().default(true),
 });
-
-type Days = {
-  Monday: { key: "M"; repeat: boolean };
-  Tuesday: { key: "T"; repeat: boolean };
-  Wednesday: { key: "W"; repeat: boolean };
-  Thursday: { key: "T"; repeat: boolean };
-  Friday: { key: "F"; repeat: boolean };
-  Saturday: { key: "S"; repeat: boolean };
-  Sunday: { key: "S"; repeat: boolean };
-};
 
 export default function CreateHabit() {
   const router = useRouter();
@@ -43,16 +34,6 @@ export default function CreateHabit() {
   const [repetition, setRepetition] = useState<
     null | "Daily" | "Weekly" | "Monthly"
   >("Daily");
-
-  const days: Days = {
-    Monday: { key: "M", repeat: true },
-    Tuesday: { key: "T", repeat: true },
-    Wednesday: { key: "W", repeat: true },
-    Thursday: { key: "T", repeat: true },
-    Friday: { key: "F", repeat: true },
-    Saturday: { key: "S", repeat: true },
-    Sunday: { key: "S", repeat: true },
-  };
 
   const [daysState, setDaysState] = useState<Days>(days);
   const maxFrequencyWeek = 7;

@@ -50,6 +50,56 @@ export default function RootLayout() {
             ),
           }}
         />
+        <Stack.Screen
+          name="habit"
+          options={{
+            header: () => (
+              <View
+                style={{
+                  backgroundColor: constants.colorSecondary,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                }}
+              >
+                {/* Back Button */}
+                <Pressable
+                  style={{ padding: constants.padding }}
+                  onPress={() => router.push("/(tabs)")}
+                >
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color={constants.colorTertiary}
+                  />
+                </Pressable>
+
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    padding: constants.padding,
+                  }}
+                >
+                  <Pressable>
+                    <Ionicons
+                      name="trash-outline"
+                      size={24}
+                      color={constants.colorTertiary}
+                    />
+                  </Pressable>
+                  <Pressable>
+                    <Ionicons
+                      name="create-outline"
+                      size={24}
+                      color={constants.colorTertiary}
+                    />
+                  </Pressable>
+                </View>
+              </View>
+            ),
+          }}
+        />
       </Stack>
     </HabitContextProvider>
   );

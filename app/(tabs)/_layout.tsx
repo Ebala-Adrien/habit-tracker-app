@@ -1,19 +1,35 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { View } from "react-native";
+import EntypoIcons from "@expo/vector-icons/Entypo";
+import { Pressable, View } from "react-native";
 import constants from "../constants";
+import { useRouter } from "expo-router";
 
 export default function TabLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
         header: () => (
           <View
             style={{
-              padding: constants.padding,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
-            <Ionicons name="menu" size={24} color="black" />
+            <Pressable>
+              <Ionicons name="menu" size={24} color={constants.colorTertiary} />
+            </Pressable>
+
+            <Pressable onPress={() => router.push("/create-habit")}>
+              <EntypoIcons
+                name="plus"
+                size={24}
+                color={constants.colorTertiary}
+              />
+            </Pressable>
           </View>
         ),
         tabBarActiveTintColor: constants.colorQuarternary,
