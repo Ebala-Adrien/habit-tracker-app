@@ -1,9 +1,10 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import EntypoIcons from "@expo/vector-icons/Entypo";
 import { Pressable, View } from "react-native";
 import constants from "../constants";
 import { useRouter } from "expo-router";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -17,16 +18,17 @@ export default function TabLayout() {
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
+              padding: constants.padding,
             }}
           >
             <Pressable>
-              <Ionicons name="menu" size={24} color={constants.colorTertiary} />
+              <SimpleLineIcons name="menu" size={30} color="black" />
             </Pressable>
 
             <Pressable onPress={() => router.push("/create-habit")}>
-              <EntypoIcons
-                name="plus"
-                size={24}
+              <FontAwesome6
+                name="square-plus"
+                size={30}
                 color={constants.colorTertiary}
               />
             </Pressable>

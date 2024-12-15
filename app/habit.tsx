@@ -1,14 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { db } from "@/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Habit } from "./types";
 import constants from "./constants";
 import { days, monthObject } from "./data";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { compareDates } from "./utility";
+import Description from "./components/habit/display/Description";
+import LoadingComponent from "./components/utility/Loading";
+import ErrorComponent from "./components/utility/Error";
+import { useRouter } from "expo-router";
+import DeleteModal from "./components/habit/modal/DeleteHabit";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function HabitPage() {
+  const router = useRouter();
   const { id } = useLocalSearchParams();
 
   const [habit, setHabit] = useState<Habit | null>(null);
@@ -23,71 +31,45 @@ export default function HabitPage() {
     };
   }, [date]);
 
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
   const allDaysInTheMonth = useMemo(() => {
-    const minNbOfDaysInAMonth = 27; // Because we start counting from 0
-    let nbOfDaysInTheMonth = minNbOfDaysInAMonth;
-    let currentMonth = month;
+    const TOTAL_DAYS = 42; // 6 weeks * 7 days
 
-    while (currentMonth === month) {
-      const newDate = new Date(year, month, nbOfDaysInTheMonth);
-      // Add 24 hours in milliseconds
-      newDate.setTime(newDate.getTime() + 24 * 60 * 60 * 1000);
+    // Helper to create a new date without mutation
+    const createDate = (y: number, m: number, d: number) => new Date(y, m, d);
 
-      currentMonth = newDate.getMonth();
-      currentMonth === month && nbOfDaysInTheMonth++;
-    }
+    // Get the first day of the given month
+    const firstDayOfMonth = createDate(year, month, 1);
 
-    const arrayDaysInTheMonth = Array.from(
-      { length: nbOfDaysInTheMonth },
-      (_, index) => {
-        const date = new Date(year, month, index + 1);
+    // Determine the weekday of the first day of the month (0 = Sunday, 1 = Monday, ...)
+    const firstWeekday = (firstDayOfMonth.getDay() + 6) % 7; // Adjust to start on Monday
 
-        return {
-          date,
-          weekday: date.getDay(),
-          monthday: index + 1,
-          year: year,
-        };
-      }
+    // Calculate the start date for the calendar (Monday of the first week)
+    const calendarStartDate = new Date(
+      firstDayOfMonth.getTime() - firstWeekday * 24 * 60 * 60 * 1000
     );
 
-    // add days from the previous month to complete the 1st week
-
-    while (arrayDaysInTheMonth[0].weekday !== 1) {
-      const previousDay = new Date(
-        arrayDaysInTheMonth[0].date.setTime(
-          arrayDaysInTheMonth[0].date.getTime() - 24 * 60 * 60 * 1000
-        )
+    // Generate the array of 42 days
+    const calendarDays = Array.from({ length: TOTAL_DAYS }, (_, index) => {
+      const currentDate = new Date(
+        calendarStartDate.getTime() + index * 24 * 60 * 60 * 1000
       );
-      arrayDaysInTheMonth.unshift({
-        date: previousDay,
-        weekday: previousDay.getDay(),
-        monthday: previousDay.getDate(),
-        year: previousDay.getFullYear(),
-      });
-    }
+      return {
+        date: currentDate,
+        weekday: currentDate.getDay(),
+        monthday: currentDate.getDate(),
+        year: currentDate.getFullYear(),
+        isCurrentMonth: currentDate.getMonth() === month,
+      };
+    });
 
-    // add days to have 42 days in the Array
+    return calendarDays;
+  }, [year, month]);
 
-    while (arrayDaysInTheMonth.length < 42) {
-      const arrayIdxLastItem = arrayDaysInTheMonth.length - 1;
-      const lastDate = arrayDaysInTheMonth[arrayIdxLastItem].date;
-      const nextDay = new Date(
-        lastDate.setTime(lastDate.getTime() + 24 * 60 * 60 * 1000)
-      );
-      arrayDaysInTheMonth.push({
-        date: nextDay,
-        weekday: nextDay.getDay(),
-        monthday: nextDay.getDate(),
-        year: nextDay.getFullYear(),
-      });
-    }
-
-    return arrayDaysInTheMonth;
-  }, [month]);
+  const docRef = doc(db, "habit", id.toString());
 
   useEffect(() => {
-    const docRef = doc(db, "habit", id.toString());
     getDoc(docRef)
       .then((doc) => {
         if (doc.exists()) {
@@ -100,221 +82,337 @@ export default function HabitPage() {
       .catch((e) => {
         setError(e.message);
         console.log(e.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    setLoading(false);
   }, []);
 
-  return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
-      {loading ? (
-        <Text>Loading ...</Text>
-      ) : error || !habit ? (
-        <Text>An error occured ...</Text>
-      ) : (
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <Text
-            style={{
-              margin: constants.padding,
-              fontWeight: constants.fontWeight,
-              fontSize: constants.largeFontSize,
-            }}
-          >
-            {habit.title}
-          </Text>
-          <View
-            style={{
-              margin: constants.padding,
-              padding: constants.padding,
-              backgroundColor: constants.colorSecondary,
-              borderRadius: 10,
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: constants.fontWeight,
-                  fontSize: constants.mediumFontSize,
-                }}
-              >
-                0
-              </Text>
-              <Text
-                style={{
-                  fontSize: constants.mediumFontSize,
-                }}
-              >
-                Total
-              </Text>
-            </View>
-          </View>
+  useEffect(() => {
+    if (habit?.occurrences) {
+      updateDoc(docRef, {
+        occurrences: habit?.occurrences,
+      })
+        .then(() => {})
+        .catch(() => {
+          console.log("We couldn't update the doc");
+        });
+    }
+  }, [habit?.occurrences]);
 
-          <View
-            style={{
-              margin: constants.padding,
-            }}
-          >
+  return (
+    <>
+      <ScrollView
+        style={{
+          flex: 1,
+        }}
+      >
+        {loading ? (
+          <LoadingComponent />
+        ) : error || !habit ? (
+          <ErrorComponent />
+        ) : (
+          <>
             <View
               style={{
-                display: "flex",
+                backgroundColor: constants.colorSecondary,
                 flexDirection: "row",
+                alignItems: "flex-start",
                 justifyContent: "space-between",
+                paddingVertical: constants.padding,
+              }}
+            >
+              {/* Back Button */}
+              <Pressable
+                style={{ padding: constants.padding }}
+                onPress={() => router.push("/(tabs)")}
+              >
+                <Ionicons
+                  name="arrow-back"
+                  size={28}
+                  color={constants.colorTertiary}
+                />
+              </Pressable>
+
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  padding: constants.padding,
+                  gap: constants.padding,
+                }}
+              >
+                <Pressable onPress={() => setShowDeleteModal(true)}>
+                  <FontAwesome6 name="trash-can" size={28} color="black" />
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push(`/update-habit?id=${id}`)}
+                >
+                  <FontAwesome6 name="edit" size={28} color="black" />
+                </Pressable>
+              </View>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                paddingBottom: constants.padding * 2,
               }}
             >
               <Text
                 style={{
+                  margin: constants.padding,
                   fontWeight: constants.fontWeight,
+                  fontSize: constants.largeFontSize,
                 }}
               >
-                History
+                {habit.title}
               </Text>
-              <View>
-                <Text
+              <View
+                style={{
+                  margin: constants.padding,
+                  padding: constants.padding,
+                  backgroundColor: constants.colorSecondary,
+                  borderRadius: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <View
                   style={{
-                    fontWeight: constants.fontWeight,
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
-                  {monthObject[month]} {year}
-                </Text>
+                  <Text
+                    style={{
+                      fontWeight: constants.fontWeight,
+                      fontSize: constants.mediumFontSize,
+                    }}
+                  >
+                    {habit.occurrences.length}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: constants.smallFontSize,
+                      fontWeight: constants.fontWeight,
+                    }}
+                  >
+                    Total
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  margin: constants.padding,
+                }}
+              >
                 <View
                   style={{
                     display: "flex",
                     flexDirection: "row",
+                    justifyContent: "space-between",
+                    margin: constants.padding,
                   }}
                 >
-                  <Pressable
-                    onPress={() => {
-                      const newDate = new Date(date);
-                      newDate.setDate(1);
-                      newDate.setMonth(newDate.getMonth() - 1);
-                      setDate(newDate);
+                  <Text
+                    style={{
+                      fontWeight: constants.fontWeight,
+                      fontSize: constants.mediumFontSize,
                     }}
                   >
-                    <Ionicons
-                      name="chevron-forward-outline"
-                      size={20}
-                      color={constants.colorTertiary}
-                      style={{
-                        transform: [{ rotate: "180deg" }], // Rotate 45 degrees
-                      }}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      const newDate = new Date(date);
-                      newDate.setDate(1);
-                      newDate.setMonth(newDate.getMonth() + 1);
-                      setDate(newDate);
+                    History
+                  </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: constants.margin,
                     }}
                   >
-                    <Ionicons
-                      name="chevron-forward-outline"
-                      size={20}
-                      color={constants.colorTertiary}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-            <View
-              style={{
-                backgroundColor: constants.colorSecondary,
-                borderRadius: 10,
-                padding: constants.padding,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                {Object.keys(days).map((day) => {
-                  return (
                     <Pressable
-                      key={day}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
+                      onPress={() => {
+                        const newDate = new Date(date);
+                        newDate.setDate(1);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setDate(newDate);
                       }}
                     >
-                      <Text
+                      <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color={constants.colorTertiary}
                         style={{
-                          textAlign: "center",
+                          transform: [{ rotate: "180deg" }], // Rotate 45 degrees
                         }}
-                      >
-                        {days[day as keyof typeof days].key}
-                      </Text>
+                      />
                     </Pressable>
-                  );
-                })}
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  flexWrap: "wrap",
-                  marginTop: constants.padding * 2,
-                  rowGap: constants.margin * 5,
-                }}
-              >
-                {allDaysInTheMonth.map((d, i) => {
-                  return (
-                    <View
-                      key={d.date.toString() + i}
+                    <Text
                       style={{
-                        borderRadius: 50,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: `${(1 / 7) * 100}%`,
-                        height: 50,
+                        fontWeight: constants.fontWeight,
+                        fontSize: constants.mediumFontSize,
                       }}
                     >
-                      <Pressable
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "85%",
-                          height: "85%",
-                          backgroundColor: "lightblue",
-                          borderRadius: 50,
-                        }}
-                      >
-                        <Text
+                      {monthObject[month]} {year}
+                    </Text>
+                    <Pressable
+                      onPress={() => {
+                        const newDate = new Date(date);
+                        newDate.setDate(1);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setDate(newDate);
+                      }}
+                    >
+                      <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color={constants.colorTertiary}
+                      />
+                    </Pressable>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: constants.colorSecondary,
+                    borderRadius: 10,
+                    padding: constants.padding,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    {Object.keys(days).map((day) => {
+                      return (
+                        <Pressable
+                          key={day}
                           style={{
-                            textAlign: "center",
+                            flex: 1,
+                            display: "flex",
+                            alignItems: "center",
                           }}
                         >
-                          {d.monthday}
-                        </Text>
-                      </Pressable>
-                    </View>
-                  );
-                })}
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              fontWeight: constants.fontWeight,
+                              color: constants.colorPrimary,
+                            }}
+                          >
+                            {days[day as keyof typeof days].key}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      flexWrap: "wrap",
+                      marginTop: constants.padding * 2,
+                      rowGap: constants.margin * 2,
+                    }}
+                  >
+                    {allDaysInTheMonth.map((d, i) => {
+                      const occurred = habit.occurrences?.find((o: string) => {
+                        return compareDates(new Date(o), d.date);
+                      });
+
+                      const dateNotFromCurrentMonth =
+                        d.date.getMonth() !==
+                        new Date(year, month, 10).getMonth();
+                      const futureDate =
+                        d.date.getTime() > new Date().getTime();
+
+                      return (
+                        <View
+                          key={d.date.toUTCString() + i}
+                          style={{
+                            borderRadius: 50,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: `${(1 / 7) * 100}%`,
+                            height: 50,
+                          }}
+                        >
+                          <Pressable
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: "85%",
+                              height: "85%",
+                              borderWidth: compareDates(d.date, new Date())
+                                ? 2
+                                : 0,
+                              borderColor: constants.colorQuarternary,
+                              borderRadius: 50,
+                              backgroundColor: occurred
+                                ? constants.colorQuinary
+                                : constants.colorSecondary,
+                            }}
+                            disabled={futureDate}
+                            onPress={() => {
+                              if (occurred) {
+                                setHabit({
+                                  ...habit,
+                                  occurrences: [...habit.occurrences].filter(
+                                    (o) => !compareDates(new Date(o), d.date)
+                                  ),
+                                });
+                              } else {
+                                setHabit({
+                                  ...habit,
+                                  occurrences: [
+                                    ...habit.occurrences,
+                                    d.date.toUTCString(),
+                                  ].sort(
+                                    (d1, d2) =>
+                                      new Date(d1).valueOf() -
+                                      new Date(d2).valueOf()
+                                  ),
+                                });
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                textAlign: "center",
+                                color:
+                                  futureDate || dateNotFromCurrentMonth
+                                    ? constants.colorPrimary
+                                    : constants.colorTertiary,
+                              }}
+                            >
+                              {d.monthday}
+                            </Text>
+                          </Pressable>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
               </View>
+
+              <Description description={habit.description} />
             </View>
-          </View>
-        </View>
+          </>
+        )}
+      </ScrollView>
+      {showDeleteModal && (
+        <DeleteModal
+          setShowModal={setShowDeleteModal}
+          habitId={id.toString()}
+          habitTitle={habit?.title}
+        />
       )}
-    </View>
+    </>
   );
 }

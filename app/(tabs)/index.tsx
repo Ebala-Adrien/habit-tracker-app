@@ -1,17 +1,30 @@
 import { View, Text, Pressable } from "react-native";
 import constants from "../constants";
-import { useState } from "react";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { useHabitContext } from "../contexts/HabitContext";
+import HabitList from "../components/habit/display/HabitList";
+import { useLocalSearchParams } from "expo-router";
+import Toast from "react-native-toast-message";
 
 export default function HomeScreen() {
-  const router = useRouter();
-
-  const frequences = ["Today", "Weekly", "Monthly", "Overall"];
-  const [frequence, setFrequence] = useState(frequences[0]);
+  const frequences = ["Today", "Weekly", "Monthly", "Overall"] as const;
+  const [frequence, setFrequence] = useState<
+    "Today" | "Weekly" | "Monthly" | "Overall"
+  >(frequences[0]);
 
   const { habits } = useHabitContext();
+  const { deleteHabitMsg } = useLocalSearchParams();
+
+  useEffect(() => {
+    if (deleteHabitMsg) {
+      Toast.show({
+        text1: deleteHabitMsg.toString(),
+        position: "bottom",
+        bottomOffset: 60,
+        type: "deletedHabitToast",
+      });
+    }
+  }, [deleteHabitMsg]);
 
   return (
     <View>
@@ -58,85 +71,7 @@ export default function HomeScreen() {
         })}
       </View>
 
-      {habits.length < 1 ? (
-        <View
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            gap: constants.padding * 1.5,
-          }}
-        >
-          <MaterialCommunityIcons
-            name="sleep"
-            size={24}
-            color={constants.colorQuarternary}
-            style={{ textAlign: "center" }}
-          />
-          <Text
-            style={{
-              fontSize: constants.mediumFontSize,
-              fontWeight: constants.fontWeight,
-            }}
-          >
-            No habits for today
-          </Text>
-          <Text>There is no habit for today. Create one?</Text>
-          <Pressable
-            onPress={() => router.push("/create-habit")}
-            style={{
-              paddingHorizontal: constants.padding * 2,
-              paddingVertical: constants.padding,
-              backgroundColor: constants.colorQuarternary,
-              borderRadius: 50,
-            }}
-          >
-            <Text
-              style={{
-                color: constants.colorSecondary,
-                fontWeight: constants.fontWeight,
-                fontSize: constants.mediumFontSize,
-              }}
-            >
-              + Create
-            </Text>
-          </Pressable>
-        </View>
-      ) : frequence === "Overall" ? (
-        <View
-          style={{
-            paddingHorizontal: constants.padding * 2,
-          }}
-        >
-          {habits.map((h) => {
-            const { id, title } = h;
-
-            return (
-              <Pressable
-                key={id}
-                style={{
-                  backgroundColor: constants.colorSecondary,
-                  padding: constants.padding * 2,
-                  borderRadius: 10,
-                }}
-                onPress={() => router.push(`/habit?id=${id}`)}
-              >
-                <Text
-                  style={{
-                    fontWeight: constants.fontWeight,
-                    fontSize: constants.mediumFontSize,
-                  }}
-                >
-                  {title}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      ) : (
-        <Text>Currently it is just a placeholder</Text>
-      )}
+      <HabitList habits={habits} frequence={frequence} />
     </View>
   );
 }

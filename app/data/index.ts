@@ -25,6 +25,16 @@ export type Days = {
     Sunday: { key: "S"; repeat: boolean };
 };
 
+export const daysMapping = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3:  "Wednesday",
+    4:  "Thursday",
+    5: "Friday",
+    6: "Saturday",
+} as const;
+
 export const days: Days = {
     Monday: { key: "M", repeat: true },
     Tuesday: { key: "T", repeat: true },
@@ -34,3 +44,6 @@ export const days: Days = {
     Saturday: { key: "S", repeat: true },
     Sunday: { key: "S", repeat: true },
   };
+
+  export const maxFrequencyWeek = 7;
+  export const maxFrequencyMonth = 30;

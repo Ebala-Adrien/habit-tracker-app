@@ -9,5 +9,6 @@ export default {
     colorSecondary: "white",
     colorTertiary: "black",
     colorQuarternary: "green",
+    colorQuinary: "lightgreen",
     colorError: "red"
 } as const
