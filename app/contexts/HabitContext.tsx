@@ -32,17 +32,13 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { user } = useAuthContext();
-  const [habits, setHabit] = useState<Habit[]>(defaultContext.habits);
+  const [habits, setHabits] = useState<Habit[]>(defaultContext.habits);
 
   const habitCollectionRef = collection(db, "habit");
   const q = useMemo(() => {
     return query(
       habitCollectionRef,
-      where(
-        "user_id",
-        "==",
-        user?.uid || uniqueId("random_id_to_prevent_sending_undefined_value")
-      )
+      where("user_id", "==", user?.uid || uniqueId("928937hh3793"))
     );
   }, [user?.uid]);
 
@@ -55,23 +51,23 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
             ...doc.data(),
           })) as Habit[];
 
-          setHabit(docs);
+          setHabits(docs);
         })
         .catch((e) => console.error(e.message));
     }
 
     // Listen whenever there is an update for the habit collection
-    const unsubscribe = onSnapshot(habitCollectionRef, (snapshot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Habit[];
-      setHabit(docs);
+      setHabits(docs);
     });
 
     // Cleanup the listener on unmount
     return () => unsubscribe();
-  }, []);
+  }, [user?.uid]);
 
   return (
     <HabitContext.Provider
