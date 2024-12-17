@@ -108,7 +108,7 @@ export default function HabitPage() {
         }}
       >
         {loading ? (
-          <LoadingComponent />
+          <LoadingComponent size={80} color={constants.colorSecondary} />
         ) : error || !habit ? (
           <ErrorComponent />
         ) : (

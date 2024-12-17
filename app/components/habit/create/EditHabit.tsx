@@ -17,12 +17,12 @@ import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Days, days, maxFrequencyWeek, maxFrequencyMonth } from "@/app/data";
 import { Habit } from "@/app/types";
+import { useAuthContext } from "@/app/contexts/AuthContext";
 
 type Props = {
   id?: string;
 };
 
-// Validation schema
 const schema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string(),
@@ -31,6 +31,7 @@ const schema = Yup.object().shape({
 
 export default function EditHabit({ id }: Props) {
   const router = useRouter();
+  const { user } = useAuthContext();
 
   const {
     control,
@@ -57,8 +58,10 @@ export default function EditHabit({ id }: Props) {
   const onSubmit: SubmitHandler<any> = async (data) => {
     if (!id) {
       try {
+        if (!user?.uid) throw new Error("Custom error: No user ID");
         await addDoc(collection(db, "habit"), {
           ...data,
+          user_id: user?.uid,
           occurrences: [],
           frequency: !data.isRepetitive
             ? undefined
@@ -116,6 +119,7 @@ export default function EditHabit({ id }: Props) {
     if (id) {
       setLoading(true);
       const docRef = doc(db, "habit", id.toString());
+
       getDoc(docRef)
         .then((doc) => {
           if (doc.exists()) {

@@ -2,9 +2,11 @@ import { View, Text, Pressable } from "react-native";
 import constants from "../constants";
 import { useEffect, useState } from "react";
 import { useHabitContext } from "../contexts/HabitContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import HabitList from "../components/habit/display/HabitList";
 import { useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
+import LoadingComponent from "../components/utility/Loading";
 
 export default function HomeScreen() {
   const frequences = ["Today", "Weekly", "Monthly", "Overall"] as const;
@@ -13,6 +15,7 @@ export default function HomeScreen() {
   >(frequences[0]);
 
   const { habits } = useHabitContext();
+  const { authCtxIsLoading } = useAuthContext();
   const { deleteHabitMsg } = useLocalSearchParams();
 
   useEffect(() => {
@@ -28,50 +31,58 @@ export default function HomeScreen() {
 
   return (
     <View>
-      <Text
-        style={{
-          fontSize: constants.largeFontSize,
-          fontWeight: constants.fontWeight,
-          padding: constants.padding,
-        }}
-      >
-        Habits
-      </Text>
-      <View
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-          padding: constants.padding,
-          marginBottom: constants.margin * 10,
-        }}
-      >
-        {frequences.map((r) => {
-          const isCurrentFrequence = frequence === r;
+      {authCtxIsLoading ? (
+        <LoadingComponent size={80} color={constants.colorQuarternary} />
+      ) : (
+        <>
+          <Text
+            style={{
+              fontSize: constants.largeFontSize,
+              fontWeight: constants.fontWeight,
+              padding: constants.padding,
+            }}
+          >
+            Habits
+          </Text>
+          <View
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              padding: constants.padding,
+              marginBottom: constants.margin * 10,
+            }}
+          >
+            {frequences.map((r) => {
+              const isCurrentFrequence = frequence === r;
 
-          return (
-            <Pressable key={r} onPress={() => setFrequence(r)}>
-              <Text
-                style={{
-                  fontWeight: "500",
-                  fontSize: constants.mediumFontSize,
-                  color: isCurrentFrequence ? "black" : "grey",
-                  backgroundColor: isCurrentFrequence ? "white" : "transparent",
-                  paddingHorizontal: constants.padding * 2,
-                  paddingVertical: constants.padding,
-                  borderRadius: 50,
-                }}
-                key={r}
-              >
-                {r}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+              return (
+                <Pressable key={r} onPress={() => setFrequence(r)}>
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      fontSize: constants.mediumFontSize,
+                      color: isCurrentFrequence ? "black" : "grey",
+                      backgroundColor: isCurrentFrequence
+                        ? "white"
+                        : "transparent",
+                      paddingHorizontal: constants.padding * 2,
+                      paddingVertical: constants.padding,
+                      borderRadius: 50,
+                    }}
+                    key={r}
+                  >
+                    {r}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
 
-      <HabitList habits={habits} frequence={frequence} />
+          <HabitList habits={habits} frequence={frequence} />
+        </>
+      )}
     </View>
   );
 }

@@ -2,6 +2,7 @@ import { Days } from "../data";
 
 export type Habit = {
 id: string,
+user_id: string,
 title: string,
 description: string
 frequency: {

@@ -21,7 +21,7 @@ export default function TabLayout() {
               padding: constants.padding,
             }}
           >
-            <Pressable>
+            <Pressable onPress={() => router.push("/settings")}>
               <SimpleLineIcons name="menu" size={30} color="black" />
             </Pressable>
 
