@@ -1,4 +1,4 @@
-import { Date, Day, Habit, HabitFrequency } from "@/app/types";
+import { DateType, Day, Habit } from "@/app/types";
 import { useMemo } from "react";
 import NoHabit from "../create/NoHabit";
 import { Pressable, ScrollView, Text } from "react-native";
@@ -11,7 +11,6 @@ import {
   getWeekStartAndEnd,
 } from "@/app/utility";
 import {
-  calculateCompletionCounts,
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
@@ -262,7 +261,7 @@ export default function HabitList({ habits, frequence }: Props) {
       new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
     );
     const currentDay = new Date().getDay() as Day;
-    const currentDate = new Date().getDate() as Date;
+    const currentDate = new Date().getDate() as DateType;
 
     return {
       startCurrentWeek: startOfWeek,

@@ -1,5 +1,5 @@
 import { compareDates, countOccurrencesOfDay } from ".";
-import { Date, Day, Habit } from "../types";
+import { DateType, Day, Habit } from "../types";
 
 export const shouldHabitBeDoneToday = (
     habit: Habit,
@@ -8,7 +8,7 @@ export const shouldHabitBeDoneToday = (
     startCurrentMonth: number,
     endCurrentMonth: number,
     currentDay: Day,
-    currentDate: Date,
+    currentDate: DateType,
     ) => {
     const nbOfTimeDoneThisWeek = habit.habitCompletions.filter(
       (o) =>
@@ -115,7 +115,7 @@ export const shouldHabitBeDoneThisWeek = (
     startCurrentMonth: number,
     endCurrentMonth: number,
     currentDay: Day,
-    currentDate: Date,
+    currentDate: DateType,
   ) => {
     const frequencyType = habit.frequency.type;
     let habitHasToBeDoneThisMonth = true;
