@@ -89,16 +89,17 @@ export default function HabitPage() {
   }, []);
 
   useEffect(() => {
-    if (habit?.occurrences) {
+    if (habit?.habitCompletions) {
       updateDoc(docRef, {
-        occurrences: habit?.occurrences,
+        modified_at: new Date(),
+        occurrences: habit?.habitCompletions,
       })
         .then(() => {})
         .catch(() => {
           console.log("We couldn't update the doc");
         });
     }
-  }, [habit?.occurrences]);
+  }, [habit?.habitCompletions]);
 
   return (
     <>
@@ -189,7 +190,7 @@ export default function HabitPage() {
                       fontSize: constants.mediumFontSize,
                     }}
                   >
-                    {habit.occurrences.length}
+                    {habit.habitCompletions.length}
                   </Text>
                   <Text
                     style={{
@@ -320,9 +321,11 @@ export default function HabitPage() {
                     }}
                   >
                     {allDaysInTheMonth.map((d, i) => {
-                      const occurred = habit.occurrences?.find((o: string) => {
-                        return compareDates(new Date(o), d.date);
-                      });
+                      const occurred = habit.habitCompletions?.find(
+                        (o: string) => {
+                          return compareDates(new Date(o), d.date);
+                        }
+                      );
 
                       const dateNotFromCurrentMonth =
                         d.date.getMonth() !==
@@ -363,15 +366,17 @@ export default function HabitPage() {
                               if (occurred) {
                                 setHabit({
                                   ...habit,
-                                  occurrences: [...habit.occurrences].filter(
+                                  habitCompletions: [
+                                    ...habit.habitCompletions,
+                                  ].filter(
                                     (o) => !compareDates(new Date(o), d.date)
                                   ),
                                 });
                               } else {
                                 setHabit({
                                   ...habit,
-                                  occurrences: [
-                                    ...habit.occurrences,
+                                  habitCompletions: [
+                                    ...habit.habitCompletions,
                                     d.date.toUTCString(),
                                   ].sort(
                                     (d1, d2) =>

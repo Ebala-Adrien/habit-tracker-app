@@ -4,9 +4,9 @@ import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 
 const messageObject = {
-  Today: "for today",
-  Weekly: "for the current week",
-  Monthly: "for the current month",
+  Day: "for today",
+  Week: "for the current week",
+  Month: "for the current month",
   Overall: "at all",
 } as const;
 

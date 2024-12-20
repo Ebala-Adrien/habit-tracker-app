@@ -16,7 +16,7 @@ import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Days, days, maxFrequencyWeek, maxFrequencyMonth } from "@/app/data";
-import { Habit } from "@/app/types";
+import { Habit, HabitFrequency } from "@/app/types";
 import { useAuthContext } from "@/app/contexts/AuthContext";
 
 type Props = {
@@ -26,8 +26,12 @@ type Props = {
 const schema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string(),
-  isRepetitive: Yup.boolean().default(true),
 });
+
+const initialFrequency: HabitFrequency = {
+  type: "weekly",
+  occurrences: 3,
+};
 
 export default function EditHabit({ id }: Props) {
   const router = useRouter();
@@ -38,7 +42,6 @@ export default function EditHabit({ id }: Props) {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -50,8 +53,8 @@ export default function EditHabit({ id }: Props) {
 
   const [daysState, setDaysState] = useState<Days>(days);
   const [maxFrequency, setMaxFrequency] = useState<number>(maxFrequencyWeek);
-  const [frequency, setFrequency] = useState<number>(maxFrequency);
-  const isMaxFrequency = frequency === maxFrequency;
+  const [frequency, setFrequency] = useState<HabitFrequency>(initialFrequency);
+  const isMaxFrequency = frequency.occurrences === maxFrequency;
   const [loading, setLoading] = useState(false);
 
   // Can remove any in the future
@@ -61,19 +64,11 @@ export default function EditHabit({ id }: Props) {
         if (!user?.uid) throw new Error("Custom error: No user ID");
         await addDoc(collection(db, "habit"), {
           ...data,
-          user_id: user?.uid,
-          occurrences: [],
-          frequency: !data.isRepetitive
-            ? undefined
-            : repetition === "Daily"
-            ? {
-                repetition,
-                frequency: daysState,
-              }
-            : {
-                repetition,
-                frequency,
-              },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userId: user?.uid,
+          habitCompletions: [],
+          frequency: frequency,
         });
 
         router.push("/");
@@ -84,17 +79,8 @@ export default function EditHabit({ id }: Props) {
       try {
         await updateDoc(doc(db, "habit", id), {
           ...data,
-          frequency: !data.isRepetitive
-            ? undefined
-            : repetition === "Daily"
-            ? {
-                repetition,
-                frequency: daysState,
-              }
-            : {
-                repetition,
-                frequency,
-              },
+          updatedAt: new Date(),
+          frequency: frequency,
         });
         router.push(`/habit?id=${id}`);
       } catch (error: any) {
@@ -107,10 +93,10 @@ export default function EditHabit({ id }: Props) {
     if (!id) {
       if (repetition === "Weekly") {
         setMaxFrequency(maxFrequencyWeek);
-        setFrequency(maxFrequencyWeek);
+        setFrequency(initialFrequency);
       } else {
         setMaxFrequency(maxFrequencyMonth);
-        setFrequency(maxFrequencyMonth);
+        setFrequency(initialFrequency);
       }
     }
   }, [repetition]);
@@ -126,19 +112,14 @@ export default function EditHabit({ id }: Props) {
             const docData = doc.data() as Habit;
             setValue("title", docData.title);
             setValue("description", docData.description);
-            setValue("isRepetitive", docData.isRepetitive);
 
-            if (docData.isRepetitive) {
-              setRepetition(docData.frequency.repetition);
-              // @ts-ignore
-              setFrequency(docData.frequency.frequency);
-              if (docData.frequency.repetition === "Daily") {
-                setDaysState(docData.frequency.frequency);
-              } else if (docData.frequency.repetition === "Weekly") {
-                setMaxFrequency(maxFrequencyWeek);
-              } else {
-                setMaxFrequency(maxFrequencyMonth);
-              }
+            // @ts-ignore
+            setFrequency(docData.frequency);
+
+            if (docData.frequency.type === "weekly") {
+              setMaxFrequency(maxFrequencyWeek);
+            } else {
+              setMaxFrequency(maxFrequencyMonth);
             }
           } else {
             throw new Error("The doc doesn't exist");
@@ -152,6 +133,8 @@ export default function EditHabit({ id }: Props) {
         });
     }
   }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <ScrollView>
@@ -240,17 +223,6 @@ export default function EditHabit({ id }: Props) {
           >
             Repeat
           </Text>
-          <Switch
-            trackColor={{
-              false: constants.colorPrimary,
-              true: constants.colorQuarternary,
-            }} // Track color
-            thumbColor={constants.colorSecondary} // Thumb color
-            onValueChange={() =>
-              setValue("isRepetitive", !watch("isRepetitive"))
-            } // Function to toggle state
-            value={watch("isRepetitive")} // Current state
-          />
         </View>
         <View
           style={{
@@ -379,7 +351,7 @@ export default function EditHabit({ id }: Props) {
                     }`}
               </Text>
             </View>
-            <View
+            {/* <View
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -446,7 +418,7 @@ export default function EditHabit({ id }: Props) {
                   +
                 </Text>
               </Pressable>
-            </View>
+            </View> */}
           </View>
         )}
       </View>

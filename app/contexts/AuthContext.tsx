@@ -14,7 +14,7 @@ import React, {
 type AuthContextType = {
   user: User | null;
   authCtxIsLoading: boolean;
-  setAuthCtxIsLoading: Dispatch<React.SetStateAction<boolean>>;
+  setAuthCtxIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const defaultContext: AuthContextType = {

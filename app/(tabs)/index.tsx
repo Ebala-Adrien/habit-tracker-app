@@ -9,9 +9,9 @@ import Toast from "react-native-toast-message";
 import LoadingComponent from "../components/utility/Loading";
 
 export default function HomeScreen() {
-  const frequences = ["Today", "Weekly", "Monthly", "Overall"] as const;
+  const frequences = ["Day", "Week", "Month", "Overall"] as const;
   const [frequence, setFrequence] = useState<
-    "Today" | "Weekly" | "Monthly" | "Overall"
+    "Day" | "Week" | "Month" | "Overall"
   >(frequences[0]);
 
   const { habits } = useHabitContext();
