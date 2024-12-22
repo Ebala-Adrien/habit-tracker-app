@@ -1,33 +1,3 @@
-import { Days } from "../data";
-
-// export type Habit = {
-// id: string,
-// user_id: string,
-// title: string,
-// description: string
-// frequency: {
-//     frequency: number,
-//     repetition: "Weekly" | "Monthly";
-// } | {
-//     frequency: Days,
-//     repetition: "Daily"
-// },
-// isRepetitive: true,
-// occurrences: string[]
-// created_at: Date
-// modified_at: Date
-// } |
-// {
-//     id: string,
-//     title: string,
-//     description: string
-//     isRepetitive: false,
-//     occurrences: string[]
-//     created_at: Date
-//     modified_at: Date
-//     }
-;
-
 export type Day = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type DateType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31
 
@@ -49,7 +19,9 @@ export type Habit = {
     title: string,
     description: string
     frequency: HabitFrequency; // Frequency configuration
+    lastFrequencyUpdate: string, // ISO timestamp for last update of the frequency
     habitCompletions: string[], // ISO timestamp of all the times this habit has been completed
+    timesDoneBeforeFreqUpdate: number, // How many times this habit had to be done before the last frequency update
     createdAt: string; // ISO timestamp for creation
     updatedAt: string; // ISO timestamp for last update
 };
@@ -63,13 +35,4 @@ export type Task = {
     completed: boolean; // Completion status
     createdAt: string; // ISO timestamp for creation
     completedAt?: string | null; // ISO timestamp for completion (null if not completed)
-};
-
-export type HabitHistory = {
-    id: string; // Unique identifier for the history record
-    habitId: string; // Links to the Habit it belongs to
-    changes: HabitFrequency; // Changes to the habit's frequency
-    startDate: string; // When this version of the habit started
-    endDate: string | null; // When this version of the habit ended (null if current)
-    changedAt: string; // ISO timestamp for when the change was made
 };

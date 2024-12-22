@@ -15,35 +15,43 @@ export const monthObject: {
     11: "Dec"
 }
 
-export type Days = {
-    Monday: { key: "M"; repeat: boolean };
-    Tuesday: { key: "T"; repeat: boolean };
-    Wednesday: { key: "W"; repeat: boolean };
-    Thursday: { key: "T"; repeat: boolean };
-    Friday: { key: "F"; repeat: boolean };
-    Saturday: { key: "S"; repeat: boolean };
-    Sunday: { key: "S"; repeat: boolean };
-};
-
 export const daysMapping = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3:  "Wednesday",
-    4:  "Thursday",
-    5: "Friday",
-    6: "Saturday",
+    0: {
+        key: "S",
+        order: 7,
+        name: "Sunday"
+    },
+    1: {
+        key: "M",
+        order: 1,
+        name: "Monday"
+    },
+    2: {
+        key: "T",
+        order: 2,
+        name: "Tuesday"
+    },
+    3:  {
+        key: "W",
+        order: 3,
+        name: "Wednesday"
+    },
+    4:  {
+        key: "T",
+        order: 4,
+        name: "Thursday"
+    },
+    5: {
+        key: "F",
+        order: 5,
+        name: "Friday"
+    },
+    6: {
+        key: "S",
+        order: 6,
+        name:  "Saturday"
+    },
 } as const;
-
-export const days: Days = {
-    Monday: { key: "M", repeat: true },
-    Tuesday: { key: "T", repeat: true },
-    Wednesday: { key: "W", repeat: true },
-    Thursday: { key: "T", repeat: true },
-    Friday: { key: "F", repeat: true },
-    Saturday: { key: "S", repeat: true },
-    Sunday: { key: "S", repeat: true },
-  };
 
   export const maxFrequencyWeek = 7;
   export const maxFrequencyMonth = 30;

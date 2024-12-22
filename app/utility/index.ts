@@ -1,4 +1,4 @@
-import { Day } from "../types";
+import { Day, Habit } from "../types";
 
 export function compareDates(date1: Date, date2: Date){
     return date1.getDate() === date2.getDate() &&
@@ -84,4 +84,54 @@ export function getWeekStartAndEnd(date: Date) {
    return Math.floor(daysBetween / 7) + 1;
 
 
+  }
+
+  export function calculateMonthsBetweenDates(date1: number, date2: number) {
+    // Parse the input dates
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+  
+    // Calculate the year and month difference
+    const yearsDifference = d2.getFullYear() - d1.getFullYear();
+    const monthsDifference = d2.getMonth() - d1.getMonth();
+  
+    // Total months difference
+    let totalMonths = yearsDifference * 12 + monthsDifference;
+  
+    // Calculate the fractional part of the month
+    const daysInStartMonth = new Date(d1.getFullYear(), d1.getMonth() + 1, 0).getDate();
+    const dayFraction = (d2.getDate() - d1.getDate()) / daysInStartMonth;
+  
+    // Add the fractional part to the total months
+    totalMonths += dayFraction;
+  
+    return Math.abs(totalMonths); // Ensure the result is positive
+  }
+
+
+  export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number, endDate: number){
+    if (habit?.frequency?.type === "weekly") {
+      if (habit.frequency.days) {
+        return habit.frequency.days.reduce(
+          (acc, curr) =>
+            countOccurrencesOfDay(
+              startDate,
+              endDate,
+              curr as Day
+            ) + acc,
+          0
+        );
+      } else {
+        return 0 // Not implemented yet
+      }
+    } else {
+      if (habit?.frequency?.occurrences) {
+        const monthCount =
+          calculateMonthsBetweenDates(startDate, endDate)
+        const occurencesCount = Math.round(monthCount * habit.frequency.occurrences)
+         return occurencesCount;
+      } else {
+        return 0
+      }
+    }
   }

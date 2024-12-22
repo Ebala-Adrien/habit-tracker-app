@@ -1,11 +1,4 @@
-import {
-  Pressable,
-  View,
-  TextInput,
-  Text,
-  Switch,
-  ScrollView,
-} from "react-native";
+import { Pressable, View, TextInput, Text, ScrollView } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -15,9 +8,10 @@ import _ from "lodash";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
-import { Days, days, maxFrequencyWeek, maxFrequencyMonth } from "@/app/data";
-import { Habit, HabitFrequency } from "@/app/types";
+import { maxFrequencyWeek, maxFrequencyMonth, daysMapping } from "@/app/data";
+import { Day, Habit } from "@/app/types";
 import { useAuthContext } from "@/app/contexts/AuthContext";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/app/utility";
 
 type Props = {
   id?: string;
@@ -28,10 +22,8 @@ const schema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const initialFrequency: HabitFrequency = {
-  type: "weekly",
-  occurrences: 3,
-};
+const initialFrequency = 1;
+const initialDaysState: Day[] = [];
 
 export default function EditHabit({ id }: Props) {
   const router = useRouter();
@@ -46,15 +38,15 @@ export default function EditHabit({ id }: Props) {
     resolver: yupResolver(schema),
   });
 
-  const repetitions = ["Daily", "Weekly", "Monthly"] as const;
-  const [repetition, setRepetition] = useState<
-    null | "Daily" | "Weekly" | "Monthly"
-  >("Daily");
+  const [habit, setHabit] = useState<null | Habit>(null);
 
-  const [daysState, setDaysState] = useState<Days>(days);
+  const repetitions = ["Weekly", "Monthly"] as const;
+  const [repetition, setRepetition] = useState<"Weekly" | "Monthly">("Weekly");
+
+  const [daysState, setDaysState] = useState<number[]>(initialDaysState);
   const [maxFrequency, setMaxFrequency] = useState<number>(maxFrequencyWeek);
-  const [frequency, setFrequency] = useState<HabitFrequency>(initialFrequency);
-  const isMaxFrequency = frequency.occurrences === maxFrequency;
+  const [frequency, setFrequency] = useState<number>(initialFrequency);
+  const isMaxFrequency = frequency === maxFrequency;
   const [loading, setLoading] = useState(false);
 
   // Can remove any in the future
@@ -62,13 +54,20 @@ export default function EditHabit({ id }: Props) {
     if (!id) {
       try {
         if (!user?.uid) throw new Error("Custom error: No user ID");
+
         await addDoc(collection(db, "habit"), {
           ...data,
           createdAt: new Date(),
           updatedAt: new Date(),
+          lastFrequencyUpdate: new Date(),
+          timesDoneSinceLastUpdate: 0,
           userId: user?.uid,
           habitCompletions: [],
-          frequency: frequency,
+          frequency: {
+            type: repetition.toLowerCase(),
+            days: daysState, // For now days is only for weekly (To change in the future)
+            occurences: frequency, // For now occurences is only for monthly (To change in the future)
+          },
         });
 
         router.push("/");
@@ -77,10 +76,45 @@ export default function EditHabit({ id }: Props) {
       }
     } else {
       try {
+        if (!habit) return;
+
+        const lastFreqUpdateDate = new Date(
+          habit.lastFrequencyUpdate
+        ).getTime();
+        const currentDate = new Date().getTime();
+
+        const habitHasBeenCompletedSinceLastFreqUpdate =
+          habit.habitCompletions.some(
+            (c) => new Date(c).getTime() > lastFreqUpdateDate
+          );
+        const habitFrequencyHasChanged =
+          habit.frequency.days !== daysState ||
+          habit.frequency.occurrences !== frequency;
+
+        const lastFrequencyUpdateMustBeModified =
+          habitFrequencyHasChanged && habitHasBeenCompletedSinceLastFreqUpdate;
+
+        let timesDoneSinceLastUpdate =
+          calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+            habit,
+            lastFreqUpdateDate,
+            currentDate
+          ); // How many times it had to be done between the last update and now
+
         await updateDoc(doc(db, "habit", id), {
           ...data,
           updatedAt: new Date(),
-          frequency: frequency,
+          lastFrequencyUpdate: lastFrequencyUpdateMustBeModified
+            ? new Date()
+            : habit?.lastFrequencyUpdate,
+          timesDoneBeforeFreqUpdate: lastFrequencyUpdateMustBeModified
+            ? habit?.timesDoneBeforeFreqUpdate + timesDoneSinceLastUpdate
+            : habit?.timesDoneBeforeFreqUpdate,
+          frequency: {
+            type: repetition?.toLowerCase(),
+            days: daysState, // For now days is only for weekly (To change in the future)
+            occurences: frequency, // For now occurences is only for monthly (To change in the future)
+          },
         });
         router.push(`/habit?id=${id}`);
       } catch (error: any) {
@@ -110,11 +144,17 @@ export default function EditHabit({ id }: Props) {
         .then((doc) => {
           if (doc.exists()) {
             const docData = doc.data() as Habit;
+            setHabit(docData);
+
             setValue("title", docData.title);
             setValue("description", docData.description);
 
             // @ts-ignore
-            setFrequency(docData.frequency);
+            setRepetition(
+              docData.frequency.type === "weekly" ? "Weekly" : "Monthly"
+            );
+            setFrequency(docData.frequency.occurrences || initialFrequency);
+            setDaysState(docData.frequency.days || initialDaysState);
 
             if (docData.frequency.type === "weekly") {
               setMaxFrequency(maxFrequencyWeek);
@@ -134,7 +174,7 @@ export default function EditHabit({ id }: Props) {
     }
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Text>Loading...</Text>;
 
   return (
     <ScrollView>
@@ -182,6 +222,7 @@ export default function EditHabit({ id }: Props) {
             onChangeText={onChange}
             value={value}
             placeholder="Description"
+            multiline
             style={{
               backgroundColor: constants.colorPrimary,
               margin: constants.padding,
@@ -262,7 +303,7 @@ export default function EditHabit({ id }: Props) {
           ))}
         </View>
 
-        {repetition === "Daily" ? (
+        {repetition === "Weekly" ? (
           <View>
             <Text
               style={{
@@ -279,18 +320,18 @@ export default function EditHabit({ id }: Props) {
                 gap: constants.padding * 1.5,
               }}
             >
-              {(Object.keys(daysState) as (keyof Days)[])
-                .sort((a: keyof Days, b: keyof Days) => {
-                  const daysArray = Object.keys(days) as (keyof Days)[];
-
-                  return daysArray.indexOf(a) - daysArray.indexOf(b);
+              {Object.keys(daysMapping)
+                .map((k) => Number(k) as Day)
+                .sort((a: Day, b: Day) => {
+                  return daysMapping[a].order - daysMapping[b].order;
                 })
                 .map((d) => {
-                  const { key, repeat } = daysState[d as keyof Days];
+                  const repeat = daysState.includes(d);
+                  const key = daysMapping[d].key;
 
                   return (
                     <Pressable
-                      key={d}
+                      key={d.toString()}
                       style={{
                         flexGrow: 1,
                         borderRadius: 5,
@@ -300,12 +341,13 @@ export default function EditHabit({ id }: Props) {
                         padding: constants.padding / 2,
                       }}
                       onPress={() => {
-                        const daysCopy = _.clone(daysState) as Days;
-                        daysCopy[d as keyof Days] = {
-                          ...daysCopy[d as keyof Days],
-                          // @ts-ignore
-                          repeat: !daysCopy[d as keyof Days].repeat,
-                        };
+                        console.log("On va voir");
+                        let daysCopy = _.clone(daysState) as Day[];
+                        if (repeat) {
+                          daysCopy = daysCopy.filter((k) => k !== d);
+                        } else {
+                          daysCopy.push(d);
+                        }
                         setDaysState(daysCopy);
                       }}
                     >
@@ -346,12 +388,10 @@ export default function EditHabit({ id }: Props) {
               <Text>
                 {isMaxFrequency
                   ? "Everyday"
-                  : `${frequency} times per ${
-                      repetition === "Weekly" ? "week" : "month"
-                    }`}
+                  : `${frequency} times per ${"month"}`}
               </Text>
             </View>
-            {/* <View
+            <View
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -418,7 +458,7 @@ export default function EditHabit({ id }: Props) {
                   +
                 </Text>
               </Pressable>
-            </View> */}
+            </View>
           </View>
         )}
       </View>

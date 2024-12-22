@@ -17,13 +17,18 @@ import {
 import { db } from "@/firebaseConfig";
 import { useAuthContext } from "./AuthContext";
 import { uniqueId } from "lodash";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "../utility";
 
 type HabitContextType = {
   habits: Habit[];
+  habitsCompletionsCount: number;
+  habitsTimesToBeDone: number;
 };
 
 const defaultContext: HabitContextType = {
   habits: [],
+  habitsCompletionsCount: 0,
+  habitsTimesToBeDone: 0,
 };
 
 const HabitContext = createContext<HabitContextType>(defaultContext);
@@ -33,55 +38,21 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { user } = useAuthContext();
   const [habits, setHabits] = useState<Habit[]>(defaultContext.habits);
+  const [habitsCompletionsCount, setHabitsCompletionsCount] =
+    useState<number>(0);
+  const [habitsTimesToBeDone, setHabitsTimesToBeDone] = useState<number>(0);
 
   const habitCollectionRef = collection(db, "habit");
   const q = useMemo(() => {
     return query(
       habitCollectionRef,
-      where("user_id", "==", user?.uid || uniqueId("928937hh3793"))
+      where("userId", "==", user?.uid || uniqueId("928937hh3793"))
     );
   }, [user?.uid]);
 
   const initialHabitStats = {
     numberOfHabits: 0,
   };
-
-  const habitsStats = useMemo(() => {
-    const s = habits.reduce((accumulator, currentValue) => {
-      // const frequency = !currentValue.isRepetitive
-      //   ? "Unique"
-      //   : currentValue.frequency.repetition;
-
-      // switch (frequency) {
-      //   case "Unique":
-      //     currentValue.isRepetitive === false
-      //     break;
-      //   case "Daily":
-      //     const daysFrequency = currentValue?.frequency
-      //   default:
-      //     break;
-      // }
-
-      // if (currentValue.isRepetitive) {
-      //   const repetition = currentValue.frequency.repetition
-      //   if(repetition === "Daily"){
-
-      //   } else  if(repetition === "Weekly") {
-
-      //   } else {
-
-      //   }
-      // } else {
-      //   // Do nothing for now but in the future we will check if we have done it on time
-      // }
-
-      return {
-        numberOfHabits: accumulator.numberOfHabits + 1,
-      };
-    }, initialHabitStats);
-
-    return 2;
-  }, [habits]);
 
   useEffect(() => {
     if (user?.uid) {
@@ -104,9 +75,28 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
         ...doc.data(),
       })) as Habit[];
       setHabits(docs);
+
+      const currentDate = new Date().getTime();
+      // setHabitsTimesToBeDone(
+      //   docs.reduce((acc, curr) => {
+      //     const habitLastFrequencyUpdateTime = new Date(
+      //       curr.lastFrequencyUpdate
+      //     ).getTime();
+      //     return (
+      //       calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+      //         curr,
+      //         habitLastFrequencyUpdateTime,
+      //         currentDate
+      //       ) + acc
+      //     );
+      //   }, 0)
+      // );
+
+      // setHabitsCompletionsCount(
+      //   docs.reduce((acc, curr) => acc + curr.habitCompletions.length, 0)
+      // );
     });
 
-    // Cleanup the listener on unmount
     return () => unsubscribe();
   }, [user?.uid]);
 
@@ -114,6 +104,8 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
     <HabitContext.Provider
       value={{
         habits,
+        habitsCompletionsCount,
+        habitsTimesToBeDone,
       }}
     >
       {children}

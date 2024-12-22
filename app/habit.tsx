@@ -3,9 +3,9 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { db } from "@/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Habit } from "./types";
+import { Day, Habit } from "./types";
 import constants from "./constants";
-import { days, monthObject } from "./data";
+import { daysMapping, monthObject } from "./data";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { compareDates } from "./utility";
 import Description from "./components/habit/display/Description";
@@ -91,8 +91,8 @@ export default function HabitPage() {
   useEffect(() => {
     if (habit?.habitCompletions) {
       updateDoc(docRef, {
-        modified_at: new Date(),
-        occurrences: habit?.habitCompletions,
+        updatedAt: new Date(),
+        habitCompletions: habit?.habitCompletions,
       })
         .then(() => {})
         .catch(() => {
@@ -287,28 +287,35 @@ export default function HabitPage() {
                       justifyContent: "space-between",
                     }}
                   >
-                    {Object.keys(days).map((day) => {
-                      return (
-                        <Pressable
-                          key={day}
-                          style={{
-                            flex: 1,
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Text
+                    {Object.keys(daysMapping)
+                      .map((k) => Number(k) as Day)
+                      .sort((a: Day, b: Day) => {
+                        return daysMapping[a].order - daysMapping[b].order;
+                      })
+                      .map((day) => {
+                        const key = daysMapping[day].key;
+
+                        return (
+                          <Pressable
+                            key={day}
                             style={{
-                              textAlign: "center",
-                              fontWeight: constants.fontWeight,
-                              color: constants.colorPrimary,
+                              flex: 1,
+                              display: "flex",
+                              alignItems: "center",
                             }}
                           >
-                            {days[day as keyof typeof days].key}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
+                            <Text
+                              style={{
+                                textAlign: "center",
+                                fontWeight: constants.fontWeight,
+                                color: constants.colorPrimary,
+                              }}
+                            >
+                              {key}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
                   </View>
                   <View
                     style={{
@@ -404,6 +411,13 @@ export default function HabitPage() {
                     })}
                   </View>
                 </View>
+              </View>
+              <View
+                style={{
+                  margin: constants.padding,
+                }}
+              >
+                <Text>Habit to de done</Text>
               </View>
 
               <Description description={habit.description} />
