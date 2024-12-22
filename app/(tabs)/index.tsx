@@ -30,7 +30,11 @@ export default function HomeScreen() {
   }, [deleteHabitMsg]);
 
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
       {authCtxIsLoading ? (
         <LoadingComponent size={80} color={constants.colorQuarternary} />
       ) : (

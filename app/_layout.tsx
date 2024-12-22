@@ -26,6 +26,7 @@ export default function RootLayout() {
                     flexDirection: "column",
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
+                    marginBottom: constants.margin * 10,
                   }}
                 >
                   {/* Back Button */}

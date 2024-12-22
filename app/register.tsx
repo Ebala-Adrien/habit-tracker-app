@@ -16,6 +16,7 @@ import { auth } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import LoadingComponent from "./components/utility/Loading";
 import { useAuthContext } from "./contexts/AuthContext";
+import { useState } from "react";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),
@@ -44,26 +45,29 @@ export default function RegisterPage() {
     resolver: yupResolver(schema),
   });
 
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
+
   const onSubmit: SubmitHandler<any> = async (data) => {
     setAuthCtxIsLoading(true);
     const { email, password } = data;
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user;
-        console.log(user);
-        console.log("");
-        console.log("Registered");
+      .then((_) => {
+        setAuthCtxIsLoading(false);
+        router.push("/login");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-        console.log(errorCode);
-        console.log(errorMessage);
-      })
-      .finally(() => setAuthCtxIsLoading(false));
+        if (error.code === "auth/email-already-in-use") {
+          setErrorMessage(
+            "There is already an account registered with this email address."
+          );
+        } else {
+          setErrorMessage(
+            "An error occured while trying to register. Please try again."
+          );
+        }
+        setAuthCtxIsLoading(false);
+      });
   };
 
   return (
@@ -128,6 +132,12 @@ export default function RegisterPage() {
           </View>
         </View>
 
+        {errorMessage && (
+          <View>
+            <Text style={styles.input_error}>{errorMessage}</Text>
+          </View>
+        )}
+
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (
             <LoadingComponent size={30} color={constants.colorSecondary} />
@@ -153,7 +163,6 @@ export default function RegisterPage() {
 }
 
 // Template: https://dribbble.com/shots/24364001-Recognotes-Mobile-App-Design
-
 // Icon from: https://icons8.com/icons/set/google
 
 const styles = StyleSheet.create({

@@ -57,10 +57,10 @@ export default function EditHabit({ id }: Props) {
 
         await addDoc(collection(db, "habit"), {
           ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          lastFrequencyUpdate: new Date(),
-          timesDoneSinceLastUpdate: 0,
+          createdAt: new Date().toUTCString(),
+          updatedAt: new Date().toUTCString(),
+          lastFrequencyUpdate: new Date().toUTCString(),
+          timesDoneBeforeFreqUpdate: 0,
           userId: user?.uid,
           habitCompletions: [],
           frequency: {
@@ -103,9 +103,9 @@ export default function EditHabit({ id }: Props) {
 
         await updateDoc(doc(db, "habit", id), {
           ...data,
-          updatedAt: new Date(),
+          updatedAt: new Date().toUTCString(),
           lastFrequencyUpdate: lastFrequencyUpdateMustBeModified
-            ? new Date()
+            ? new Date().toDateString()
             : habit?.lastFrequencyUpdate,
           timesDoneBeforeFreqUpdate: lastFrequencyUpdateMustBeModified
             ? habit?.timesDoneBeforeFreqUpdate + timesDoneSinceLastUpdate
@@ -304,7 +304,12 @@ export default function EditHabit({ id }: Props) {
         </View>
 
         {repetition === "Weekly" ? (
-          <View>
+          <View
+            style={{
+              display: "flex",
+              gap: constants.margin * 5,
+            }}
+          >
             <Text
               style={{
                 fontWeight: constants.fontWeight,
@@ -354,6 +359,9 @@ export default function EditHabit({ id }: Props) {
                       <Text
                         style={{
                           textAlign: "center",
+                          color: repeat
+                            ? constants.colorSecondary
+                            : constants.colorTertiary,
                         }}
                       >
                         {key}
@@ -411,8 +419,11 @@ export default function EditHabit({ id }: Props) {
                 <Text
                   style={{
                     fontWeight: "700",
-                    backgroundColor: frequency === 1 ? "lightgreen" : "lime",
-                    color: frequency === 1 ? "white" : "green",
+                    backgroundColor:
+                      frequency === 1
+                        ? constants.colorQuinary
+                        : constants.colorQuarternary,
+                    color: constants.colorSecondary,
                     padding: constants.padding,
                     borderRadius: 5,
                     textAlign: "center",
@@ -447,8 +458,10 @@ export default function EditHabit({ id }: Props) {
                 <Text
                   style={{
                     fontWeight: "700",
-                    backgroundColor: isMaxFrequency ? "lightgreen" : "lime",
-                    color: isMaxFrequency ? "white" : "green",
+                    backgroundColor: isMaxFrequency
+                      ? constants.colorQuinary
+                      : constants.colorQuarternary,
+                    color: constants.colorSecondary,
                     padding: constants.padding,
                     borderRadius: 5,
                     textAlign: "center",

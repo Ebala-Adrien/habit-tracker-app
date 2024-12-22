@@ -61,10 +61,11 @@ export function getWeekStartAndEnd(date: Date) {
   }
 
   // Count the occurences of a specific day (e.g. Monday) over a specific period
-  export function countOccurrencesOfDay(startDate: number, endDate: number, targetDay: Day) {
+  export function countOccurrencesOfDay(startDate: number | string, endDate: number | string, targetDay: Day) {
   // Convert dates to Date objects
   const start = new Date(startDate);
   const end = new Date(endDate);
+
 
   // Find the first occurrence of the target day
   let firstOccurrence = new Date(start);
@@ -86,7 +87,7 @@ export function getWeekStartAndEnd(date: Date) {
 
   }
 
-  export function calculateMonthsBetweenDates(date1: number, date2: number) {
+  export function calculateMonthsBetweenDates(date1: number | string, date2: number | string) {
     // Parse the input dates
     const d1 = new Date(date1);
     const d2 = new Date(date2);
@@ -108,8 +109,7 @@ export function getWeekStartAndEnd(date: Date) {
     return Math.abs(totalMonths); // Ensure the result is positive
   }
 
-
-  export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number, endDate: number){
+  export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number | string, endDate: number | string){    
     if (habit?.frequency?.type === "weekly") {
       if (habit.frequency.days) {
         return habit.frequency.days.reduce(
@@ -118,7 +118,9 @@ export function getWeekStartAndEnd(date: Date) {
               startDate,
               endDate,
               curr as Day
-            ) + acc,
+            ) 
+            + 
+            acc,
           0
         );
       } else {

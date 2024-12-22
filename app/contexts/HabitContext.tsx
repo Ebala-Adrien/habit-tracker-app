@@ -50,10 +50,6 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
     );
   }, [user?.uid]);
 
-  const initialHabitStats = {
-    numberOfHabits: 0,
-  };
-
   useEffect(() => {
     if (user?.uid) {
       getDocs(q)
@@ -77,24 +73,27 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
       setHabits(docs);
 
       const currentDate = new Date().getTime();
-      // setHabitsTimesToBeDone(
-      //   docs.reduce((acc, curr) => {
-      //     const habitLastFrequencyUpdateTime = new Date(
-      //       curr.lastFrequencyUpdate
-      //     ).getTime();
-      //     return (
-      //       calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
-      //         curr,
-      //         habitLastFrequencyUpdateTime,
-      //         currentDate
-      //       ) + acc
-      //     );
-      //   }, 0)
-      // );
 
-      // setHabitsCompletionsCount(
-      //   docs.reduce((acc, curr) => acc + curr.habitCompletions.length, 0)
-      // );
+      setHabitsTimesToBeDone(
+        docs.reduce((acc, curr) => {
+          const habitLastFrequencyUpdateTime = new Date(
+            curr.lastFrequencyUpdate
+          ).getTime();
+          return (
+            calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+              curr,
+              habitLastFrequencyUpdateTime,
+              currentDate
+            ) +
+            curr.timesDoneBeforeFreqUpdate +
+            acc
+          );
+        }, 0)
+      );
+
+      setHabitsCompletionsCount(
+        docs.reduce((acc, curr) => acc + curr.habitCompletions.length, 0)
+      );
     });
 
     return () => unsubscribe();

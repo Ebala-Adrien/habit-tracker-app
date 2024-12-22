@@ -7,7 +7,10 @@ import { Day, Habit } from "./types";
 import constants from "./constants";
 import { daysMapping, monthObject } from "./data";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { compareDates } from "./utility";
+import {
+  calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
+  compareDates,
+} from "./utility";
 import Description from "./components/habit/display/Description";
 import LoadingComponent from "./components/utility/Loading";
 import ErrorComponent from "./components/utility/Error";
@@ -101,6 +104,20 @@ export default function HabitPage() {
     }
   }, [habit?.habitCompletions]);
 
+  const habitScore = useMemo(() => {
+    if (!habit) return "-";
+    const habitCount = habit?.habitCompletions.length;
+    const toBeDoneCount =
+      calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+        habit,
+        habit.lastFrequencyUpdate,
+        new Date().toUTCString()
+      ) + habit.timesDoneBeforeFreqUpdate;
+
+    if (toBeDoneCount === 0) return "-";
+    return ((habitCount / toBeDoneCount) * 100).toFixed(2);
+  }, [habit]);
+
   return (
     <>
       <ScrollView
@@ -172,6 +189,7 @@ export default function HabitPage() {
                 style={{
                   margin: constants.padding,
                   padding: constants.padding,
+                  gap: constants.padding * 4,
                   backgroundColor: constants.colorSecondary,
                   borderRadius: 10,
                   display: "flex",
@@ -199,6 +217,29 @@ export default function HabitPage() {
                     }}
                   >
                     Total
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: constants.fontWeight,
+                      fontSize: constants.mediumFontSize,
+                    }}
+                  >
+                    {habitScore}%
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: constants.smallFontSize,
+                      fontWeight: constants.fontWeight,
+                    }}
+                  >
+                    Score
                   </Text>
                 </View>
               </View>
@@ -411,13 +452,6 @@ export default function HabitPage() {
                     })}
                   </View>
                 </View>
-              </View>
-              <View
-                style={{
-                  margin: constants.padding,
-                }}
-              >
-                <Text>Habit to de done</Text>
               </View>
 
               <Description description={habit.description} />

@@ -16,6 +16,7 @@ import { auth } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import LoadingComponent from "./components/utility/Loading";
 import { useAuthContext } from "./contexts/AuthContext";
+import { useEffect, useState } from "react";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),
@@ -43,24 +44,22 @@ export default function LoginPage() {
   });
 
   const { authCtxIsLoading, setAuthCtxIsLoading } = useAuthContext();
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     setAuthCtxIsLoading(true);
     const { email, password } = data;
 
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        // const user = userCredential.user;
-        const user = JSON.stringify(userCredential);
-        console.log(user);
-        console.log("");
-        console.log("Signed in");
-        // ...
-      })
+      .then((_) => {})
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        if (error.code === "auth/invalid-credential") {
+          setErrorMessage("Either the email address or password is not valid.");
+        } else {
+          setErrorMessage(
+            "An error occurred while trying to login. Please try again."
+          );
+        }
       })
       .finally(() => setAuthCtxIsLoading(false));
   };
@@ -126,6 +125,12 @@ export default function LoginPage() {
             />
           </View>
         </View>
+
+        {errorMessage && (
+          <View>
+            <Text style={styles.input_error}>{errorMessage}</Text>
+          </View>
+        )}
 
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (

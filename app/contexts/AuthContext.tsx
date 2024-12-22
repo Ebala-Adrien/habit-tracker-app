@@ -40,10 +40,10 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
       if (currentUser) {
         setUser(currentUser);
 
-        router.push("/(tabs)");
+        router.replace("/(tabs)");
       } else {
         setUser(null);
-        router.push("/login");
+        router.replace("/login");
       }
       setAuthCtxIsLoading(false);
     });

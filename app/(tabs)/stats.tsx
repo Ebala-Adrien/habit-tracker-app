@@ -1,10 +1,8 @@
 import { View, Text, ScrollView } from "react-native";
 import constants from "../constants";
-import { useRouter } from "expo-router";
 import { useHabitContext } from "../contexts/HabitContext";
 
 export default function StatsScreen() {
-  const router = useRouter();
   const { habitsCompletionsCount, habitsTimesToBeDone } = useHabitContext();
 
   return (
@@ -78,7 +76,9 @@ export default function StatsScreen() {
           >
             {habitsTimesToBeDone === 0
               ? "-"
-              : (habitsCompletionsCount / habitsTimesToBeDone) * 100}
+              : ((habitsCompletionsCount / habitsTimesToBeDone) * 100).toFixed(
+                  2
+                )}
           </Text>
           <Text
             style={{

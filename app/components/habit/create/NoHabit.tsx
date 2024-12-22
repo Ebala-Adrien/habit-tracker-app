@@ -19,11 +19,13 @@ export default function NoHabit({ frequence }: Props) {
   return (
     <View
       style={{
+        flex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
         gap: constants.padding * 1.5,
+        padding: constants.padding,
       }}
     >
       <MaterialCommunityIcons
