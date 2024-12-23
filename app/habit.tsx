@@ -84,7 +84,6 @@ export default function HabitPage() {
       })
       .catch((e) => {
         setError(e.message);
-        console.log(e.message);
       })
       .finally(() => {
         setLoading(false);

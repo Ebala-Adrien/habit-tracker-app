@@ -25,7 +25,7 @@ const defaultContext: AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>(defaultContext);
 
-export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
+const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -65,3 +65,5 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
 };
 
 export const useAuthContext = () => useContext(AuthContext);
+
+export default AuthContextProvider;

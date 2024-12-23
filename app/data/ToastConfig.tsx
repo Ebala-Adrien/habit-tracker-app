@@ -12,7 +12,7 @@ export type BaseToastProps = {
 };
 // https://github.com/calintamas/react-native-toast-message/blob/0026645eeda2242ea740250471f1b4f2be894c6e/src/types/index.ts#L86-L103
 
-export const ToastConfig = {
+const ToastConfig = {
   deletedHabitToast: ({ text1 }: { text1?: string }) => (
     <View
       style={{
@@ -45,3 +45,5 @@ export const ToastConfig = {
     </View>
   ),
 };
+
+export default ToastConfig;

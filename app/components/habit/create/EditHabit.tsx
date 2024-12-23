@@ -346,7 +346,6 @@ export default function EditHabit({ id }: Props) {
                         padding: constants.padding / 2,
                       }}
                       onPress={() => {
-                        console.log("On va voir");
                         let daysCopy = _.clone(daysState) as Day[];
                         if (repeat) {
                           daysCopy = daysCopy.filter((k) => k !== d);

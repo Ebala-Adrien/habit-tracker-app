@@ -6,7 +6,7 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-import GoogleIcon from "./components/icons/GoogleIcon";
+// import GoogleIcon from "./components/icons/GoogleIcon";
 import constants from "./constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -17,6 +17,8 @@ import { useRouter } from "expo-router";
 import LoadingComponent from "./components/utility/Loading";
 import { useAuthContext } from "./contexts/AuthContext";
 import { useState } from "react";
+import styles from "./styles/login_and_register_style";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),
@@ -31,6 +33,9 @@ const schema = Yup.object().shape({
       /[@$!%*?&]/,
       "Password must include at least one special character (@, $, !, %, *, ?, &)"
     ),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
 export default function RegisterPage() {
@@ -46,6 +51,9 @@ export default function RegisterPage() {
   });
 
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
+
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [hideConfirmPassword, setHideConfirmPassword] = useState<boolean>(true);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     setAuthCtxIsLoading(true);
@@ -84,7 +92,7 @@ export default function RegisterPage() {
           </Pressable>
         </View>
 
-        <View style={styles.input_container}>
+        <View style={styles.inputs_container}>
           <Controller
             name="email"
             control={control}
@@ -93,7 +101,10 @@ export default function RegisterPage() {
               <>
                 <TextInput
                   onBlur={onBlur}
-                  onChangeText={onChange}
+                  onChangeText={(e) => {
+                    setErrorMessage(null);
+                    onChange(e);
+                  }}
                   value={value}
                   style={styles.input}
                   placeholder="Email address"
@@ -106,27 +117,77 @@ export default function RegisterPage() {
               </>
             )}
           />
-          <View>
+          <View style={styles.input_container}>
             <Controller
               name="password"
               control={control}
               defaultValue=""
               render={({ field: { onChange, onBlur, value } }) => (
-                <>
+                <View style={styles.input_container}>
+                  <Pressable
+                    onPress={() => setHidePassword(!hidePassword)}
+                    style={styles.hide_password_container}
+                  >
+                    {hidePassword ? (
+                      <AntDesign name="eye" size={30} color="black" />
+                    ) : (
+                      <AntDesign name="eyeo" size={30} color="black" />
+                    )}
+                  </Pressable>
                   <TextInput
                     onBlur={onBlur}
-                    onChangeText={onChange}
+                    onChangeText={(e) => {
+                      setErrorMessage(null);
+                      onChange(e);
+                    }}
                     value={value}
                     style={[styles.input]}
                     placeholder="Password"
-                    secureTextEntry={true}
+                    secureTextEntry={hidePassword}
                   />
                   {errors["password"] ? (
                     <Text style={styles.input_error}>
                       {errors["password"].message}
                     </Text>
                   ) : null}
-                </>
+                </View>
+              )}
+            />
+          </View>
+          <View style={styles.input_container}>
+            <Controller
+              name="confirmPassword"
+              control={control}
+              defaultValue=""
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.input_container}>
+                  <Pressable
+                    onPress={() => setHideConfirmPassword(!hideConfirmPassword)}
+                    style={styles.hide_password_container}
+                  >
+                    {hideConfirmPassword ? (
+                      <AntDesign name="eye" size={30} color="black" />
+                    ) : (
+                      <AntDesign name="eyeo" size={30} color="black" />
+                    )}
+                  </Pressable>
+                  <TextInput
+                    onBlur={onBlur}
+                    onChangeText={(e) => {
+                      setErrorMessage(null);
+                      onChange(e);
+                    }}
+                    value={value}
+                    style={[styles.input]}
+                    placeholder="Confirm password"
+                    secureTextEntry={hideConfirmPassword}
+                  />
+                  {errors["confirmPassword"] ? (
+                    <Text style={styles.input_error}>
+                      {errors["confirmPassword"].message}
+                    </Text>
+                  ) : null}
+                </View>
               )}
             />
           </View>
@@ -162,101 +223,4 @@ export default function RegisterPage() {
   );
 }
 
-// Template: https://dribbble.com/shots/24364001-Recognotes-Mobile-App-Design
 // Icon from: https://icons8.com/icons/set/google
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    display: "flex",
-  },
-  page_contentContainerStyle: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: constants.padding * 2,
-  },
-  content_container: {
-    flex: 1,
-    margin: constants.padding * 2,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: constants.padding * 3,
-    width: "100%",
-  },
-  title: {
-    fontWeight: constants.fontWeight,
-    fontSize: constants.mediumFontSize,
-  },
-  subtitle_container: {
-    fontWeight: constants.fontWeight,
-    display: "flex",
-    flexDirection: "row",
-  },
-  subtitle_part_two: {
-    color: constants.colorQuarternary,
-  },
-  input_container: {
-    gap: constants.padding,
-    width: "100%",
-  },
-  input: {
-    backgroundColor: constants.colorPrimary,
-    height: constants.padding * 5,
-    padding: constants.padding,
-    borderRadius: 5,
-  },
-  input_error: {
-    color: constants.colorError,
-  },
-  login_button: {
-    borderRadius: 5,
-    backgroundColor: constants.colorQuarternary,
-    borderWidth: constants.borderWidth,
-    borderColor: constants.colorQuarternary,
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: constants.padding,
-  },
-  login_button_text: {
-    width: "100%",
-    textAlign: "center",
-    color: constants.colorSecondary,
-    fontWeight: constants.fontWeight,
-    fontSize: constants.mediumFontSize,
-  },
-  or_content_container: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-  },
-  line: {
-    flex: 1,
-    height: constants.borderWidth,
-    backgroundColor: constants.colorPrimary,
-  },
-  or_text: {
-    marginHorizontal: constants.padding,
-    fontWeight: constants.fontWeight,
-  },
-  container_logo_container: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: constants.padding,
-  },
-  logo_container: {
-    flex: 1,
-    borderRadius: 5,
-    borderColor: constants.colorPrimary,
-    borderWidth: constants.borderWidth,
-    padding: constants.margin,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

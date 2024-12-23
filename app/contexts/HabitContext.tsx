@@ -33,7 +33,7 @@ const defaultContext: HabitContextType = {
 
 const HabitContext = createContext<HabitContextType>(defaultContext);
 
-export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
+const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { user } = useAuthContext();
@@ -113,3 +113,5 @@ export const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
 };
 
 export const useHabitContext = () => useContext(HabitContext);
+
+export default HabitContextProvider;
