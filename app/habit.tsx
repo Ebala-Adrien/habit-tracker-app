@@ -3,19 +3,19 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { db } from "@/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Day, Habit } from "./types";
-import constants from "./constants";
-import { daysMapping, monthObject } from "./data";
+import { Day, Habit } from "../types";
+import constants from "../constants";
+import { daysMapping, monthObject } from "../data";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
   compareDates,
-} from "./utility";
-import Description from "./components/habit/display/Description";
-import LoadingComponent from "./components/utility/Loading";
-import ErrorComponent from "./components/utility/Error";
+} from "../utility";
+import Description from "../components/habit/display/Description";
+import LoadingComponent from "../components/utility/Loading";
+import ErrorComponent from "../components/utility/Error";
 import { useRouter } from "expo-router";
-import DeleteModal from "./components/habit/modal/DeleteHabit";
+import DeleteModal from "../components/habit/modal/DeleteHabit";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function HabitPage() {

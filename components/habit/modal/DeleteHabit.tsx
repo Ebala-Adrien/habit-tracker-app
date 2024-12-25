@@ -1,4 +1,4 @@
-import constants from "@/app/constants";
+import constants from "@/constants";
 import { Dispatch, SetStateAction } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";

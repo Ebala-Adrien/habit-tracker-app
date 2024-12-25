@@ -2,16 +2,16 @@ import { Pressable, View, TextInput, Text, ScrollView } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import constants from "@/app/constants";
+import constants from "@/constants";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
-import { maxFrequencyWeek, maxFrequencyMonth, daysMapping } from "@/app/data";
-import { Day, Habit } from "@/app/types";
-import { useAuthContext } from "@/app/contexts/AuthContext";
-import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/app/utility";
+import { maxFrequencyWeek, maxFrequencyMonth, daysMapping } from "@/data";
+import { Day, Habit } from "@/types";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/utility";
 
 type Props = {
   id?: string;
@@ -66,7 +66,7 @@ export default function EditHabit({ id }: Props) {
           frequency: {
             type: repetition.toLowerCase(),
             days: daysState, // For now days is only for weekly (To change in the future)
-            occurences: frequency, // For now occurences is only for monthly (To change in the future)
+            occurrences: frequency, // For now occurrences is only for monthly (To change in the future)
           },
         });
 
@@ -113,7 +113,7 @@ export default function EditHabit({ id }: Props) {
           frequency: {
             type: repetition?.toLowerCase(),
             days: daysState, // For now days is only for weekly (To change in the future)
-            occurences: frequency, // For now occurences is only for monthly (To change in the future)
+            occurrences: frequency, // For now occurrences is only for monthly (To change in the future)
           },
         });
         router.push(`/habit?id=${id}`);
@@ -155,7 +155,7 @@ export default function EditHabit({ id }: Props) {
             );
             setFrequency(docData.frequency.occurrences || initialFrequency);
             setDaysState(docData.frequency.days || initialDaysState);
-
+            console.log(docData);
             if (docData.frequency.type === "weekly") {
               setMaxFrequency(maxFrequencyWeek);
             } else {

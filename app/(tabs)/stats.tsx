@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
-import constants from "../constants";
-import { useHabitContext } from "../contexts/HabitContext";
+import constants from "../../constants";
+import { useHabitContext } from "../../contexts/HabitContext";
 
 export default function StatsScreen() {
   const { habitsCompletionsCount, habitsTimesToBeDone } = useHabitContext();

@@ -1,15 +1,15 @@
-import { DateType, Day, Habit } from "@/app/types";
+import { DateType, Day, Habit } from "@/types";
 import { useMemo } from "react";
 import NoHabit from "../create/NoHabit";
 import { Pressable, ScrollView, Text } from "react-native";
-import constants from "@/app/constants";
+import constants from "@/constants";
 import { useRouter } from "expo-router";
-import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/app/utility";
+import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
 import {
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
-} from "@/app/utility/habitList";
+} from "@/utility/habitList";
 
 type Props = {
   habits: Habit[];
@@ -31,18 +31,18 @@ export default function HabitList({ habits, frequence }: Props) {
     const today = new Date();
     const { startOfWeek, endOfWeek } = getWeekStartAndEnd(today);
     const { startOfMonth, endOfMonth } = getMonthStartAndEnd(today);
-    const nbOfDays: number = Number(
+    const nbOfDaysInCurrentMonth: number = Number(
       new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
     );
-    const currentDay = new Date().getDay() as Day;
-    const currentDate = new Date().getDate() as DateType;
+    const currentDay = today.getDay() as Day;
+    const currentDate = today.getDate() as DateType;
 
     return {
       startCurrentWeek: startOfWeek,
       endCurrentWeek: endOfWeek,
       startCurrentMonth: startOfMonth,
       endCurrentMonth: endOfMonth,
-      nbOfDaysInCurrentMonth: nbOfDays,
+      nbOfDaysInCurrentMonth: nbOfDaysInCurrentMonth,
       currentDate,
       currentDay,
     };

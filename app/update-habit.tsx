@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
-import EditHabit from "./components/habit/create/EditHabit";
+import EditHabit from "../components/habit/create/EditHabit";
 import { Pressable, View, Text } from "react-native";
-import constants from "./constants";
+import constants from "../constants";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 

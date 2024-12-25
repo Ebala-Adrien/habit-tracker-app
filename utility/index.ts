@@ -1,5 +1,6 @@
 import { Day, Habit } from "../types";
 
+// Check if two dates belong to the exact same day
 export function compareDates(date1: Date, date2: Date){
     return date1.getDate() === date2.getDate() &&
     date1.getMonth() === date2.getMonth() &&
@@ -60,7 +61,7 @@ export function getWeekStartAndEnd(date: Date) {
     };
   }
 
-  // Count the occurences of a specific day (e.g. Monday) over a specific period
+  // Count the occurrences of a specific day (e.g. Monday) over a specific period
   export function countOccurrencesOfDay(startDate: number | string, endDate: number | string, targetDay: Day) {
   // Convert dates to Date objects
   const start = new Date(startDate);
@@ -87,6 +88,45 @@ export function getWeekStartAndEnd(date: Date) {
 
   }
 
+  // Count the occurrences of a specific date (e.g., the 15th) over a specific period
+  export function countOccurrencesOfDate(startDate: number | string, endDate: number | string, targetDate: number) {
+    // Convert dates to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    // Ensure targetDate is a valid day of the month
+    if (targetDate < 1 || targetDate > 31) {
+      throw new Error("Invalid target date. Must be between 1 and 31.");
+    }
+  
+    // Find the first occurrence of the target date
+    let firstOccurrence = new Date(start);
+    if (firstOccurrence.getDate() > targetDate) {
+      // Move to the next month if the target date has passed in the starting month
+      firstOccurrence.setMonth(firstOccurrence.getMonth() + 1);
+      firstOccurrence.setDate(targetDate);
+    } else {
+      // Set the date to the target date in the current month
+      firstOccurrence.setDate(targetDate);
+    }
+  
+    // If the first occurrence is after the end date, return 0
+    if (firstOccurrence > end) {
+      return 0;
+    }
+  
+    // Count occurrences by iterating through months
+    let count = 0;
+    let currentOccurrence = new Date(firstOccurrence);
+  
+    while (currentOccurrence <= end) {
+      count++;
+      currentOccurrence.setMonth(currentOccurrence.getMonth() + 1);
+    }
+  
+    return count;
+  }
+
   export function calculateMonthsBetweenDates(date1: number | string, date2: number | string) {
     // Parse the input dates
     const d1 = new Date(date1);
@@ -107,6 +147,24 @@ export function getWeekStartAndEnd(date: Date) {
     totalMonths += dayFraction;
   
     return Math.abs(totalMonths); // Ensure the result is positive
+  }
+
+  export function calculateWeeksBetweenDates(date1: number | string, date2: number | string) {
+    // Parse the input dates
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+  
+    // Get time difference in milliseconds
+    const diffInMs = d2.getTime() - d1.getTime();
+  
+    // Convert milliseconds to days
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  
+    // Convert days to weeks
+    const diffInWeeks = diffInDays / 7;
+  
+    // Return the absolute value in case date2 is earlier than date1
+    return Math.abs(diffInWeeks);
   }
 
   export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number | string, endDate: number | string){    
@@ -130,10 +188,21 @@ export function getWeekStartAndEnd(date: Date) {
       if (habit?.frequency?.occurrences) {
         const monthCount =
           calculateMonthsBetweenDates(startDate, endDate)
-        const occurencesCount = Math.round(monthCount * habit.frequency.occurrences)
-         return occurencesCount;
+        const occurrencesCount = Math.round(monthCount * habit.frequency.occurrences)
+         return occurrencesCount;
       } else {
         return 0
       }
     }
+  }
+
+  export function getCompletionsInPeriod(
+    completions: string[],
+    windowStart: number,
+    windowEnd: number
+  ): number {
+    return completions.filter((c) => {
+      const time = new Date(c).getTime();
+      return time >= windowStart && time <= windowEnd;
+    }).length;
   }

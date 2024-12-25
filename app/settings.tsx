@@ -1,6 +1,6 @@
 import { Pressable, View, Text } from "react-native";
-import constants from "./constants";
-import { useAuthContext } from "./contexts/AuthContext";
+import constants from "../constants";
+import { useAuthContext } from "../contexts/AuthContext";
 import { auth } from "@/firebaseConfig";
 import { signOut } from "firebase/auth";
 

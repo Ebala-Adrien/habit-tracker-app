@@ -1,4 +1,4 @@
-import constants from "@/app/constants";
+import constants from "@/constants";
 import { View, Text } from "react-native";
 
 type Props = {

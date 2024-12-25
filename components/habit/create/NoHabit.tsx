@@ -1,4 +1,4 @@
-import constants from "@/app/constants";
+import constants from "@/constants";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
