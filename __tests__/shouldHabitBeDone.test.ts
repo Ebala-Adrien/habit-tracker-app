@@ -53,10 +53,10 @@ const startCurrentWeekOne = 1734908400000; // Sun, 22 Dec 2024 23:00:00 GMT (23 
 const endCurrentWeekOne = 1735513199999; // Sun, 29 Dec 2024 22:59:59 GMT
 const startCurrentMonthOne = 1733007600000; // Sat, 30 Nov 2024 23:00:00 GMT (1st Dec in Paris)
 const endCurrentMonthOne = 1735685999999; // Tue, 31 Dec 2024 22:59:59 GMT
-const currentDayOne = 1; //
-const currentDateOne = 25; //
+const currentDayOne = 1;
+const currentDateOne = 25;
 
-describe('Test all should habit be done functions', () => {
+describe('', () => {
     test('Be done today. For a weekly habit on specific days.',  () => {       
         expect(shouldHabitBeDoneToday(habitOne, startCurrentWeekOne, endCurrentWeekOne, startCurrentMonthOne, endCurrentMonthOne, currentDayOne, currentDateOne)).toBeTruthy()
     })
