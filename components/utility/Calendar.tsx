@@ -217,17 +217,39 @@ type HabitStartDateCalendarProps = {
     year: number;
     isCurrentMonth: boolean;
   }[];
+  calendarYear: number;
+  calendarMonth: number;
   customStartDate: Date;
   setCustomStartDate: React.Dispatch<React.SetStateAction<Date>>;
+  setCalendarDate: React.Dispatch<React.SetStateAction<Date>>;
 };
 
 export const HabitStartDateCalendar = ({
   days,
   customStartDate,
   setCustomStartDate,
+  setCalendarDate,
+  calendarMonth,
+  calendarYear,
 }: HabitStartDateCalendarProps) => {
   return (
     <>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          padding: constants.padding,
+          paddingBottom: constants.padding * 2,
+        }}
+      >
+        <DateSwitcher
+          month={calendarMonth}
+          year={calendarYear}
+          date={customStartDate}
+          setDate={setCalendarDate}
+        />
+      </View>
       <CalendarDaysKeysDisplay />
       <View
         style={{
@@ -240,6 +262,10 @@ export const HabitStartDateCalendar = ({
         }}
       >
         {days.map((d, i) => {
+          const dateNotFromCurrentMonth =
+            d.date.getMonth() !==
+            new Date(calendarYear, calendarMonth, 10).getMonth();
+
           const handlePress = () => {
             setCustomStartDate(d.date);
           };
@@ -255,7 +281,11 @@ export const HabitStartDateCalendar = ({
                     ? constants.colorQuinary
                     : constants.colorSecondary
                 }
-                color={constants.colorTertiary}
+                color={
+                  dateNotFromCurrentMonth
+                    ? constants.colorPrimary
+                    : constants.colorTertiary
+                }
                 disabled={false}
               />
             </Fragment>

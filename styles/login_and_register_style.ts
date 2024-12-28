@@ -55,6 +55,17 @@ export default StyleSheet.create({
   input_error: {
     color: constants.colorError,
   },
+  forgot_password_container: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  forgot_password_link: {  
+    color: constants.colorQuarternary,
+    fontWeight: constants.fontWeight,
+  }
+  ,
   login_button: {
     borderRadius: 5,
     backgroundColor: constants.colorQuarternary,

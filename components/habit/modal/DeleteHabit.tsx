@@ -2,29 +2,54 @@ import constants from "@/constants";
 import { Dispatch, SetStateAction } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import { Habit } from "@/types";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/utility";
 
 type Props = {
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  habitId: string;
-  habitTitle: string | undefined;
+  habit: Habit | null;
 };
 
-export default function DeleteModal({
-  setShowModal,
-  habitTitle,
-  habitId,
-}: Props) {
+export default function DeleteModal({ setShowModal, habit }: Props) {
   const router = useRouter();
 
   const handleDelete = () => {
-    deleteDoc(doc(db, "habit", habitId))
+    if (!habit) return console.error("Error: No habit to delete");
+
+    let timesDoneSinceLastUpdate =
+      calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+        habit,
+        Math.max(
+          new Date(habit.lastFrequencyUpdate).getTime(),
+          new Date(habit.createdAt).getTime()
+        ),
+        Math.max(new Date().getTime())
+      ); // How many times it had to be done between the last update and now
+
+    if (
+      (habit.habitCompletions,
+      length > 1 || habit.timesDoneBeforeFreqUpdate > 0)
+      // The habit should be archived because we can compute stats from it
+    ) {
+      addDoc(collection(db, "archivedHabit"), {
+        ...habit,
+        lastFrequencyUpdate: new Date().toUTCString(),
+        updatedAt: new Date().toUTCString(),
+        timesDoneBeforeFreqUpdate:
+          habit.timesDoneBeforeFreqUpdate + timesDoneSinceLastUpdate,
+      })
+        .then(() => {})
+        .catch(() => console.error("Error: We couldn't archive the habit"));
+    }
+
+    deleteDoc(doc(db, "habit", habit.id))
       .then(() => {})
-      .catch(() => console.log("We couldn't delete the item"));
+      .catch(() => console.error("Error: We couldn't delete the habit"));
 
     setShowModal(false);
-    router.push(`/?deleteHabitMsg=The habit "${habitTitle}" has been deleted`);
+    router.push(`/?deleteHabitMsg=The habit "${habit.title}" has been deleted`);
   };
 
   return (

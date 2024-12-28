@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import LoadingComponent from "../components/utility/Loading";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useState } from "react";
@@ -138,6 +138,11 @@ export default function LoginPage() {
                 </View>
               )}
             />
+          </View>
+          <View style={styles.forgot_password_container}>
+            <Link style={styles.forgot_password_link} href="/forgot-password">
+              Forgot password?
+            </Link>
           </View>
         </View>
 

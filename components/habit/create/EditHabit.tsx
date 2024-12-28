@@ -10,30 +10,19 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import constants from "@/constants";
-import { useEffect, useMemo, useState } from "react";
-import _, { create } from "lodash";
+import React, { useEffect, useMemo, useState } from "react";
+import _ from "lodash";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
-import {
-  maxFrequencyWeek,
-  maxFrequencyMonth,
-  daysMapping,
-  monthObject,
-} from "@/data";
+import { maxFrequencyWeek, maxFrequencyMonth, daysMapping } from "@/data";
 import { Day, Habit } from "@/types";
 import { useAuthContext } from "@/contexts/AuthContext";
 import getCalendarDays, {
   calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
-  compareDates,
 } from "@/utility";
 import { StyleSheet } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  CalendarDaysKeysDisplay,
-  DateSwitcher,
-  HabitStartDateCalendar,
-} from "@/components/utility/Calendar";
+import { HabitStartDateCalendar } from "@/components/utility/Calendar";
 
 type Props = {
   id?: string;
@@ -74,19 +63,22 @@ export default function EditHabit({ id }: Props) {
   const [habitHasCustomStart, setHabitHasCustomStart] =
     useState<boolean>(false);
   const [customStartDate, setCustomStartDate] = useState<Date>(new Date());
+  const [customStartCalendarDate, setCustomStartCalendarDate] = useState<Date>(
+    new Date()
+  );
 
-  const { month: customDateMonth, year: customDateYear } = useMemo(() => {
-    return {
-      month: new Date(customStartDate).getMonth(),
-      year: new Date(customStartDate).getFullYear(),
-    };
-  }, [customStartDate]);
+  const { month: customStartCalendarMonth, year: customStartCalendarYear } =
+    useMemo(() => {
+      return {
+        month: new Date(customStartCalendarDate).getMonth(),
+        year: new Date(customStartCalendarDate).getFullYear(),
+      };
+    }, [customStartCalendarDate]);
 
   const allDaysInTheCustomDateMonth = useMemo(() => {
-    return getCalendarDays(customDateYear, customDateMonth);
-  }, [customDateYear, customDateMonth]);
+    return getCalendarDays(customStartCalendarYear, customStartCalendarMonth);
+  }, [customStartCalendarYear, customStartCalendarMonth]);
 
-  // Can remove any in the future
   const onSubmit: SubmitHandler<any> = async (data) => {
     if (!id) {
       try {
@@ -94,7 +86,9 @@ export default function EditHabit({ id }: Props) {
 
         await addDoc(collection(db, "habit"), {
           ...data,
-          createdAt: new Date().toUTCString(),
+          createdAt: habitHasCustomStart
+            ? customStartDate.toUTCString()
+            : habit?.createdAt,
           updatedAt: new Date().toUTCString(),
           lastFrequencyUpdate: new Date().toUTCString(),
           timesDoneBeforeFreqUpdate: 0,
@@ -102,8 +96,8 @@ export default function EditHabit({ id }: Props) {
           habitCompletions: [],
           frequency: {
             type: repetition.toLowerCase(),
-            days: daysState, // For now days is only for weekly (To change in the future)
-            occurrences: frequency, // For now occurrences is only for monthly (To change in the future)
+            days: daysState, // For now days is only for weekly habits (To change in the future)
+            occurrences: frequency, // For now occurrences is only for monthly habits (To change in the future)
           },
         });
 
@@ -531,19 +525,14 @@ export default function EditHabit({ id }: Props) {
           />
         </View>
         {habitHasCustomStart && (
-          <>
-            <DateSwitcher
-              month={customDateMonth}
-              year={customDateYear}
-              date={customStartDate}
-              setDate={setCustomStartDate}
-            />
-            <HabitStartDateCalendar
-              days={allDaysInTheCustomDateMonth}
-              customStartDate={customStartDate}
-              setCustomStartDate={setCustomStartDate}
-            />
-          </>
+          <HabitStartDateCalendar
+            calendarMonth={customStartCalendarMonth}
+            calendarYear={customStartCalendarYear}
+            days={allDaysInTheCustomDateMonth}
+            customStartDate={customStartDate}
+            setCustomStartDate={setCustomStartDate}
+            setCalendarDate={setCustomStartCalendarDate}
+          />
         )}
       </View>
 

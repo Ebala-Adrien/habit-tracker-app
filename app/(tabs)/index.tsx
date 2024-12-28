@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import constants from "../../constants";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHabitContext } from "../../contexts/HabitContext";
 import { useAuthContext } from "../../contexts/AuthContext";
 import HabitList from "../../components/habit/display/HabitList";
