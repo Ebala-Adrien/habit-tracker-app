@@ -1,17 +1,39 @@
-import { Pressable, View, TextInput, Text, ScrollView } from "react-native";
+import {
+  Pressable,
+  View,
+  TextInput,
+  Text,
+  ScrollView,
+  Switch,
+} from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import constants from "@/constants";
-import { useEffect, useState } from "react";
-import _ from "lodash";
+import { useEffect, useMemo, useState } from "react";
+import _, { create } from "lodash";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
-import { maxFrequencyWeek, maxFrequencyMonth, daysMapping } from "@/data";
+import {
+  maxFrequencyWeek,
+  maxFrequencyMonth,
+  daysMapping,
+  monthObject,
+} from "@/data";
 import { Day, Habit } from "@/types";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/utility";
+import getCalendarDays, {
+  calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
+  compareDates,
+} from "@/utility";
+import { StyleSheet } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+  CalendarDaysKeysDisplay,
+  DateSwitcher,
+  HabitStartDateCalendar,
+} from "@/components/utility/Calendar";
 
 type Props = {
   id?: string;
@@ -48,6 +70,21 @@ export default function EditHabit({ id }: Props) {
   const [frequency, setFrequency] = useState<number>(initialFrequency);
   const isMaxFrequency = frequency === maxFrequency;
   const [loading, setLoading] = useState(false);
+
+  const [habitHasCustomStart, setHabitHasCustomStart] =
+    useState<boolean>(false);
+  const [customStartDate, setCustomStartDate] = useState<Date>(new Date());
+
+  const { month: customDateMonth, year: customDateYear } = useMemo(() => {
+    return {
+      month: new Date(customStartDate).getMonth(),
+      year: new Date(customStartDate).getFullYear(),
+    };
+  }, [customStartDate]);
+
+  const allDaysInTheCustomDateMonth = useMemo(() => {
+    return getCalendarDays(customDateYear, customDateMonth);
+  }, [customDateYear, customDateMonth]);
 
   // Can remove any in the future
   const onSubmit: SubmitHandler<any> = async (data) => {
@@ -113,7 +150,10 @@ export default function EditHabit({ id }: Props) {
           frequency: {
             type: repetition?.toLowerCase(),
             days: daysState, // For now days is only for weekly (To change in the future)
-            occurrences: frequency, // For now occurrences is only for monthly (To change in the future)
+            occurrences: frequency, // For now occurrences is only for monthly (To change in the future),
+            createdAt: habitHasCustomStart
+              ? customStartDate.toUTCString()
+              : habit?.createdAt,
           },
         });
         router.push(`/habit?id=${id}`);
@@ -475,29 +515,73 @@ export default function EditHabit({ id }: Props) {
         )}
       </View>
 
-      {/*Completion*/}
+      <View style={styles.page_block}>
+        <View style={styles.habit_start_text_container}>
+          <Text style={styles.habit_start_text}>Habit to start now?</Text>
+          <Switch
+            value={habitHasCustomStart}
+            onValueChange={() => {
+              setHabitHasCustomStart(!habitHasCustomStart);
+            }}
+            trackColor={{
+              false: constants.colorPrimary,
+              true: constants.colorQuarternary,
+            }}
+            thumbColor={constants.colorSecondary}
+          />
+        </View>
+        {habitHasCustomStart && (
+          <>
+            <DateSwitcher
+              month={customDateMonth}
+              year={customDateYear}
+              date={customStartDate}
+              setDate={setCustomStartDate}
+            />
+            <HabitStartDateCalendar
+              days={allDaysInTheCustomDateMonth}
+              customStartDate={customStartDate}
+              setCustomStartDate={setCustomStartDate}
+            />
+          </>
+        )}
+      </View>
 
       {/*Submit button*/}
-      <Pressable
-        style={{
-          backgroundColor: constants.colorQuarternary,
-          margin: constants.padding,
-          borderRadius: 10,
-          padding: constants.padding,
-        }}
-        onPress={handleSubmit(onSubmit)}
-      >
-        <Text
-          style={{
-            textAlign: "center",
-            fontWeight: constants.fontWeight,
-            fontSize: constants.mediumFontSize,
-            color: constants.colorSecondary,
-          }}
-        >
-          Save
-        </Text>
+      <Pressable style={styles.save_button} onPress={handleSubmit(onSubmit)}>
+        <Text style={styles.save_button_text}>Save</Text>
       </Pressable>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  page_block: {
+    backgroundColor: constants.colorSecondary,
+    margin: constants.padding,
+    padding: constants.padding,
+    borderRadius: 10,
+  },
+  habit_start_text_container: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: constants.padding,
+  },
+  habit_start_text: {
+    fontWeight: constants.fontWeight,
+  },
+  save_button: {
+    backgroundColor: constants.colorQuarternary,
+    margin: constants.padding,
+    borderRadius: 10,
+    padding: constants.padding,
+  },
+  save_button_text: {
+    textAlign: "center",
+    fontWeight: constants.fontWeight,
+    fontSize: constants.mediumFontSize,
+    color: constants.colorSecondary,
+  },
+});

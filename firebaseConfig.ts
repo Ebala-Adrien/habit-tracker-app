@@ -1,12 +1,12 @@
-// Import the functions you need from the SDKs you need
 import  { initializeApp } from "firebase/app";
-import { getAuth, setPersistence } from "firebase/auth";
+import { getAuth, initializeAuth,
+    // @ts-ignore
+    getReactNativePersistence,
+ } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+// https://stackoverflow.com/questions/76914913/cannot-import-getreactnativepersistence-in-firebase10-1-0/76943639#76943639
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBRZBe1TJaTWBjxMbatEChxFqWHjOcmQe0",
   authDomain: "habit-tracker-app-3cf38.firebaseapp.com",
@@ -17,17 +17,12 @@ const firebaseConfig = {
   measurementId: "G-Z5SJ48WSV8"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+const app = initializeApp(firebaseConfig, {
 
-setPersistence(auth, {
-  type: "LOCAL"
-})
-.then(_ => console.log("State persits locally"))
-.catch((error) => {
-  console.error("Auth state could not persist", error.message)
-})
+});
+const db = getFirestore(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
 export { db, auth };

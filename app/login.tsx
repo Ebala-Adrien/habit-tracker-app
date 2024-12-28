@@ -12,6 +12,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 import { useState } from "react";
 import styles from "../styles/login_and_register_style";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import React from "react";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),

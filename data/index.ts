@@ -53,5 +53,5 @@ export const daysMapping = {
     },
 } as const;
 
-  export const maxFrequencyWeek = 7;
-  export const maxFrequencyMonth = 30;
+export const maxFrequencyWeek = 7;
+export const maxFrequencyMonth = 30;

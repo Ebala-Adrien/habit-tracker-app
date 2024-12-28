@@ -206,3 +206,38 @@ export function getWeekStartAndEnd(date: Date) {
       return time >= windowStart && time <= windowEnd;
     }).length;
   }
+
+
+  export default function getCalendarDays(year: number, month: number) {
+    const TOTAL_DAYS = 42; // 6 weeks * 7 days
+
+    // Helper to create a new date without mutation
+    const createDate = (y: number, m: number, d: number) => new Date(y, m, d);
+
+    // Get the first day of the given month
+    const firstDayOfMonth = createDate(year, month, 1);
+
+    // Determine the weekday of the first day of the month (0 = Sunday, 1 = Monday, ...)
+    const firstWeekday = (firstDayOfMonth.getDay() + 6) % 7; // Adjust to start on Monday
+
+    // Calculate the start date for the calendar (Monday of the first week)
+    const calendarStartDate = new Date(
+      firstDayOfMonth.getTime() - firstWeekday * 24 * 60 * 60 * 1000
+    );
+
+    // Generate the array of 42 days
+    const calendarDays = Array.from({ length: TOTAL_DAYS }, (_, index) => {
+      const currentDate = new Date(
+        calendarStartDate.getTime() + index * 24 * 60 * 60 * 1000
+      );
+      return {
+        date: currentDate,
+        weekday: currentDate.getDay(),
+        monthday: currentDate.getDate(),
+        year: currentDate.getFullYear(),
+        isCurrentMonth: currentDate.getMonth() === month,
+      };
+    });
+
+    return calendarDays;
+}

@@ -5,9 +5,8 @@ import { db } from "@/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Day, Habit } from "../types";
 import constants from "../constants";
-import { daysMapping, monthObject } from "../data";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
+import getCalendarDays, {
   calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
   compareDates,
 } from "../utility";
@@ -17,6 +16,11 @@ import ErrorComponent from "../components/utility/Error";
 import { useRouter } from "expo-router";
 import DeleteModal from "../components/habit/modal/DeleteHabit";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { daysMapping, monthObject } from "@/data";
+import {
+  HabitCompletionCalendar,
+  DateSwitcher,
+} from "@/components/utility/Calendar";
 
 export default function HabitPage() {
   const router = useRouter();
@@ -37,37 +41,7 @@ export default function HabitPage() {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const allDaysInTheMonth = useMemo(() => {
-    const TOTAL_DAYS = 42; // 6 weeks * 7 days
-
-    // Helper to create a new date without mutation
-    const createDate = (y: number, m: number, d: number) => new Date(y, m, d);
-
-    // Get the first day of the given month
-    const firstDayOfMonth = createDate(year, month, 1);
-
-    // Determine the weekday of the first day of the month (0 = Sunday, 1 = Monday, ...)
-    const firstWeekday = (firstDayOfMonth.getDay() + 6) % 7; // Adjust to start on Monday
-
-    // Calculate the start date for the calendar (Monday of the first week)
-    const calendarStartDate = new Date(
-      firstDayOfMonth.getTime() - firstWeekday * 24 * 60 * 60 * 1000
-    );
-
-    // Generate the array of 42 days
-    const calendarDays = Array.from({ length: TOTAL_DAYS }, (_, index) => {
-      const currentDate = new Date(
-        calendarStartDate.getTime() + index * 24 * 60 * 60 * 1000
-      );
-      return {
-        date: currentDate,
-        weekday: currentDate.getDay(),
-        monthday: currentDate.getDate(),
-        year: currentDate.getFullYear(),
-        isCurrentMonth: currentDate.getMonth() === month,
-      };
-    });
-
-    return calendarDays;
+    return getCalendarDays(year, month);
   }, [year, month]);
 
   const docRef = doc(db, "habit", id.toString());
@@ -264,193 +238,21 @@ export default function HabitPage() {
                   >
                     History
                   </Text>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: constants.margin,
-                    }}
-                  >
-                    <Pressable
-                      onPress={() => {
-                        const newDate = new Date(date);
-                        newDate.setDate(1);
-                        newDate.setMonth(newDate.getMonth() - 1);
-                        setDate(newDate);
-                      }}
-                    >
-                      <Ionicons
-                        name="chevron-forward-outline"
-                        size={20}
-                        color={constants.colorTertiary}
-                        style={{
-                          transform: [{ rotate: "180deg" }], // Rotate 45 degrees
-                        }}
-                      />
-                    </Pressable>
-                    <Text
-                      style={{
-                        fontWeight: constants.fontWeight,
-                        fontSize: constants.mediumFontSize,
-                      }}
-                    >
-                      {monthObject[month]} {year}
-                    </Text>
-                    <Pressable
-                      onPress={() => {
-                        const newDate = new Date(date);
-                        newDate.setDate(1);
-                        newDate.setMonth(newDate.getMonth() + 1);
-                        setDate(newDate);
-                      }}
-                    >
-                      <Ionicons
-                        name="chevron-forward-outline"
-                        size={20}
-                        color={constants.colorTertiary}
-                      />
-                    </Pressable>
-                  </View>
+                  <DateSwitcher
+                    month={month}
+                    year={year}
+                    date={date}
+                    setDate={setDate}
+                  />
                 </View>
-                <View
-                  style={{
-                    backgroundColor: constants.colorSecondary,
-                    borderRadius: 10,
-                    padding: constants.padding,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    {Object.keys(daysMapping)
-                      .map((k) => Number(k) as Day)
-                      .sort((a: Day, b: Day) => {
-                        return daysMapping[a].order - daysMapping[b].order;
-                      })
-                      .map((day) => {
-                        const key = daysMapping[day].key;
 
-                        return (
-                          <Pressable
-                            key={day}
-                            style={{
-                              flex: 1,
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                fontWeight: constants.fontWeight,
-                                color: constants.colorPrimary,
-                              }}
-                            >
-                              {key}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      flexWrap: "wrap",
-                      marginTop: constants.padding * 2,
-                      rowGap: constants.margin * 2,
-                    }}
-                  >
-                    {allDaysInTheMonth.map((d, i) => {
-                      const occurred = habit.habitCompletions?.find(
-                        (o: string) => {
-                          return compareDates(new Date(o), d.date);
-                        }
-                      );
-
-                      const dateNotFromCurrentMonth =
-                        d.date.getMonth() !==
-                        new Date(year, month, 10).getMonth();
-                      const futureDate =
-                        d.date.getTime() > new Date().getTime();
-
-                      return (
-                        <View
-                          key={d.date.toUTCString() + i}
-                          style={{
-                            borderRadius: 50,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: `${(1 / 7) * 100}%`,
-                            height: 50,
-                          }}
-                        >
-                          <Pressable
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "85%",
-                              height: "85%",
-                              borderWidth: compareDates(d.date, new Date())
-                                ? 2
-                                : 0,
-                              borderColor: constants.colorQuarternary,
-                              borderRadius: 50,
-                              backgroundColor: occurred
-                                ? constants.colorQuinary
-                                : constants.colorSecondary,
-                            }}
-                            disabled={futureDate}
-                            onPress={() => {
-                              if (occurred) {
-                                setHabit({
-                                  ...habit,
-                                  habitCompletions: [
-                                    ...habit.habitCompletions,
-                                  ].filter(
-                                    (o) => !compareDates(new Date(o), d.date)
-                                  ),
-                                });
-                              } else {
-                                setHabit({
-                                  ...habit,
-                                  habitCompletions: [
-                                    ...habit.habitCompletions,
-                                    d.date.toUTCString(),
-                                  ].sort(
-                                    (d1, d2) =>
-                                      new Date(d1).valueOf() -
-                                      new Date(d2).valueOf()
-                                  ),
-                                });
-                              }
-                            }}
-                          >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                color:
-                                  futureDate || dateNotFromCurrentMonth
-                                    ? constants.colorPrimary
-                                    : constants.colorTertiary,
-                              }}
-                            >
-                              {d.monthday}
-                            </Text>
-                          </Pressable>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </View>
+                <HabitCompletionCalendar
+                  days={allDaysInTheMonth}
+                  year={year}
+                  month={month}
+                  habit={habit}
+                  setHabit={setHabit}
+                />
               </View>
 
               <Description description={habit.description} />
