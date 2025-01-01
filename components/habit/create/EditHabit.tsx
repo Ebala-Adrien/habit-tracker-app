@@ -68,12 +68,11 @@ export default function EditHabit({ id }: Props) {
     if (!id) {
       try {
         if (!user?.uid) throw new Error("Custom error: No user ID");
-
         await addDoc(collection(db, "habit"), {
           ...data,
           createdAt: habitHasCustomStart
             ? customStartDate.toUTCString()
-            : habit?.createdAt,
+            : new Date().toUTCString(),
           updatedAt: new Date().toUTCString(),
           lastFrequencyUpdate: new Date().toUTCString(),
           timesDoneBeforeFreqUpdate: 0,

@@ -16,7 +16,7 @@ export default function TaskList({}: Props) {
 
   const list: Task[] = useMemo(() => {
     return tasks;
-  }, []);
+  }, [tasks]);
 
   return (
     <>

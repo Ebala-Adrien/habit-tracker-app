@@ -49,8 +49,8 @@ export default function DeleteModal({
         ); // How many times it had to be done between the last update and now
 
       if (
-        (habit.habitCompletions,
-        length > 1 || habit.timesDoneBeforeFreqUpdate > 0)
+        habit.habitCompletions.length > 1 ||
+        habit.timesDoneBeforeFreqUpdate > 0
         // The habit should be archived because we can compute stats from it
       ) {
         addDoc(collection(db, "archivedHabit"), {

@@ -1,5 +1,5 @@
 import  { initializeApp } from "firebase/app";
-import { getAuth, initializeAuth,
+import { initializeAuth,
     // @ts-ignore
     getReactNativePersistence,
  } from "firebase/auth";
@@ -8,18 +8,16 @@ import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 // https://stackoverflow.com/questions/76914913/cannot-import-getreactnativepersistence-in-firebase10-1-0/76943639#76943639
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBRZBe1TJaTWBjxMbatEChxFqWHjOcmQe0",
-  authDomain: "habit-tracker-app-3cf38.firebaseapp.com",
-  projectId: "habit-tracker-app-3cf38",
-  storageBucket: "habit-tracker-app-3cf38.firebasestorage.app",
-  messagingSenderId: "170007127574",
-  appId: "1:170007127574:web:d298cbc40d2350986df737",
-  measurementId: "G-Z5SJ48WSV8"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig, {
-
-});
+const app = initializeApp(firebaseConfig, "habit-tracker-app");
 const db = getFirestore(app);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)

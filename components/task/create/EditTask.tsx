@@ -28,11 +28,8 @@ export default function EditTask({ id }: Props) {
   const router = useRouter();
 
   const { editTaskForm } = useTaskContext();
-  const {
-    handleSubmit,
-    formState: { errors },
-  } = editTaskForm;
-  console.log(errors);
+  const { handleSubmit, reset } = editTaskForm;
+
   const [loading, setLoading] = useState(false);
   const [dueDate, setDueDate] = useState<Date>(() => {
     const currentDate = new Date();
@@ -60,7 +57,7 @@ export default function EditTask({ id }: Props) {
           createdAt: new Date().toUTCString(),
           completedAt: null,
         });
-
+        reset();
         setLoading(false);
         router.push("/");
       } else {
@@ -69,7 +66,7 @@ export default function EditTask({ id }: Props) {
           dueDate: dueDate.toUTCString(),
           updatedAt: new Date().toUTCString(),
         });
-
+        reset();
         setLoading(false);
         router.push("/");
       }

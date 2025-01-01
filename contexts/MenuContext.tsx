@@ -29,7 +29,6 @@ const MenuContextProvider: React.FC<{ children: ReactNode }> = ({
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showCreateTaskOrHabitModal, setShowCreateTaskOrHabitModal] =
     useState<boolean>(false);
-  const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const pathname = usePathname();
 
   useEffect(() => {
