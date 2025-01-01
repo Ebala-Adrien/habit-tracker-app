@@ -1,16 +1,17 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, View, SafeAreaView } from "react-native";
+import { Pressable, View, SafeAreaView, Text } from "react-native";
 import constants from "../../constants";
 import { useRouter } from "expo-router";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import { useMenuContext } from "@/contexts/MenuContext";
 
 export default function TabLayout() {
   const router = useRouter();
+  const { setShowFilter, showFilter } = useMenuContext();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: constants.colorPrimary }}>
       <Tabs
         screenOptions={{
           header: () => (
@@ -26,9 +27,9 @@ export default function TabLayout() {
                 <SimpleLineIcons name="menu" size={30} color="black" />
               </Pressable>
 
-              <Pressable onPress={() => router.push("/create-habit")}>
-                <FontAwesome6
-                  name="square-plus"
+              <Pressable onPress={() => setShowFilter(!showFilter)}>
+                <Ionicons
+                  name="filter-sharp"
                   size={30}
                   color={constants.colorTertiary}
                 />

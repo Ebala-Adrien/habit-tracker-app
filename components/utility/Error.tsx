@@ -10,7 +10,6 @@ export default function ErrorComponent({
 }: Props) {
   return (
     <View style={styles.container}>
-      {/* ActivityIndicator provides a rotating spinner */}
       <Text style={styles.text}>{text}</Text>
     </View>
   );

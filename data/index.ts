@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 export const monthObject: {
     [key: number]: string,
 } = {
@@ -55,3 +57,19 @@ export const daysMapping = {
 
 export const maxFrequencyWeek = 7;
 export const maxFrequencyMonth = 30;
+
+export const habitAndTaskFormInputsData = [
+  {
+    name: "title",
+    placeholder: "Title",
+  },
+  {
+    name: "description",
+    placeholder: "Description",
+  },
+] as const;
+
+export const editHabitOrTaskFormSchema = Yup.object().shape({
+    title: Yup.string().required("Title is required"),
+    description: Yup.string(),
+  });

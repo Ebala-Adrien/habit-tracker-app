@@ -1,11 +1,4 @@
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-} from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 // import GoogleIcon from "./components/icons/GoogleIcon";
 import constants from "../constants";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +9,7 @@ import { auth } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import LoadingComponent from "../components/utility/Loading";
 import { useAuthContext } from "../contexts/AuthContext";
-import { useState } from "react";
+import React, { useState } from "react";
 import styles from "../styles/login_and_register_style";
 import AntDesign from "@expo/vector-icons/AntDesign";
 

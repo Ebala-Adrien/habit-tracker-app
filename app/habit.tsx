@@ -1,30 +1,27 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, ScrollView } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { db } from "@/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Day, Habit } from "../types";
+import { Habit } from "../types";
 import constants from "../constants";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import getCalendarDays, {
   calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates,
-  compareDates,
 } from "../utility";
-import Description from "../components/habit/display/Description";
+import TextBlock from "@/components/habit_or_task/display/TextBlock";
 import LoadingComponent from "../components/utility/Loading";
 import ErrorComponent from "../components/utility/Error";
-import { useRouter } from "expo-router";
-import DeleteModal from "../components/habit/modal/DeleteHabit";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { daysMapping, monthObject } from "@/data";
+import DeleteModal from "../components/habit_or_task/modal/DeleteHabitOrTask";
 import {
   HabitCompletionCalendar,
   DateSwitcher,
 } from "@/components/utility/Calendar";
+import HeaderHabit from "@/components/habit_or_task/HeaderHabitOrTaskPage";
+import styles from "@/components/habit_or_task/styles/habit_or_task_page";
 
 export default function HabitPage() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const id = useLocalSearchParams().id as string;
 
   const [habit, setHabit] = useState<Habit | null>(null);
   const [loading, setLoading] = useState(true);
@@ -104,93 +101,20 @@ export default function HabitPage() {
           <ErrorComponent />
         ) : (
           <>
-            <View
-              style={{
-                backgroundColor: constants.colorSecondary,
-                flexDirection: "row",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                paddingVertical: constants.padding,
-              }}
-            >
-              {/* Back Button */}
-              <Pressable
-                style={{ padding: constants.padding }}
-                onPress={() => router.push("/(tabs)")}
-              >
-                <Ionicons
-                  name="arrow-back"
-                  size={28}
-                  color={constants.colorTertiary}
-                />
-              </Pressable>
+            <HeaderHabit
+              id={id}
+              type="habit"
+              setShowDeleteModal={setShowDeleteModal}
+            />
+            <View style={styles.page_content_container}>
+              <Text style={styles.page_title}>{habit.title}</Text>
 
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  padding: constants.padding,
-                  gap: constants.padding,
-                }}
-              >
-                <Pressable onPress={() => setShowDeleteModal(true)}>
-                  <FontAwesome6 name="trash-can" size={28} color="black" />
-                </Pressable>
-                <Pressable
-                  onPress={() => router.push(`/update-habit?id=${id}`)}
-                >
-                  <FontAwesome6 name="edit" size={28} color="black" />
-                </Pressable>
-              </View>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                paddingBottom: constants.padding * 2,
-              }}
-            >
-              <Text
-                style={{
-                  margin: constants.padding,
-                  fontWeight: constants.fontWeight,
-                  fontSize: constants.largeFontSize,
-                }}
-              >
-                {habit.title}
-              </Text>
-              <View
-                style={{
-                  margin: constants.padding,
-                  padding: constants.padding,
-                  gap: constants.padding * 4,
-                  backgroundColor: constants.colorSecondary,
-                  borderRadius: 10,
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <View
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: constants.fontWeight,
-                      fontSize: constants.mediumFontSize,
-                    }}
-                  >
+              <View style={styles.page_flex_row_block}>
+                <View style={{ display: "flex", alignItems: "center" }}>
+                  <Text style={styles.subtitle_text}>
                     {habit.habitCompletions.length}
                   </Text>
-                  <Text
-                    style={{
-                      fontSize: constants.smallFontSize,
-                      fontWeight: constants.fontWeight,
-                    }}
-                  >
-                    Total
-                  </Text>
+                  <Text style={styles.h3_text}>Total</Text>
                 </View>
                 <View
                   style={{
@@ -198,22 +122,8 @@ export default function HabitPage() {
                     alignItems: "center",
                   }}
                 >
-                  <Text
-                    style={{
-                      fontWeight: constants.fontWeight,
-                      fontSize: constants.mediumFontSize,
-                    }}
-                  >
-                    {habitScore}%
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: constants.smallFontSize,
-                      fontWeight: constants.fontWeight,
-                    }}
-                  >
-                    Score
-                  </Text>
+                  <Text style={styles.subtitle_text}>{habitScore}%</Text>
+                  <Text style={styles.h3_text}>Score</Text>
                 </View>
               </View>
 
@@ -230,14 +140,7 @@ export default function HabitPage() {
                     margin: constants.padding,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontWeight: constants.fontWeight,
-                      fontSize: constants.mediumFontSize,
-                    }}
-                  >
-                    History
-                  </Text>
+                  <Text style={styles.subtitle_text}>History</Text>
                   <DateSwitcher
                     month={month}
                     year={year}
@@ -255,16 +158,17 @@ export default function HabitPage() {
                 />
               </View>
 
-              <Description description={habit.description} />
+              <TextBlock title="Description" text={habit.description} />
             </View>
           </>
         )}
       </ScrollView>
       {showDeleteModal && (
         <DeleteModal
+          id={id}
           setShowModal={setShowDeleteModal}
-          habitId={id.toString()}
-          habitTitle={habit?.title}
+          habit={habit}
+          type="habit"
         />
       )}
     </>

@@ -1,12 +1,12 @@
 import { useLocalSearchParams } from "expo-router";
-import EditHabit from "../components/habit/create/EditHabit";
 import { Pressable, View, Text } from "react-native";
 import constants from "../constants";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
+import EditTask from "@/components/task/create/EditTask";
 
-export default function UpdateHabit() {
+export default function UpdateTask() {
   const { id } = useLocalSearchParams() as { id: string };
   const router = useRouter();
 
@@ -40,10 +40,10 @@ export default function UpdateHabit() {
             padding: constants.padding,
           }}
         >
-          Update Habit
+          Update Task
         </Text>
       </View>
-      <EditHabit id={id} />
+      <EditTask id={id} />
     </>
   );
 }

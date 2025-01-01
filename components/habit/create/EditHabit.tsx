@@ -1,14 +1,5 @@
-import {
-  Pressable,
-  View,
-  TextInput,
-  Text,
-  ScrollView,
-  Switch,
-} from "react-native";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+import { Pressable, View, Text, ScrollView, Switch } from "react-native";
+import { SubmitHandler } from "react-hook-form";
 import constants from "@/constants";
 import React, { useEffect, useMemo, useState } from "react";
 import _ from "lodash";
@@ -23,15 +14,13 @@ import getCalendarDays, {
 } from "@/utility";
 import { StyleSheet } from "react-native";
 import { HabitStartDateCalendar } from "@/components/utility/Calendar";
+import LoadingComponent from "@/components/utility/Loading";
+import { useHabitContext } from "@/contexts/HabitContext";
+import EditHabitInputs from "./EditHabitInputs";
 
 type Props = {
   id?: string;
 };
-
-const schema = Yup.object().shape({
-  title: Yup.string().required("Title is required"),
-  description: Yup.string(),
-});
 
 const initialFrequency = 1;
 const initialDaysState: Day[] = [];
@@ -40,14 +29,10 @@ export default function EditHabit({ id }: Props) {
   const router = useRouter();
   const { user } = useAuthContext();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
+  const { editHabitForm } = useHabitContext();
+  const { setValue, handleSubmit } = editHabitForm;
+
+  const [loading, setLoading] = useState(false);
 
   const [habit, setHabit] = useState<null | Habit>(null);
 
@@ -55,13 +40,13 @@ export default function EditHabit({ id }: Props) {
   const [repetition, setRepetition] = useState<"Weekly" | "Monthly">("Weekly");
 
   const [daysState, setDaysState] = useState<number[]>(initialDaysState);
+
   const [maxFrequency, setMaxFrequency] = useState<number>(maxFrequencyWeek);
   const [frequency, setFrequency] = useState<number>(initialFrequency);
   const isMaxFrequency = frequency === maxFrequency;
-  const [loading, setLoading] = useState(false);
 
   const [habitHasCustomStart, setHabitHasCustomStart] =
-    useState<boolean>(false);
+    useState<boolean>(false); // True if the habit we want to set a start date that is different from the current date
   const [customStartDate, setCustomStartDate] = useState<Date>(new Date());
   const [customStartCalendarDate, setCustomStartCalendarDate] = useState<Date>(
     new Date()
@@ -183,13 +168,12 @@ export default function EditHabit({ id }: Props) {
             setValue("title", docData.title);
             setValue("description", docData.description);
 
-            // @ts-ignore
             setRepetition(
               docData.frequency.type === "weekly" ? "Weekly" : "Monthly"
             );
             setFrequency(docData.frequency.occurrences || initialFrequency);
             setDaysState(docData.frequency.days || initialDaysState);
-            console.log(docData);
+
             if (docData.frequency.type === "weekly") {
               setMaxFrequency(maxFrequencyWeek);
             } else {
@@ -208,108 +192,19 @@ export default function EditHabit({ id }: Props) {
     }
   }, []);
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading)
+    return <LoadingComponent size={80} color={constants.colorSecondary} />;
 
   return (
     <ScrollView>
-      <Controller
-        name="title"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            placeholder="Title"
-            style={{
-              backgroundColor: constants.colorPrimary,
-              margin: constants.padding,
-              padding: constants.padding,
-              fontSize: constants.mediumFontSize,
-              fontWeight: constants.fontWeight,
-              borderRadius: 10,
-            }}
-          />
-        )}
-      />
-      {errors["title"] && (
-        <Text
-          style={{
-            color: constants.colorError,
-            marginHorizontal: constants.padding,
-            marginBottom: constants.padding,
-            paddingHorizontal: constants.padding,
-          }}
-        >
-          {errors["title"].message}
-        </Text>
-      )}
-
-      <Controller
-        name="description"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            placeholder="Description"
-            multiline
-            style={{
-              backgroundColor: constants.colorPrimary,
-              margin: constants.padding,
-              padding: constants.padding,
-              fontSize: constants.mediumFontSize,
-              fontWeight: constants.fontWeight,
-              borderRadius: 10,
-              minHeight: constants.padding * 10,
-              textAlignVertical: "top",
-            }}
-          />
-        )}
-      />
+      <EditHabitInputs />
 
       {/* Repetition */}
-      <View
-        style={{
-          backgroundColor: constants.colorSecondary,
-          margin: constants.padding,
-          padding: constants.padding,
-          borderRadius: 10,
-        }}
-      >
-        <View
-          style={{
-            display: "flex",
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            padding: constants.padding,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: constants.mediumFontSize,
-              fontWeight: constants.fontWeight,
-            }}
-          >
-            Repeat
-          </Text>
+      <View style={styles.page_block}>
+        <View style={styles.repeat_block_title_container}>
+          <Text style={styles.repeat_block_title}>Repeat</Text>
         </View>
-        <View
-          style={{
-            display: "flex",
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            backgroundColor: constants.colorPrimary,
-            borderRadius: 10,
-            marginBottom: constants.padding * 3,
-          }}
-        >
+        <View style={styles.repeat_block_switch_container}>
           {repetitions.map((f) => (
             <Pressable
               key={f}
@@ -325,32 +220,14 @@ export default function EditHabit({ id }: Props) {
                 padding: constants.padding / 2,
               }}
             >
-              <Text
-                style={{
-                  fontWeight: constants.fontWeight,
-                  textAlign: "center",
-                }}
-              >
-                {f}
-              </Text>
+              <Text style={styles.repeat_switch_option_text}>{f}</Text>
             </Pressable>
           ))}
         </View>
 
         {repetition === "Weekly" ? (
-          <View
-            style={{
-              display: "flex",
-              gap: constants.margin * 5,
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: constants.fontWeight,
-              }}
-            >
-              On these days
-            </Text>
+          <View style={styles.weekly_rep_block_container}>
+            <Text style={styles.bold_text}>On these days</Text>
             <View
               style={{
                 display: "flex",
@@ -419,13 +296,7 @@ export default function EditHabit({ id }: Props) {
                 gap: constants.padding,
               }}
             >
-              <Text
-                style={{
-                  fontWeight: constants.fontWeight,
-                }}
-              >
-                Frequency
-              </Text>
+              <Text style={styles.bold_text}>Frequency</Text>
               <Text>
                 {isMaxFrequency
                   ? "Everyday"
@@ -550,6 +421,38 @@ const styles = StyleSheet.create({
     margin: constants.padding,
     padding: constants.padding,
     borderRadius: 10,
+  },
+  repeat_block_title_container: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    padding: constants.padding,
+  },
+  repeat_block_title: {
+    fontSize: constants.mediumFontSize,
+    fontWeight: constants.fontWeight,
+  },
+  repeat_block_switch_container: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: constants.colorPrimary,
+    borderRadius: 10,
+    marginBottom: constants.padding * 3,
+  },
+  repeat_switch_option_text: {
+    fontWeight: constants.fontWeight,
+    textAlign: "center",
+  },
+  weekly_rep_block_container: {
+    display: "flex",
+    gap: constants.margin * 5,
+  },
+  bold_text: {
+    fontWeight: constants.fontWeight,
   },
   habit_start_text_container: {
     display: "flex",

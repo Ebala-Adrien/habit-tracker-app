@@ -39,7 +39,6 @@ const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-
         router.replace("/(tabs)");
       } else {
         setUser(null);

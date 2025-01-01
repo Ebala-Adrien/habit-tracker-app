@@ -1,3 +1,5 @@
+import { UseFormReturn } from "react-hook-form";
+
 export type Day = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type DateType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31
 
@@ -34,5 +36,15 @@ export type Task = {
     dueDate: string; // ISO date for when the task is due
     completed: boolean; // Completion status
     createdAt: string; // ISO timestamp for creation
+    updatedAt: string; // ISO timestamp for last update
     completedAt?: string | null; // ISO timestamp for completion (null if not completed)
 };
+
+export type EditHabitOrTaskForm = UseFormReturn<
+  {
+    description?: string | undefined;
+    title: string;
+  },
+  any,
+  undefined
+>;

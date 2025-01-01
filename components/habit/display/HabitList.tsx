@@ -1,7 +1,7 @@
 import { DateType, Day, Habit } from "@/types";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import NoHabit from "../create/NoHabit";
-import { Pressable, ScrollView, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import constants from "@/constants";
 import { useRouter } from "expo-router";
 import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
@@ -10,14 +10,15 @@ import {
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
 } from "@/utility/habitList";
+import { useHabitContext } from "@/contexts/HabitContext";
 
 type Props = {
-  habits: Habit[];
   frequence: "Day" | "Week" | "Month" | "Overall";
 };
 
-export default function HabitList({ habits, frequence }: Props) {
+export default function HabitList({ frequence }: Props) {
   const router = useRouter();
+  const { habits } = useHabitContext();
 
   const {
     startCurrentWeek,
@@ -102,11 +103,7 @@ export default function HabitList({ habits, frequence }: Props) {
       {list.length < 1 ? (
         <NoHabit frequence={frequence} />
       ) : (
-        <ScrollView
-          style={{
-            paddingHorizontal: constants.padding * 2,
-          }}
-        >
+        <>
           {list.map((habit) => (
             <Pressable
               key={habit.id}
@@ -128,7 +125,7 @@ export default function HabitList({ habits, frequence }: Props) {
               </Text>
             </Pressable>
           ))}
-        </ScrollView>
+        </>
       )}
     </>
   );

@@ -1,4 +1,3 @@
-import constants from "@/constants";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 
 type Props = {
@@ -12,10 +11,9 @@ export default function LoadingComponent({
   size,
   color,
 }: Props) {
-  if (!isLoading) return <></>;
+  if (!isLoading) return null;
   return (
     <View style={styles.container}>
-      {/* ActivityIndicator provides a rotating spinner */}
       <ActivityIndicator size={size} color={color} />
     </View>
   );

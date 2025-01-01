@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { Habit } from "../types";
+import { EditHabitOrTaskForm, Habit } from "../types";
 import {
   collection,
   getDocs,
@@ -16,19 +16,23 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useAuthContext } from "./AuthContext";
-import { uniqueId } from "lodash";
 import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "../utility";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { editHabitOrTaskFormSchema } from "@/data";
 
 type HabitContextType = {
   habits: Habit[];
   habitsCompletionsCount: number;
   habitsTimesToBeDone: number;
+  editHabitForm: EditHabitOrTaskForm;
 };
 
 const defaultContext: HabitContextType = {
   habits: [],
   habitsCompletionsCount: 0,
   habitsTimesToBeDone: 0,
+  editHabitForm: {} as EditHabitOrTaskForm,
 };
 
 const HabitContext = createContext<HabitContextType>(defaultContext);
@@ -36,6 +40,10 @@ const HabitContext = createContext<HabitContextType>(defaultContext);
 const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const editHabitForm = useForm({
+    resolver: yupResolver(editHabitOrTaskFormSchema),
+  });
+
   const { user } = useAuthContext();
   const [habits, setHabits] = useState<Habit[]>(defaultContext.habits);
   const [habitsCompletionsCount, setHabitsCompletionsCount] =
@@ -46,7 +54,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   const q = useMemo(() => {
     return query(
       habitCollectionRef,
-      where("userId", "==", user?.uid || uniqueId("928937hh3793"))
+      where("userId", "==", user?.uid || "random_user_id")
     );
   }, [user?.uid]);
 
@@ -105,6 +113,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
         habits,
         habitsCompletionsCount,
         habitsTimesToBeDone,
+        editHabitForm,
       }}
     >
       {children}

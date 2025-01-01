@@ -1,12 +1,13 @@
 import constants from "@/constants";
-import { View, Text } from "react-native";
+import React, { View, Text } from "react-native";
 
 type Props = {
-  description: string | undefined;
+  title: string;
+  text: string | undefined;
 };
 
-export default function Description({ description }: Props) {
-  if (!description) return <></>;
+export default function TextBlock({ title, text }: Props) {
+  if (!text) return <></>;
 
   return (
     <View>
@@ -29,7 +30,7 @@ export default function Description({ description }: Props) {
               fontSize: constants.mediumFontSize,
             }}
           >
-            Description
+            {title}
           </Text>
         </View>
       </View>
@@ -46,7 +47,7 @@ export default function Description({ description }: Props) {
             padding: constants.padding,
           }}
         >
-          {description}
+          {text}
         </Text>
       </View>
     </View>

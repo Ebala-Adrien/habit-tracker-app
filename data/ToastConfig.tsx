@@ -1,6 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Text, View } from "react-native";
 import constants from "../constants";
+import { Link } from "expo-router";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export type BaseToastProps = {
   text1?: string;
