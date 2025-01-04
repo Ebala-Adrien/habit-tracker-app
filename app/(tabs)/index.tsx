@@ -2,7 +2,6 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import constants from "../../constants";
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../contexts/AuthContext";
-import HabitList from "../../components/habit/display/HabitList";
 import { useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
@@ -10,6 +9,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useMenuContext } from "@/contexts/MenuContext";
 import Checkbox from "react-native-bouncy-checkbox";
 import TaskList from "@/components/task/display/TaskList";
+import HabitAndTaskList from "@/components/habit_or_task/display/HabitAndTaskList";
 
 export default function HomeScreen() {
   const frequences = ["Day", "Week", "Month", "Overall"] as const;
@@ -121,8 +121,7 @@ export default function HomeScreen() {
               paddingHorizontal: constants.padding * 2,
             }}
           >
-            <HabitList frequence={frequence} />
-            <TaskList frequence={frequence} />
+            <HabitAndTaskList frequence={frequence} />
           </ScrollView>
 
           <View

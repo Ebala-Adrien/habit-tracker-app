@@ -1,7 +1,7 @@
 import constants from "@/constants";
+import { useMenuContext } from "@/contexts/MenuContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { View, Text, Pressable } from "react-native";
-import { useRouter } from "expo-router";
 
 const messageObject = {
   Day: "for today",
@@ -14,8 +14,9 @@ type Props = {
   frequence: keyof typeof messageObject;
 };
 
-export default function NoHabit({ frequence }: Props) {
-  const router = useRouter();
+export default function NoHabitOrTask({ frequence }: Props) {
+  const { setShowCreateTaskOrHabitModal } = useMenuContext();
+
   return (
     <View
       style={{
@@ -40,11 +41,13 @@ export default function NoHabit({ frequence }: Props) {
           fontWeight: constants.fontWeight,
         }}
       >
-        No habits {messageObject[frequence]}
+        Nothing {messageObject[frequence]}
       </Text>
-      <Text>There is no habit {messageObject[frequence]}. Create one?</Text>
+      <Text>
+        There is nothing to do {messageObject[frequence]}. Create one?
+      </Text>
       <Pressable
-        onPress={() => router.push("/create-habit")}
+        onPress={() => setShowCreateTaskOrHabitModal(true)}
         style={{
           paddingHorizontal: constants.padding * 2,
           paddingVertical: constants.padding,

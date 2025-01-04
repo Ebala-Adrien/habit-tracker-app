@@ -1,6 +1,6 @@
 import LoadingComponent from "@/components/utility/Loading";
 import constants from "@/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   View,
@@ -16,8 +16,10 @@ import { SubmitHandler } from "react-hook-form";
 import { useTaskContext } from "@/contexts/TaskContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import { get } from "lodash";
+import { Task } from "@/types";
 
 type Props = {
   id?: string;
@@ -28,7 +30,7 @@ export default function EditTask({ id }: Props) {
   const router = useRouter();
 
   const { editTaskForm } = useTaskContext();
-  const { handleSubmit, reset } = editTaskForm;
+  const { handleSubmit, reset, setValue } = editTaskForm;
 
   const [loading, setLoading] = useState(false);
   const [dueDate, setDueDate] = useState<Date>(() => {
@@ -76,6 +78,31 @@ export default function EditTask({ id }: Props) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (id) {
+      setLoading(true);
+      const docRef = doc(db, "task", id);
+
+      getDoc(docRef)
+        .then((doc) => {
+          if (doc.exists()) {
+            const docData = doc.data() as Task;
+            setValue("title", docData.title);
+            setValue("description", docData.description);
+            setDueDate(new Date(docData.dueDate));
+          } else {
+            throw new Error("The doc doesn't exist");
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, []);
 
   if (loading)
     return <LoadingComponent size={80} color={constants.colorSecondary} />;

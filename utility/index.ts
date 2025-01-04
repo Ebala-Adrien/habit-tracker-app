@@ -167,6 +167,20 @@ export function getWeekStartAndEnd(date: Date) {
     return Math.abs(diffInWeeks);
   }
 
+  export function calculateDaysBetweenDates(date1: number | string, date2: number | string) {
+    // Parse the input dates
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+  
+    // Calculate the time difference in milliseconds
+    const timeDifference = Math.abs(d2.getTime() - d1.getTime());
+  
+    // Convert the time difference to days
+    const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+  
+    return daysDifference;
+  }
+
   export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number | string, endDate: number | string){  
     if(startDate > endDate) return 0  
     if (habit?.frequency?.type === "weekly") {
@@ -192,7 +206,7 @@ export function getWeekStartAndEnd(date: Date) {
         const occurrencesCount = Math.round(monthCount * habit.frequency.occurrences)
          return occurrencesCount;
       } else {
-        return 0
+        return 0 // Not yet implemented
       }
     }
   }

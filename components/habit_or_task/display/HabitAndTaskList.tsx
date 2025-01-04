@@ -1,24 +1,27 @@
-import { DateType, Day, Habit } from "@/types";
-import React, { useMemo } from "react";
-import NoHabit from "../create/NoHabit";
-import { Pressable, Text } from "react-native";
-import constants from "@/constants";
-import { useRouter } from "expo-router";
+import { useHabitContext } from "@/contexts/HabitContext";
+import { useTaskContext } from "@/contexts/TaskContext";
+import { DateType, Day } from "@/types";
 import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
 import {
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
 } from "@/utility/habitList";
-import { useHabitContext } from "@/contexts/HabitContext";
+import React, { useMemo } from "react";
+import { Pressable, Text } from "react-native";
+import NoHabitOrTask from "./NoHabitOrTask";
+import constants from "@/constants";
+import { useRouter } from "expo-router";
 
 type Props = {
   frequence: "Day" | "Week" | "Month" | "Overall";
 };
 
-export default function HabitList({ frequence }: Props) {
-  const router = useRouter();
+export default function HabitAndTaskList({ frequence }: Props) {
   const { habits } = useHabitContext();
+  const { tasks } = useTaskContext();
+
+  const router = useRouter();
 
   const {
     startCurrentWeek,
@@ -49,7 +52,7 @@ export default function HabitList({ frequence }: Props) {
     };
   }, []);
 
-  const list = useMemo(() => {
+  const habitList = useMemo(() => {
     if (frequence === "Overall") {
       return habits;
     } else if (frequence === "Day") {
@@ -76,57 +79,52 @@ export default function HabitList({ frequence }: Props) {
           nbOfDaysInCurrentMonth
         )
       );
+    } else {
+      return habits.filter((h) =>
+        shouldHabitBeDoneThisMonth(
+          h,
+          startCurrentWeek,
+          endCurrentWeek,
+          startCurrentMonth,
+          endCurrentMonth,
+          currentDate
+        )
+      );
     }
+  }, [habits, frequence]);
 
-    return habits.filter((h) =>
-      shouldHabitBeDoneThisMonth(
-        h,
-        startCurrentWeek,
-        endCurrentWeek,
-        startCurrentMonth,
-        endCurrentMonth,
-        currentDay,
-        currentDate
-      )
-    );
-  }, [
-    habits,
-    frequence,
-    startCurrentWeek,
-    endCurrentWeek,
-    startCurrentMonth,
-    endCurrentMonth,
-  ]);
+  const habitsAndTaskList = [...habitList, ...tasks];
+
+  if (habitsAndTaskList.length < 1)
+    return <NoHabitOrTask frequence={frequence} />;
 
   return (
     <>
-      {list.length < 1 ? (
-        <NoHabit frequence={frequence} />
-      ) : (
-        <>
-          {list.map((habit) => (
-            <Pressable
-              key={habit.id}
+      {habitsAndTaskList.map((doc) => {
+        const type = "frequency" in doc ? "habit" : "task";
+
+        return (
+          <Pressable
+            key={doc.id}
+            style={{
+              backgroundColor: constants.colorSecondary,
+              padding: constants.padding * 2,
+              marginBottom: constants.padding * 2,
+              borderRadius: 10,
+            }}
+            onPress={() => router.push(`/${type}?id=${doc.id}`)}
+          >
+            <Text
               style={{
-                backgroundColor: constants.colorSecondary,
-                padding: constants.padding * 2,
-                marginBottom: constants.padding * 2,
-                borderRadius: 10,
+                fontWeight: constants.fontWeight,
+                fontSize: constants.mediumFontSize,
               }}
-              onPress={() => router.push(`/habit?id=${habit.id}`)}
             >
-              <Text
-                style={{
-                  fontWeight: constants.fontWeight,
-                  fontSize: constants.mediumFontSize,
-                }}
-              >
-                {habit.title}
-              </Text>
-            </Pressable>
-          ))}
-        </>
-      )}
+              {doc.title}
+            </Text>
+          </Pressable>
+        );
+      })}
     </>
   );
 }
