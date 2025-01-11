@@ -9,6 +9,7 @@ import ToastConfig from "../data/ToastConfig";
 import AuthContextProvider from "../contexts/AuthContext";
 import MenuContextProvider from "@/contexts/MenuContext";
 import TaskContextProvider from "@/contexts/TaskContext";
+import SimpleHeader from "@/components/utility/SimpleHeader";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -139,6 +140,12 @@ export default function RootLayout() {
                   name="register"
                   options={{
                     headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="settings"
+                  options={{
+                    header: () => <SimpleHeader />,
                   }}
                 />
               </Stack>

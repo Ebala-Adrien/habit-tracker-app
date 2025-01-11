@@ -12,9 +12,7 @@ export default function SettingsPage() {
       .then(() => {
         // Sign-out successful.
       })
-      .catch((_) => {
-        // An error happened.
-      });
+      .catch((_) => {});
   };
 
   return (
@@ -29,6 +27,7 @@ export default function SettingsPage() {
         style={{
           backgroundColor: constants.colorError,
           padding: constants.padding,
+          borderRadius: 5,
         }}
         onPress={handleSignOut}
       >

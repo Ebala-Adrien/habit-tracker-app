@@ -8,18 +8,17 @@ import {
   shouldHabitBeDoneToday,
 } from "@/utility/habitList";
 import React, { useMemo } from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import NoHabitOrTask from "./NoHabitOrTask";
 import constants from "@/constants";
 import { useRouter } from "expo-router";
+import { useMenuContext } from "@/contexts/MenuContext";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
-type Props = {
-  frequence: "Day" | "Week" | "Month" | "Overall";
-};
-
-export default function HabitAndTaskList({ frequence }: Props) {
+export default function HabitAndTaskList() {
   const { habits } = useHabitContext();
   const { tasks } = useTaskContext();
+  const { homeScreenDisplayFrequence: frequence, filter } = useMenuContext();
 
   const router = useRouter();
 
@@ -53,6 +52,7 @@ export default function HabitAndTaskList({ frequence }: Props) {
   }, []);
 
   const habitList = useMemo(() => {
+    if (!filter[0].checked) return [];
     if (frequence === "Overall") {
       return habits;
     } else if (frequence === "Day") {
@@ -91,9 +91,14 @@ export default function HabitAndTaskList({ frequence }: Props) {
         )
       );
     }
-  }, [habits, frequence]);
+  }, [habits, frequence, filter]);
 
-  const habitsAndTaskList = [...habitList, ...tasks];
+  const taskList = useMemo(() => {
+    if (!filter[1].checked) return [];
+    return tasks;
+  }, [tasks, filter]);
+
+  const habitsAndTaskList = [...habitList, ...taskList];
 
   if (habitsAndTaskList.length < 1)
     return <NoHabitOrTask frequence={frequence} />;
@@ -111,17 +116,41 @@ export default function HabitAndTaskList({ frequence }: Props) {
               padding: constants.padding * 2,
               marginBottom: constants.padding * 2,
               borderRadius: 10,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: constants.padding * 2,
             }}
             onPress={() => router.push(`/${type}?id=${doc.id}`)}
           >
-            <Text
+            {type === "habit" ? (
+              <AntDesign
+                name="Trophy"
+                size={20}
+                color={constants.colorTertiary}
+              />
+            ) : (
+              <AntDesign
+                name="checksquareo"
+                size={24}
+                color={constants.colorTertiary}
+              />
+            )}
+            <View
               style={{
-                fontWeight: constants.fontWeight,
-                fontSize: constants.mediumFontSize,
+                flex: 1,
               }}
             >
-              {doc.title}
-            </Text>
+              <Text
+                style={{
+                  fontWeight: constants.fontWeight,
+                  fontSize: constants.mediumFontSize,
+                  width: "100%",
+                }}
+              >
+                {doc.title}
+              </Text>
+            </View>
           </Pressable>
         );
       })}

@@ -1,23 +1,23 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import constants from "../../constants";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useMenuContext } from "@/contexts/MenuContext";
-import Checkbox from "react-native-bouncy-checkbox";
-import TaskList from "@/components/task/display/TaskList";
 import HabitAndTaskList from "@/components/habit_or_task/display/HabitAndTaskList";
+import { displayFrequencies } from "@/data";
+import HabitAndTaskFilter from "@/components/habit_or_task/modal/HabitAndTaskFilter";
 
 export default function HomeScreen() {
-  const frequences = ["Day", "Week", "Month", "Overall"] as const;
-  const [frequence, setFrequence] = useState<
-    "Day" | "Week" | "Month" | "Overall"
-  >(frequences[0]);
-
-  const { showFilter, setShowCreateTaskOrHabitModal } = useMenuContext();
+  const {
+    showFilter,
+    setShowCreateTaskOrHabitModal,
+    homeScreenDisplayFrequence,
+    setHomeScreenDisplayFrequence,
+  } = useMenuContext();
   const { authCtxIsLoading } = useAuthContext();
   const { deleteHabitMsg } = useLocalSearchParams();
 
@@ -42,66 +42,26 @@ export default function HomeScreen() {
         <LoadingComponent size={80} color={constants.colorQuarternary} />
       ) : (
         <>
-          {showFilter && (
-            <View
-              style={{
-                position: "absolute",
-                backgroundColor: constants.colorSecondary,
-                width: "50%",
-                right: 0,
-                flex: 1,
-                borderRadius: 5,
-                padding: constants.padding,
-                borderColor: constants.colorTertiary,
-                borderWidth: 1,
-                zIndex: 100,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ fontWeight: constants.fontWeight }}>Habits</Text>
-                <Checkbox size={20} isChecked={true} />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ fontWeight: constants.fontWeight }}>Tasks</Text>
-                <Checkbox size={20} isChecked={true} />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ fontWeight: constants.fontWeight }}>
-                  Archived
-                </Text>
-                <Checkbox size={20} />
-              </View>
-            </View>
-          )}
+          {showFilter && <HabitAndTaskFilter />}
 
           <View style={styles.frequences_container}>
-            {frequences.map((r) => {
-              const isCurrentFrequence = frequence === r;
+            {displayFrequencies.map((r) => {
+              const isCurrentFrequence = homeScreenDisplayFrequence === r;
 
               return (
-                <Pressable key={r} onPress={() => setFrequence(r)}>
+                <Pressable
+                  key={r}
+                  onPress={() => setHomeScreenDisplayFrequence(r)}
+                >
                   <Text
                     style={{
                       fontWeight: "500",
                       fontSize: constants.mediumFontSize,
-                      color: isCurrentFrequence ? "black" : "grey",
+                      color: isCurrentFrequence
+                        ? constants.colorTertiary
+                        : constants.colorSextary,
                       backgroundColor: isCurrentFrequence
-                        ? "white"
+                        ? constants.colorSecondary
                         : "transparent",
                       paddingHorizontal: constants.padding * 2,
                       paddingVertical: constants.padding,
@@ -121,7 +81,7 @@ export default function HomeScreen() {
               paddingHorizontal: constants.padding * 2,
             }}
           >
-            <HabitAndTaskList frequence={frequence} />
+            <HabitAndTaskList />
           </ScrollView>
 
           <View

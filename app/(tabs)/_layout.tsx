@@ -1,10 +1,11 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, View, SafeAreaView, Text } from "react-native";
+import { Pressable, View, SafeAreaView } from "react-native";
 import constants from "../../constants";
 import { useRouter } from "expo-router";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { useMenuContext } from "@/contexts/MenuContext";
+import SimpleHeader from "@/components/utility/SimpleHeader";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -37,6 +38,9 @@ export default function TabLayout() {
             </View>
           ),
           tabBarActiveTintColor: constants.colorQuarternary,
+          tabBarStyle: {
+            borderWidth: 0,
+          },
         }}
       >
         <Tabs.Screen
@@ -55,29 +59,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="stats"
           options={{
-            header: () => (
-              <View
-                style={{
-                  backgroundColor: constants.colorSecondary,
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  paddingVertical: constants.padding,
-                }}
-              >
-                {/* Back Button */}
-                <Pressable
-                  style={{ padding: constants.padding }}
-                  onPress={() => router.back()}
-                >
-                  <Ionicons
-                    name="arrow-back"
-                    size={28}
-                    color={constants.colorTertiary}
-                  />
-                </Pressable>
-              </View>
-            ),
+            header: () => <SimpleHeader />,
             title: "Stats",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons

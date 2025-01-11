@@ -12,14 +12,22 @@ export default function CreateHabitOrTaskModal() {
       href: "/create-habit",
       description:
         "Activity that repeats over time. It has detailed tracking and statistics.",
-      icon: <AntDesign name="Trophy" size={24} color="black" />,
+      icon: (
+        <AntDesign name="Trophy" size={24} color={constants.colorTertiary} />
+      ),
     },
     {
       id: 2,
       title: "Task",
       href: "/create-task",
       description: "Single instance activity.",
-      icon: <AntDesign name="checksquareo" size={24} color="black" />,
+      icon: (
+        <AntDesign
+          name="checksquareo"
+          size={24}
+          color={constants.colorTertiary}
+        />
+      ),
     },
   ] as const;
 
@@ -35,7 +43,6 @@ export default function CreateHabitOrTaskModal() {
         zIndex: 100,
         display: "flex",
         justifyContent: "flex-end",
-        borderRadius: 10,
       }}
       onPress={() => setShowCreateTaskOrHabitModal(false)}
     >
@@ -43,8 +50,10 @@ export default function CreateHabitOrTaskModal() {
         style={{
           backgroundColor: constants.colorSecondary,
           gap: constants.padding,
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          borderWidth: 0.5,
+          borderColor: constants.colorTertiary,
         }}
       >
         {listItems.map((r, i) => {
@@ -70,7 +79,12 @@ export default function CreateHabitOrTaskModal() {
                 {r.icon}
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: constants.fontWeight }}>
+                <Text
+                  style={{
+                    fontWeight: constants.fontWeight,
+                    color: constants.colorQuarternary,
+                  }}
+                >
                   {r.title}
                 </Text>
                 <Text>{r.description}</Text>

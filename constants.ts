@@ -10,6 +10,7 @@ export default {
     colorTertiary: "black",
     colorQuarternary: "green",
     colorQuinary: "lightgreen",
+    colorSextary: "grey",
     colorError: "red",
     borderWidth: 1.5
 } as const

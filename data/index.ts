@@ -73,3 +73,18 @@ export const editHabitOrTaskFormSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     description: Yup.string(),
   });
+
+export const displayFrequencies = ["Day", "Week", "Month", "Overall"] as const;
+
+export const filterArray = [
+    {
+      id: 1,
+      name: "Habits",
+      checked: true,
+    },
+    {
+      id: 2,
+      name: "Tasks",
+      checked: true,
+    },
+  ];

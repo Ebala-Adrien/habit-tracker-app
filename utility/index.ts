@@ -181,8 +181,10 @@ export function getWeekStartAndEnd(date: Date) {
     return daysDifference;
   }
 
-  export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number | string, endDate: number | string){  
-    if(startDate > endDate) return 0  
+  export function calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(habit: Habit, startDate: number | string, endDate: number | string){ 
+   
+    if(new Date(startDate).getTime() > new Date(endDate).getTime()) {
+      return 0 } 
     if (habit?.frequency?.type === "weekly") {
       if (habit.frequency.days) {
         return habit.frequency.days.reduce(

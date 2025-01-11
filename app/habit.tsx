@@ -83,7 +83,6 @@ export default function HabitPage() {
         habit.lastFrequencyUpdate,
         new Date().toUTCString()
       ) + habit.timesDoneBeforeFreqUpdate;
-
     if (toBeDoneCount === 0) return "-";
     return ((habitCount / toBeDoneCount) * 100).toFixed(2);
   }, [habit]);

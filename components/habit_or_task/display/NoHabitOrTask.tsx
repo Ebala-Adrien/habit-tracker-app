@@ -15,7 +15,23 @@ type Props = {
 };
 
 export default function NoHabitOrTask({ frequence }: Props) {
-  const { setShowCreateTaskOrHabitModal } = useMenuContext();
+  const { setShowCreateTaskOrHabitModal, filter, setShowFilter } =
+    useMenuContext();
+  const emptyFilter = filter.every((f) => !f.checked);
+
+  const firstMessage = emptyFilter
+    ? "Filters on"
+    : `Nothing ${messageObject[frequence]}`;
+
+  const secondMessage = emptyFilter
+    ? "Remove filters to see tasks and habits"
+    : `There is nothing to do ${messageObject[frequence]}. Create one?`;
+
+  const buttonText = emptyFilter ? "Change filters" : "+ Create";
+
+  const buttonFunction = emptyFilter
+    ? () => setShowFilter(true)
+    : () => setShowCreateTaskOrHabitModal(true);
 
   return (
     <View
@@ -41,13 +57,11 @@ export default function NoHabitOrTask({ frequence }: Props) {
           fontWeight: constants.fontWeight,
         }}
       >
-        Nothing {messageObject[frequence]}
+        {firstMessage}
       </Text>
-      <Text>
-        There is nothing to do {messageObject[frequence]}. Create one?
-      </Text>
+      <Text>{secondMessage}</Text>
       <Pressable
-        onPress={() => setShowCreateTaskOrHabitModal(true)}
+        onPress={buttonFunction}
         style={{
           paddingHorizontal: constants.padding * 2,
           paddingVertical: constants.padding,
@@ -62,7 +76,7 @@ export default function NoHabitOrTask({ frequence }: Props) {
             fontSize: constants.mediumFontSize,
           }}
         >
-          + Create
+          {buttonText}
         </Text>
       </Pressable>
     </View>
