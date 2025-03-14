@@ -1,8 +1,6 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text, View } from "react-native";
-import constants from "../constants";
-import { Link } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Text, View } from 'react-native';
+import constants from '../constants';
 
 export type BaseToastProps = {
   text1?: string;
@@ -19,12 +17,12 @@ const ToastConfig = {
     <View
       style={{
         backgroundColor: constants.colorSecondary,
-        width: "90%",
+        width: '90%',
         padding: constants.padding,
         borderRadius: 10,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         gap: constants.padding * 2,
       }}
     >
@@ -38,8 +36,8 @@ const ToastConfig = {
         style={{
           fontSize: constants.mediumFontSize,
           fontWeight: constants.fontWeight,
-          maxWidth: "90%",
-          textAlign: "center",
+          maxWidth: '90%',
+          textAlign: 'center',
         }}
       >
         {text1}

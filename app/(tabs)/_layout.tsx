@@ -1,11 +1,11 @@
-import { Tabs } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, View, SafeAreaView } from "react-native";
-import constants from "../../constants";
-import { useRouter } from "expo-router";
-import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import { useMenuContext } from "@/contexts/MenuContext";
-import SimpleHeader from "@/components/utility/SimpleHeader";
+import { Tabs } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, View, SafeAreaView } from 'react-native';
+import constants from '../../constants';
+import { useRouter } from 'expo-router';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import { useMenuContext } from '@/contexts/MenuContext';
+import Header from '@/components/utility/Header';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -18,13 +18,13 @@ export default function TabLayout() {
           header: () => (
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 padding: constants.padding,
               }}
             >
-              <Pressable onPress={() => router.push("/settings")}>
+              <Pressable onPress={() => router.push('/settings')}>
                 <SimpleLineIcons name="menu" size={30} color="black" />
               </Pressable>
 
@@ -46,10 +46,10 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: 'Home',
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "home" : "home-outline"}
+                name={focused ? 'home' : 'home-outline'}
                 color={constants.colorQuarternary}
                 size={24}
               />
@@ -59,11 +59,11 @@ export default function TabLayout() {
         <Tabs.Screen
           name="stats"
           options={{
-            header: () => <SimpleHeader />,
-            title: "Stats",
+            header: () => <Header simple />,
+            title: 'Stats',
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "stats-chart" : "stats-chart-outline"}
+                name={focused ? 'stats-chart' : 'stats-chart-outline'}
                 color={constants.colorQuarternary}
                 size={24}
               />
