@@ -7,9 +7,9 @@ import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useMenuContext } from "@/contexts/MenuContext";
-import HabitAndTaskList from "@/components/habit_or_task/display/HabitAndTaskList";
+import HabitAndTaskList from "@/components/habitOrTask/display/HabitAndTaskList";
 import { displayFrequencies } from "@/data";
-import HabitAndTaskFilter from "@/components/habit_or_task/modal/HabitAndTaskFilter";
+import HabitAndTaskFilter from "@/components/habitOrTask/modal/HabitAndTaskFilter";
 
 export default function HomeScreen() {
   const {

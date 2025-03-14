@@ -1,16 +1,16 @@
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Task } from "@/types";
-import { addDoc, collection, deleteDoc, doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import DeleteModal from "@/components/habit_or_task/modal/DeleteHabitOrTask";
-import LoadingComponent from "@/components/utility/Loading";
-import constants from "@/constants";
-import ErrorComponent from "@/components/utility/Error";
-import HeaderTask from "@/components/habit_or_task/HeaderHabitOrTaskPage";
-import styles from "@/components/habit_or_task/styles/habit_or_task_page";
-import TextBlock from "@/components/habit_or_task/display/TextBlock";
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Task } from '@/types';
+import { addDoc, collection, deleteDoc, doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import DeleteModal from '@/components/habitOrTask/modal/DeleteHabitOrTask';
+import LoadingComponent from '@/components/utility/Loading';
+import constants from '@/constants';
+import ErrorComponent from '@/components/utility/Error';
+import HeaderTask from '@/components/habitOrTask/HeaderHabitOrTaskPage';
+import styles from '@/components/habitOrTask/styles/habit_or_task_page';
+import TextBlock from '@/components/habitOrTask/display/TextBlock';
 
 export default function TaskPage() {
   const router = useRouter();
@@ -22,10 +22,10 @@ export default function TaskPage() {
 
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const docRef = doc(db, "task", id.toString());
+  const docRef = doc(db, 'task', id.toString());
 
   const handleComplete = () => {
-    addDoc(collection(db, "archivedTask"), {
+    addDoc(collection(db, 'archivedTask'), {
       ...task,
       updatedAt: new Date().toUTCString(),
       completedAt: new Date().toUTCString(),
@@ -39,7 +39,7 @@ export default function TaskPage() {
       .catch(() =>
         console.error(`Error: We couldn't delete the task ${task?.title}`)
       );
-    router.push("/(tabs)");
+    router.push('/(tabs)');
   };
 
   useEffect(() => {
@@ -82,8 +82,8 @@ export default function TaskPage() {
             <View style={styles.page_content_container}>
               <Text style={styles.page_title}>{task.title}</Text>
 
-              <TextBlock title={"Description"} text={task.description} />
-              <TextBlock title={"Due date"} text={task.dueDate} />
+              <TextBlock title={'Description'} text={task.description} />
+              <TextBlock title={'Due date'} text={task.dueDate} />
 
               <Pressable
                 style={{
@@ -96,7 +96,7 @@ export default function TaskPage() {
               >
                 <Text
                   style={{
-                    textAlign: "center",
+                    textAlign: 'center',
                     fontWeight: constants.fontWeight,
                     fontSize: constants.mediumFontSize,
                     color: constants.colorSecondary,

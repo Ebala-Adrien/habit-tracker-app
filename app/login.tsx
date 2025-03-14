@@ -140,7 +140,7 @@ export default function LoginPage() {
             />
           </View>
           <View style={styles.forgot_password_container}>
-            <Link style={styles.forgot_password_link} href="/forgot-password">
+            <Link style={styles.forgot_password_link} href="/ForgotPassword">
               Forgot password?
             </Link>
           </View>

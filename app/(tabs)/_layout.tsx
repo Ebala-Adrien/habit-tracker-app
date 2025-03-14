@@ -1,11 +1,9 @@
 import { Tabs } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, View, SafeAreaView } from 'react-native';
-import constants from '../../constants';
+import { SafeAreaView } from 'react-native';
+import constants from '@/constants';
 import { useRouter } from 'expo-router';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { useMenuContext } from '@/contexts/MenuContext';
-import Header from '@/components/utility/Header';
+import { getTabScreenOptions, tabScreens } from '../navigation/tabConfig';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -14,61 +12,19 @@ export default function TabLayout() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: constants.colorPrimary }}>
       <Tabs
-        screenOptions={{
-          header: () => (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                padding: constants.padding,
-              }}
-            >
-              <Pressable onPress={() => router.push('/settings')}>
-                <SimpleLineIcons name="menu" size={30} color="black" />
-              </Pressable>
-
-              <Pressable onPress={() => setShowFilter(!showFilter)}>
-                <Ionicons
-                  name="filter-sharp"
-                  size={30}
-                  color={constants.colorTertiary}
-                />
-              </Pressable>
-            </View>
-          ),
-          tabBarActiveTintColor: constants.colorQuarternary,
-          tabBarStyle: {
-            borderWidth: 0,
-          },
-        }}
+        screenOptions={getTabScreenOptions({
+          router,
+          setShowFilter,
+          showFilter,
+        })}
       >
         <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? 'home' : 'home-outline'}
-                color={constants.colorQuarternary}
-                size={24}
-              />
-            ),
-          }}
+          name={tabScreens.home.name}
+          options={tabScreens.home.options}
         />
         <Tabs.Screen
-          name="stats"
-          options={{
-            header: () => <Header simple />,
-            title: 'Stats',
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? 'stats-chart' : 'stats-chart-outline'}
-                color={constants.colorQuarternary}
-                size={24}
-              />
-            ),
-          }}
+          name={tabScreens.stats.name}
+          options={tabScreens.stats.options}
         />
       </Tabs>
     </SafeAreaView>

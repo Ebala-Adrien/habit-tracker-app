@@ -1,4 +1,4 @@
-import CreateHabitOrTaskModal from "@/components/habit_or_task/modal/createHabitOrTaskModal";
+import CreateHabitOrTaskModal from "@/components/habitOrTask/modal/createHabitOrTaskModal";
 import { displayFrequencies, filterArray } from "@/data";
 import { usePathname } from "expo-router";
 import React from "react";

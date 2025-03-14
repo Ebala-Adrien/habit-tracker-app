@@ -9,7 +9,7 @@ export default function CreateHabitOrTaskModal() {
     {
       id: 1,
       title: "Habit",
-      href: "/create-habit",
+      href: "/CreateHabit",
       description:
         "Activity that repeats over time. It has detailed tracking and statistics.",
       icon: (
@@ -19,7 +19,7 @@ export default function CreateHabitOrTaskModal() {
     {
       id: 2,
       title: "Task",
-      href: "/create-task",
+      href: "/CreateTask",
       description: "Single instance activity.",
       icon: (
         <AntDesign
