@@ -5,20 +5,20 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { useAuthContext } from "./AuthContext";
+} from 'react';
+import { useAuthContext } from './AuthContext';
 import {
   collection,
   getDocs,
   onSnapshot,
   query,
   where,
-} from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import { EditHabitOrTaskForm, Task } from "@/types";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { editHabitOrTaskFormSchema } from "@/data";
+} from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import { EditHabitOrTaskForm, Task } from '@/types';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { editHabitOrTaskFormSchema } from '@/data';
 
 type TaskContextType = {
   tasks: Task[];
@@ -74,19 +74,19 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [tasks, archivedTasksCount, archivedTasksCompletedOnTimeCount]);
 
-  const taskCollectionRef = collection(db, "task");
+  const taskCollectionRef = collection(db, 'task');
   const tasksQuery = useMemo(() => {
     return query(
       taskCollectionRef,
-      where("userId", "==", user?.uid || "random_user_id")
+      where('userId', '==', user?.uid || 'random_user_id')
     );
   }, [user?.uid]);
 
-  const archivedTaskCollectionRef = collection(db, "archivedTask");
+  const archivedTaskCollectionRef = collection(db, 'archivedTask');
   const archivedTaskQuery = useMemo(() => {
     return query(
       archivedTaskCollectionRef,
-      where("userId", "==", user?.uid || "random_user_id")
+      where('userId', '==', user?.uid || 'random_user_id')
     );
   }, [user?.uid]);
 
@@ -125,7 +125,9 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
         setArchivedTasksCompletedOnTimeCount(
           docs.filter((t) => {
             if (!t.completedAt) return;
-            new Date(t.dueDate).getTime() < new Date(t.completedAt).getTime();
+            return (
+              new Date(t.dueDate).getTime() < new Date(t.completedAt).getTime()
+            );
           }).length
         );
       }

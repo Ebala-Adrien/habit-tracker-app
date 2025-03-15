@@ -1,8 +1,10 @@
-import { Pressable, View, Text } from "react-native";
-import constants from "../constants";
-import { useAuthContext } from "../contexts/AuthContext";
-import { auth } from "@/firebaseConfig";
-import { signOut } from "firebase/auth";
+import { Pressable, View, Text } from 'react-native';
+import constants from '../constants';
+import { useAuthContext } from '../contexts/AuthContext';
+import { auth } from '@/firebaseConfig';
+import { signOut } from 'firebase/auth';
+import Header from '@/components/utility/Header';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsPage() {
   const { user } = useAuthContext();
@@ -16,34 +18,39 @@ export default function SettingsPage() {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        padding: constants.padding,
-        gap: constants.padding * 2,
-      }}
-    >
-      <Pressable
+    <SafeAreaView style={{ flex: 1 }}>
+      <Header simple />
+      <View
         style={{
-          backgroundColor: constants.colorError,
+          flex: 1,
           padding: constants.padding,
-          borderRadius: 5,
+          gap: constants.padding * 2,
         }}
-        onPress={handleSignOut}
       >
-        <Text
+        <Pressable
           style={{
-            color: constants.colorSecondary,
-            textAlign: "center",
-            fontSize: constants.mediumFontSize,
-            fontWeight: constants.fontWeight,
+            backgroundColor: constants.colorError,
+            padding: constants.padding,
+            borderRadius: 5,
           }}
+          onPress={handleSignOut}
         >
-          Log out
-        </Text>
-      </Pressable>
+          <Text
+            style={{
+              color: constants.colorSecondary,
+              textAlign: 'center',
+              fontSize: constants.mediumFontSize,
+              fontWeight: constants.fontWeight,
+            }}
+          >
+            Log out
+          </Text>
+        </Pressable>
 
-      {user ? <Text style={{ textAlign: "center" }}>{user.email}</Text> : null}
-    </View>
+        {user ? (
+          <Text style={{ textAlign: 'center' }}>{user.email}</Text>
+        ) : null}
+      </View>
+    </SafeAreaView>
   );
 }

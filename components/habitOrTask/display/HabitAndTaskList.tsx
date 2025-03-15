@@ -1,19 +1,20 @@
-import { useHabitContext } from "@/contexts/HabitContext";
-import { useTaskContext } from "@/contexts/TaskContext";
-import { DateType, Day } from "@/types";
-import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
+import { useHabitContext } from '@/contexts/HabitContext';
+import { useTaskContext } from '@/contexts/TaskContext';
+import { DateType, Day } from '@/types';
+import { getMonthStartAndEnd, getWeekStartAndEnd } from '@/utility';
 import {
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
-} from "@/utility/habitList";
-import React, { useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
-import NoHabitOrTask from "./NoHabitOrTask";
-import constants from "@/constants";
-import { useRouter } from "expo-router";
-import { useMenuContext } from "@/contexts/MenuContext";
-import AntDesign from "@expo/vector-icons/AntDesign";
+} from '@/utility/habitList';
+import React, { useMemo } from 'react';
+import { Pressable, Text, View } from 'react-native';
+import NoHabitOrTask from './NoHabitOrTask';
+import constants from '@/constants';
+import { useRouter } from 'expo-router';
+import { useMenuContext } from '@/contexts/MenuContext';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { Habit } from '@/types';
 
 export default function HabitAndTaskList() {
   const { habits } = useHabitContext();
@@ -53,10 +54,10 @@ export default function HabitAndTaskList() {
 
   const habitList = useMemo(() => {
     if (!filter[0].checked) return [];
-    if (frequence === "Overall") {
+    if (frequence === 'Overall') {
       return habits;
-    } else if (frequence === "Day") {
-      return habits.filter((h) =>
+    } else if (frequence === 'Day') {
+      return habits.filter((h: Habit) =>
         shouldHabitBeDoneToday(
           h,
           startCurrentWeek,
@@ -67,8 +68,8 @@ export default function HabitAndTaskList() {
           currentDate
         )
       );
-    } else if (frequence === "Week") {
-      return habits.filter((h) =>
+    } else if (frequence === 'Week') {
+      return habits.filter((h: Habit) =>
         shouldHabitBeDoneThisWeek(
           h,
           startCurrentWeek,
@@ -80,7 +81,7 @@ export default function HabitAndTaskList() {
         )
       );
     } else {
-      return habits.filter((h) =>
+      return habits.filter((h: Habit) =>
         shouldHabitBeDoneThisMonth(
           h,
           startCurrentWeek,
@@ -106,7 +107,7 @@ export default function HabitAndTaskList() {
   return (
     <>
       {habitsAndTaskList.map((doc) => {
-        const type = "frequency" in doc ? "habit" : "task";
+        const type = 'frequency' in doc ? 'habit' : 'task';
 
         return (
           <Pressable
@@ -116,14 +117,14 @@ export default function HabitAndTaskList() {
               padding: constants.padding * 2,
               marginBottom: constants.padding * 2,
               borderRadius: 10,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
               gap: constants.padding * 2,
             }}
             onPress={() => router.push(`/${type}?id=${doc.id}`)}
           >
-            {type === "habit" ? (
+            {type === 'habit' ? (
               <AntDesign
                 name="Trophy"
                 size={20}
@@ -145,7 +146,7 @@ export default function HabitAndTaskList() {
                 style={{
                   fontWeight: constants.fontWeight,
                   fontSize: constants.mediumFontSize,
-                  width: "100%",
+                  width: '100%',
                 }}
               >
                 {doc.title}

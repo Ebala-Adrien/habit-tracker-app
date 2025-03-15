@@ -1,8 +1,8 @@
-import { View, Text, ScrollView } from "react-native";
-import constants from "../../constants";
-import { useHabitContext } from "../../contexts/HabitContext";
-import { StyleSheet } from "react-native";
-import { useTaskContext } from "@/contexts/TaskContext";
+import { View, Text, ScrollView } from 'react-native';
+import constants from '../../constants';
+import { useHabitContext } from '../../contexts/HabitContext';
+import { StyleSheet } from 'react-native';
+import { useTaskContext } from '@/contexts/TaskContext';
 
 export default function StatsScreen() {
   const { habitsCompletionsCount, habitsTimesToBeDone } = useHabitContext();
@@ -32,7 +32,7 @@ export default function StatsScreen() {
         <View style={styles.section_stats_sub_container}>
           <Text style={styles.section_stat_number}>
             {habitsTimesToBeDone === 0
-              ? "-"
+              ? '-'
               : ((habitsCompletionsCount / habitsTimesToBeDone) * 100).toFixed(
                   2
                 )}
@@ -54,11 +54,11 @@ export default function StatsScreen() {
 
         <View style={styles.section_stats_sub_container}>
           <Text style={styles.section_stat_number}>
-            {tasksStats.tasksCompletedOnTime === 0
+            {tasksStats.tasksCompletedOnTime == 0
               ? 0
               : !tasksStats.tasksCompletedOnTime
-              ? "-"
-              : tasksStats.tasksCompletedOnTime}
+              ? '-'
+              : tasksStats.tasksCompletedOnTime.toFixed(2)}
           </Text>
           <Text style={styles.section_stat_name}>% completed on time</Text>
         </View>
@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   section_title: {
     fontSize: constants.mediumFontSize,
     fontWeight: constants.fontWeight,
-    width: "100%",
-    textAlign: "center",
+    width: '100%',
+    textAlign: 'center',
   },
   section_stats_container: {
     margin: constants.padding,
@@ -95,10 +95,10 @@ const styles = StyleSheet.create({
     padding: constants.padding,
     backgroundColor: constants.colorSecondary,
     borderRadius: 10,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
     rowGap: constants.padding * 2,
     columnGap: constants.padding * 2,
   },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     fontWeight: constants.fontWeight,
   },
   section_stats_sub_container: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
 });

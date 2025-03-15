@@ -11,6 +11,7 @@ import ErrorComponent from '@/components/utility/Error';
 import HeaderTask from '@/components/habitOrTask/HeaderHabitOrTaskPage';
 import styles from '@/components/habitOrTask/styles/habit_or_task_page';
 import TextBlock from '@/components/habitOrTask/display/TextBlock';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TaskPage() {
   const router = useRouter();
@@ -18,97 +19,92 @@ export default function TaskPage() {
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [error, setError] = useState<Error | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const docRef = doc(db, 'task', id.toString());
-
-  const handleComplete = () => {
-    addDoc(collection(db, 'archivedTask'), {
-      ...task,
-      updatedAt: new Date().toUTCString(),
-      completedAt: new Date().toUTCString(),
-    })
-      .then(() => {})
-      .catch(() =>
-        console.error(`Error: We couldn't delete the task ${task?.title}`)
-      );
-    deleteDoc(docRef)
-      .then(() => {})
-      .catch(() =>
-        console.error(`Error: We couldn't delete the task ${task?.title}`)
-      );
-    router.push('/(tabs)');
-  };
 
   useEffect(() => {
     getDoc(docRef)
       .then((doc) => {
         if (doc.exists()) {
-          const docData = doc.data() as Task;
-          setTask(docData);
+          setTask({ id: doc.id, ...doc.data() } as Task);
         } else {
-          throw new Error("The doc doesn't exist");
+          setError(new Error('Task not found'));
         }
       })
-      .catch((e) => {
-        setError(e.message);
+      .catch((error) => {
+        setError(error);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [id]);
+
+  const handleComplete = () => {
+    if (!task) return;
+
+    addDoc(collection(db, 'archivedTask'), {
+      ...task,
+      updatedAt: new Date().toUTCString(),
+      completedAt: new Date().toUTCString(),
+    })
+      .then(() => {
+        deleteDoc(docRef)
+          .then(() => {
+            router.push('/(tabs)');
+          })
+          .catch(() =>
+            console.error(`Error: We couldn't delete the task ${task?.title}`)
+          );
+      })
+      .catch(() =>
+        console.error(`Error: We couldn't archive the task ${task?.title}`)
+      );
+  };
+
+  if (loading) {
+    return <LoadingComponent size={80} color={constants.colorSecondary} />;
+  }
+
+  if (error || !task) {
+    return <ErrorComponent />;
+  }
 
   return (
-    <>
-      <ScrollView
-        style={{
-          flex: 1,
-        }}
-      >
-        {loading ? (
-          <LoadingComponent size={80} color={constants.colorSecondary} />
-        ) : error || !task ? (
-          <ErrorComponent />
-        ) : (
-          <>
-            <HeaderTask
-              id={id}
-              type="task"
-              setShowDeleteModal={setShowDeleteModal}
-            />
-
-            <View style={styles.page_content_container}>
-              <Text style={styles.page_title}>{task.title}</Text>
-
-              <TextBlock title={'Description'} text={task.description} />
-              <TextBlock title={'Due date'} text={task.dueDate} />
-
-              <Pressable
-                style={{
-                  backgroundColor: constants.colorQuarternary,
-                  margin: constants.padding,
-                  borderRadius: 10,
-                  padding: constants.padding,
-                }}
-                onPress={handleComplete}
-              >
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    fontWeight: constants.fontWeight,
-                    fontSize: constants.mediumFontSize,
-                    color: constants.colorSecondary,
-                  }}
-                >
-                  Mark as completed
-                </Text>
-              </Pressable>
-            </View>
-          </>
-        )}
+    <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+      <ScrollView style={styles.scrollView}>
+        <HeaderTask
+          id={id}
+          type="Task"
+          setShowDeleteModal={setShowDeleteModal}
+        />
+        <View style={styles.page_content_container}>
+          <Text style={styles.page_title}>{task.title}</Text>
+          <TextBlock title="Description" text={task.description} />
+          <Pressable
+            style={{
+              backgroundColor: constants.colorQuarternary,
+              padding: constants.padding,
+              margin: constants.padding,
+              borderRadius: 10,
+              alignItems: 'center',
+            }}
+            onPress={handleComplete}
+          >
+            <Text
+              style={{
+                color: constants.colorSecondary,
+                fontWeight: constants.fontWeight,
+                fontSize: constants.mediumFontSize,
+              }}
+            >
+              Complete
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
+
       {showDeleteModal && (
         <DeleteModal
           id={id}
@@ -117,6 +113,6 @@ export default function TaskPage() {
           type="task"
         />
       )}
-    </>
+    </SafeAreaView>
   );
 }

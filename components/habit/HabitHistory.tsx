@@ -1,20 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text } from 'react-native';
-import { Habit } from '@/types';
 import {
   HabitCompletionCalendar,
   DateSwitcher,
 } from '@/components/utility/Calendar';
 import getCalendarDays from '@/utility';
 import styles from '@/components/habitOrTask/styles/habit_or_task_page';
+import { useHabitContext } from '@/contexts/HabitContext';
 
-interface HabitHistoryProps {
-  habit: Habit;
-  setHabit: React.Dispatch<React.SetStateAction<Habit | null>>;
-}
-
-export default function HabitHistory({ habit, setHabit }: HabitHistoryProps) {
+export default function HabitHistory() {
   const [date, setDate] = useState<Date>(new Date());
+  const { currentHabit, setCurrentHabit } = useHabitContext();
+
   const { month, year } = useMemo(
     () => ({
       month: date.getMonth(),
@@ -28,6 +25,8 @@ export default function HabitHistory({ habit, setHabit }: HabitHistoryProps) {
     [year, month]
   );
 
+  if (!currentHabit) return null;
+
   return (
     <View style={styles.historyContainer}>
       <View style={styles.historyHeader}>
@@ -39,8 +38,8 @@ export default function HabitHistory({ habit, setHabit }: HabitHistoryProps) {
         days={allDaysInTheMonth}
         year={year}
         month={month}
-        habit={habit}
-        setHabit={setHabit}
+        habit={currentHabit}
+        setHabit={setCurrentHabit}
       />
     </View>
   );

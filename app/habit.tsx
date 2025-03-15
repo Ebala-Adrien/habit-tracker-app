@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import LoadingComponent from '@/components/utility/Loading';
@@ -8,20 +8,30 @@ import HeaderHabit from '@/components/habitOrTask/HeaderHabitOrTaskPage';
 import TextBlock from '@/components/habitOrTask/display/TextBlock';
 import HabitStats from '@/components/habit/HabitStats';
 import HabitHistory from '@/components/habit/HabitHistory';
-import { useHabit } from '@/hooks/useHabit';
+import { useHabitContext } from '@/contexts/HabitContext';
 import styles from '@/components/habitOrTask/styles/habit_or_task_page';
-import constants from '../constants';
+import constants from '@/constants';
 
 export default function HabitPage() {
   const id = useLocalSearchParams().id as string;
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { habit, setHabit, loading, error } = useHabit(id);
+  const {
+    loading,
+    error,
+    currentHabit,
+    loadHabit,
+    showDeleteModal,
+    setShowDeleteModal,
+  } = useHabitContext();
+
+  useEffect(() => {
+    loadHabit(id);
+  }, [id, loadHabit]);
 
   if (loading) {
     return <LoadingComponent size={80} color={constants.colorSecondary} />;
   }
 
-  if (error || !habit) {
+  if (error || !currentHabit) {
     return <ErrorComponent />;
   }
 
@@ -30,14 +40,14 @@ export default function HabitPage() {
       <ScrollView style={styles.scrollView}>
         <HeaderHabit
           id={id}
-          type="habit"
+          type="Habit"
           setShowDeleteModal={setShowDeleteModal}
         />
         <View style={styles.page_content_container}>
-          <Text style={styles.page_title}>{habit.title}</Text>
-          <HabitStats habit={habit} />
-          <HabitHistory habit={habit} setHabit={setHabit} />
-          <TextBlock title="Description" text={habit.description} />
+          <Text style={styles.page_title}>{currentHabit.title}</Text>
+          <HabitStats habit={currentHabit} />
+          <HabitHistory />
+          <TextBlock title="Description" text={currentHabit.description} />
         </View>
       </ScrollView>
 
@@ -45,7 +55,7 @@ export default function HabitPage() {
         <DeleteModal
           id={id}
           setShowModal={setShowDeleteModal}
-          habit={habit}
+          habit={currentHabit}
           type="habit"
         />
       )}
