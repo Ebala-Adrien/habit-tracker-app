@@ -1,9 +1,9 @@
-import { Tabs } from 'expo-router';
-import { SafeAreaView } from 'react-native';
-import constants from '@/constants';
-import { useRouter } from 'expo-router';
-import { useMenuContext } from '@/contexts/MenuContext';
-import { getTabScreenOptions, tabScreens } from '../navigation/tabConfig';
+import { Tabs } from "expo-router";
+import { SafeAreaView } from "react-native";
+import constants from "@/constants";
+import { useRouter } from "expo-router";
+import { useMenuContext } from "@/contexts/MenuContext";
+import { getTabScreenOptions, tabScreens } from "../navigation/tabConfig";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -12,11 +12,14 @@ export default function TabLayout() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: constants.colorPrimary }}>
       <Tabs
-        screenOptions={getTabScreenOptions({
-          router,
-          setShowFilter,
-          showFilter,
-        })}
+        screenOptions={{
+          ...getTabScreenOptions({
+            router,
+            setShowFilter,
+            showFilter,
+          }),
+          tabBarShowLabel: false,
+        }}
       >
         <Tabs.Screen
           name={tabScreens.home.name}

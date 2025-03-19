@@ -1,9 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { View, Pressable } from 'react-native';
-import constants from '@/constants';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import Header from '@/components/utility/Header';
-import { tabHeaderStyles } from '@/styles/tabHeader';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { View, Pressable } from "react-native";
+import constants from "@/constants";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import Header from "@/components/utility/Header";
+import { tabHeaderStyles } from "@/styles/tabHeader";
 
 interface TabHeaderProps {
   router: any;
@@ -17,7 +17,7 @@ export const TabHeader = ({
   showFilter,
 }: TabHeaderProps) => (
   <View style={tabHeaderStyles.container}>
-    <Pressable onPress={() => router.push('/settings')}>
+    <Pressable onPress={() => router.push("/settings")}>
       <SimpleLineIcons name="menu" size={30} color="black" />
     </Pressable>
 
@@ -42,32 +42,35 @@ export const getTabScreenOptions = ({
   tabBarActiveTintColor: constants.colorQuarternary,
   tabBarStyle: {
     borderWidth: 0,
+    height: 70,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
 });
 
 export const tabScreens = {
   home: {
-    name: 'index' as const,
+    name: "index" as const,
     options: {
-      title: 'Home',
+      title: "Home",
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
-          name={focused ? 'home' : 'home-outline'}
-          color={constants.colorQuarternary}
+          name={"home"}
+          color={focused ? constants.colorQuarternary : constants.colorSextary}
           size={24}
         />
       ),
     },
   },
   stats: {
-    name: 'stats' as const,
+    name: "stats" as const,
     options: {
       header: () => <Header simple />,
-      title: 'Stats',
+      title: "Stats",
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
-          name={focused ? 'stats-chart' : 'stats-chart-outline'}
-          color={constants.colorQuarternary}
+          name={"stats-chart"}
+          color={focused ? constants.colorQuarternary : constants.colorSextary}
           size={24}
         />
       ),

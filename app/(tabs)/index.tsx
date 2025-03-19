@@ -36,6 +36,7 @@ export default function HomeScreen() {
     <View
       style={{
         flex: 1,
+        position: "relative",
       }}
     >
       {authCtxIsLoading ? (
@@ -76,43 +77,49 @@ export default function HomeScreen() {
             })}
           </View>
 
-          <ScrollView
-            style={{
-              paddingHorizontal: constants.padding * 2,
-            }}
-          >
-            <HabitAndTaskList />
-          </ScrollView>
-
-          <View
-            style={{
-              position: "fixed",
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "flex-end",
-              paddingBottom: constants.padding,
-              paddingRight: constants.padding,
-              left: "100%",
-              transform: [{ translateX: "-100%" }],
-              height: 50,
-              width: 50,
-            }}
-          >
-            <Pressable
-              onPress={() => setShowCreateTaskOrHabitModal(true)}
+          <View style={{ flex: 1 }}>
+            <ScrollView
               style={{
-                backgroundColor: constants.colorQuarternary,
-                height: 50,
-                width: 50,
-                borderRadius: 10,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: constants.padding,
+                paddingHorizontal: constants.padding * 2,
+                flex: 1,
+              }}
+              contentContainerStyle={{
+                paddingBottom: 70,
               }}
             >
-              <Entypo name="plus" size={24} color={constants.colorSecondary} />
-            </Pressable>
+              <HabitAndTaskList />
+            </ScrollView>
+
+            <View
+              style={{
+                position: "absolute",
+                bottom: 20,
+                right: constants.padding,
+                height: 50,
+                width: 50,
+                zIndex: 1,
+              }}
+            >
+              <Pressable
+                onPress={() => setShowCreateTaskOrHabitModal(true)}
+                style={{
+                  backgroundColor: constants.colorQuarternary,
+                  height: 50,
+                  width: 50,
+                  borderRadius: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: constants.padding,
+                }}
+              >
+                <Entypo
+                  name="plus"
+                  size={24}
+                  color={constants.colorSecondary}
+                />
+              </Pressable>
+            </View>
           </View>
         </>
       )}
