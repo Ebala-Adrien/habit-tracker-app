@@ -1,20 +1,21 @@
-import { useHabitContext } from '@/contexts/HabitContext';
-import { useTaskContext } from '@/contexts/TaskContext';
-import { DateType, Day } from '@/types';
-import { getMonthStartAndEnd, getWeekStartAndEnd } from '@/utility';
+import { useHabitContext } from "@/contexts/HabitContext";
+import { useTaskContext } from "@/contexts/TaskContext";
+import { DateType, Day, Task } from "@/types";
+import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
 import {
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
-} from '@/utility/habitList';
-import React, { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import NoHabitOrTask from './NoHabitOrTask';
-import constants from '@/constants';
-import { useRouter } from 'expo-router';
-import { useMenuContext } from '@/contexts/MenuContext';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { Habit } from '@/types';
+} from "@/utility/habitList";
+import React, { useMemo } from "react";
+import { Pressable, Text, View } from "react-native";
+import NoHabitOrTask from "./NoHabitOrTask";
+import constants from "@/constants";
+import { useRouter } from "expo-router";
+import { useMenuContext } from "@/contexts/MenuContext";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Feather from "@expo/vector-icons/Feather";
+import { Habit } from "@/types";
 
 export default function HabitAndTaskList() {
   const { habits } = useHabitContext();
@@ -54,9 +55,9 @@ export default function HabitAndTaskList() {
 
   const habitList = useMemo(() => {
     if (!filter[0].checked) return [];
-    if (frequence === 'Overall') {
+    if (frequence === "Overall") {
       return habits;
-    } else if (frequence === 'Day') {
+    } else if (frequence === "Day") {
       return habits.filter((h: Habit) =>
         shouldHabitBeDoneToday(
           h,
@@ -68,7 +69,7 @@ export default function HabitAndTaskList() {
           currentDate
         )
       );
-    } else if (frequence === 'Week') {
+    } else if (frequence === "Week") {
       return habits.filter((h: Habit) =>
         shouldHabitBeDoneThisWeek(
           h,
@@ -107,32 +108,37 @@ export default function HabitAndTaskList() {
   return (
     <>
       {habitsAndTaskList.map((doc) => {
-        const type = 'frequency' in doc ? 'habit' : 'task';
+        const type = "frequency" in doc ? "habit" : "task";
+        const isOverdue =
+          type === "task" && new Date((doc as Task).dueDate) < new Date();
 
         return (
           <Pressable
             key={doc.id}
             style={{
-              backgroundColor: constants.colorSecondary,
+              // backgroundColor: constants.colorSecondary,
+              backgroundColor: isOverdue
+                ? constants.colorOverdue
+                : constants.colorQuinary,
               padding: constants.padding * 2,
               marginBottom: constants.padding * 2,
               borderRadius: 10,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
               gap: constants.padding * 2,
             }}
             onPress={() => router.push(`/${type}?id=${doc.id}`)}
           >
-            {type === 'habit' ? (
-              <AntDesign
-                name="Trophy"
+            {type === "habit" ? (
+              <FontAwesome5
+                name="trophy"
                 size={20}
                 color={constants.colorTertiary}
               />
             ) : (
-              <AntDesign
-                name="checksquareo"
+              <Feather
+                name="target"
                 size={24}
                 color={constants.colorTertiary}
               />
@@ -146,7 +152,8 @@ export default function HabitAndTaskList() {
                 style={{
                   fontWeight: constants.fontWeight,
                   fontSize: constants.mediumFontSize,
-                  width: '100%',
+                  color: constants.colorTertiary,
+                  width: "100%",
                 }}
               >
                 {doc.title}

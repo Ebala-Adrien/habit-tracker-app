@@ -48,6 +48,7 @@ const MenuContextProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     if (showCreateTaskOrHabitModal) setShowCreateTaskOrHabitModal(false);
+    if (showFilter) setShowFilter(false);
   }, [pathname]);
 
   return (

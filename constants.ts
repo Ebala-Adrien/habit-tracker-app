@@ -12,5 +12,6 @@ export default {
     colorQuinary: "lightgreen",
     colorSextary: "grey",
     colorError: "red",
+    colorOverdue: "pink",
     borderWidth: 1.5
 } as const
