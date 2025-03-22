@@ -1,86 +1,150 @@
 import constants from "@/constants";
 import { useMenuContext } from "@/contexts/MenuContext";
-import { Pressable, View, Text } from "react-native";
+import { Pressable, View, Text, StyleSheet, Animated } from "react-native";
 import Checkbox from "expo-checkbox";
-import { useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function HabitAndTaskFilter() {
   const { setShowFilter, filter, setFilter } = useMenuContext();
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      duration: 250,
+    }).start();
+  }, []);
 
   return (
-    <Pressable
-      style={{
-        position: "absolute",
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        zIndex: 100,
-        display: "flex",
-      }}
-      onPress={() => setShowFilter(false)}
-    >
-      <View
-        style={{
-          width: "100%",
-          backgroundColor: constants.colorQuarternary,
-          padding: constants.padding,
-          display: "flex",
-          gap: constants.padding * 2,
-          borderColor: constants.colorTertiary,
-        }}
+    <Pressable style={styles.overlay} onPress={() => setShowFilter(false)}>
+      <Animated.View
+        style={[
+          styles.modalContainer,
+          {
+            transform: [
+              {
+                translateY: slideAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-100, 0],
+                }),
+              },
+            ],
+          },
+        ]}
       >
-        {filter
-          .sort((a, b) => a.id - b.id)
-          .map((o, i) => {
-            return (
-              <View
-                key={o.name}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  borderBottomRightRadius: 10,
-                  borderBottomLeftRadius: 10,
+        <Text style={styles.modalTitle}>Filter</Text>
+        <View style={styles.itemsContainer}>
+          {filter
+            .sort((a, b) => a.id - b.id)
+            .map((item, index) => (
+              <Pressable
+                key={item.name}
+                style={[
+                  styles.filterItem,
+                  index === filter.length - 1 && styles.lastFilterItem,
+                ]}
+                onPress={() => {
+                  const newFilterState = filter.filter(
+                    (ob) => ob.id != item.id
+                  );
+                  setFilter([
+                    ...newFilterState,
+                    {
+                      ...item,
+                      checked: !item.checked,
+                    },
+                  ]);
                 }}
               >
-                <Text
-                  style={{
-                    fontWeight: constants.fontWeight,
-                    fontSize: constants.mediumFontSize,
-                    color: constants.colorSecondary,
-                  }}
-                >
-                  {o.name}
-                </Text>
-                <Checkbox
-                  color={o.checked ? "black" : undefined}
-                  style={{
-                    backgroundColor: constants.colorSecondary,
-                    borderColor: constants.colorTertiary,
-                  }}
-                  value={o.checked}
-                  onValueChange={() => {
-                    const newFilterState = filter.filter((ob) => ob.id != o.id);
-
-                    setFilter([
-                      ...newFilterState,
-                      {
-                        ...o,
-                        checked: !o.checked,
-                      },
-                    ]);
-                  }}
-                />
-              </View>
-            );
-          })}
-      </View>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: constants.colorSextary,
-          opacity: 0.8,
-        }}
-      ></View>
+                <Text style={styles.filterText}>{item.name}</Text>
+                <View style={styles.checkboxContainer}>
+                  <Checkbox
+                    value={item.checked}
+                    onValueChange={() => {
+                      const newFilterState = filter.filter(
+                        (ob) => ob.id != item.id
+                      );
+                      setFilter([
+                        ...newFilterState,
+                        {
+                          ...item,
+                          checked: !item.checked,
+                        },
+                      ]);
+                    }}
+                    color={item.checked ? constants.colorPrimary : undefined}
+                    style={styles.checkbox}
+                  />
+                </View>
+              </Pressable>
+            ))}
+        </View>
+      </Animated.View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.3)",
+    zIndex: 100,
+  },
+  modalContainer: {
+    backgroundColor: constants.colorSecondary,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingBottom: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: constants.colorQuinary,
+    shadowColor: constants.colorTertiary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: constants.colorTertiary,
+    marginTop: 16,
+    marginBottom: 16,
+    paddingHorizontal: 24,
+  },
+  itemsContainer: {
+    gap: 4,
+  },
+  filterItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    paddingHorizontal: 24,
+  },
+  lastFilterItem: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: constants.colorQuinary,
+    marginBottom: 8,
+  },
+  filterText: {
+    fontSize: 17,
+    color: constants.colorTertiary,
+    flex: 1,
+  },
+  checkboxContainer: {
+    marginLeft: 16,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: constants.colorPrimary,
+  },
+});

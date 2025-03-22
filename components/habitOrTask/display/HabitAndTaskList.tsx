@@ -1,29 +1,51 @@
 import { useHabitContext } from "@/contexts/HabitContext";
 import { useTaskContext } from "@/contexts/TaskContext";
 import { DateType, Day, Task } from "@/types";
-import { getMonthStartAndEnd, getWeekStartAndEnd } from "@/utility";
+import {
+  getMonthStartAndEnd,
+  getWeekStartAndEnd,
+  compareDates,
+} from "@/utility";
 import {
   shouldHabitBeDoneThisMonth,
   shouldHabitBeDoneThisWeek,
   shouldHabitBeDoneToday,
-} from "@/utility/habitList";
+} from "@/utility/habit/habitList";
 import React, { useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
-import NoHabitOrTask from "./NoHabitOrTask";
+import { Pressable, Text, View, GestureResponderEvent } from "react-native";
 import constants from "@/constants";
 import { useRouter } from "expo-router";
 import { useMenuContext } from "@/contexts/MenuContext";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Feather from "@expo/vector-icons/Feather";
 import { Habit } from "@/types";
 import { StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { calculateStreak } from "@/utility/habit";
 
 const HabitListItem = ({ item }: { item: Habit }) => {
-  const itemCompleted: boolean = false; // TODO: get from habit
-  const itemStreak: number = Math.floor(Math.random() * 8); // TODO: get from habit
-
+  const { updateHabitCompletions } = useHabitContext();
   const router = useRouter();
+
+  const itemCompleted = item.habitCompletions.some((c) =>
+    compareDates(new Date(c), new Date())
+  );
+
+  const itemStreak = calculateStreak(item);
+
+  const handleCompletion = async (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    const updatedHabit = {
+      ...item,
+      habitCompletions: itemCompleted
+        ? [...item.habitCompletions].filter(
+            (c) => !compareDates(new Date(c), new Date())
+          )
+        : [...item.habitCompletions, new Date().toUTCString()].sort(
+            (d1, d2) => new Date(d1).valueOf() - new Date(d2).valueOf()
+          ),
+    };
+
+    await updateHabitCompletions(updatedHabit);
+  };
 
   return (
     <Pressable
@@ -33,8 +55,10 @@ const HabitListItem = ({ item }: { item: Habit }) => {
       <Pressable
         style={[
           styles.checkbox,
-          itemCompleted && styles.checkboxChecked && styles.habitCheckbox,
+          styles.habitCheckbox,
+          itemCompleted && styles.checkboxChecked,
         ]}
+        onPress={handleCompletion}
       >
         {itemCompleted && (
           <MaterialCommunityIcons
@@ -111,8 +135,6 @@ export function HabitList() {
   const { habits } = useHabitContext();
   const { homeScreenDisplayFrequence: frequence } = useMenuContext();
 
-  const router = useRouter();
-
   const {
     startCurrentWeek,
     endCurrentWeek,
@@ -146,8 +168,8 @@ export function HabitList() {
     if (frequence === "Overall") {
       return habits;
     } else if (frequence === "Day") {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneToday(
+      return habits.filter((h: Habit) => {
+        const status = shouldHabitBeDoneToday(
           h,
           startCurrentWeek,
           endCurrentWeek,
@@ -155,11 +177,12 @@ export function HabitList() {
           endCurrentMonth,
           currentDay,
           currentDate
-        )
-      );
+        );
+        return status.shouldBeDone || status.recentlyCompleted;
+      });
     } else if (frequence === "Week") {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneThisWeek(
+      return habits.filter((h: Habit) => {
+        const status = shouldHabitBeDoneThisWeek(
           h,
           startCurrentWeek,
           endCurrentWeek,
@@ -167,19 +190,21 @@ export function HabitList() {
           endCurrentMonth,
           currentDay,
           nbOfDaysInCurrentMonth
-        )
-      );
+        );
+        return status.shouldBeDone || status.recentlyCompleted;
+      });
     } else {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneThisMonth(
+      return habits.filter((h: Habit) => {
+        const status = shouldHabitBeDoneThisMonth(
           h,
           startCurrentWeek,
           endCurrentWeek,
           startCurrentMonth,
           endCurrentMonth,
           currentDate
-        )
-      );
+        );
+        return status.shouldBeDone || status.recentlyCompleted;
+      });
     }
   }, [habits, frequence]);
 
@@ -193,6 +218,9 @@ export function HabitList() {
 }
 
 export function TaskListItem({ item }: { item: Task }) {
+  const { toggleTaskCompletion } = useTaskContext();
+  const router = useRouter();
+
   const getDueColor = (dueDate: string) => {
     const now = new Date();
     const dueDateObj = new Date(dueDate);
@@ -218,7 +246,14 @@ export function TaskListItem({ item }: { item: Task }) {
     });
   };
 
-  const router = useRouter();
+  const handleToggleCompletion = async (e: GestureResponderEvent) => {
+    e.stopPropagation(); // Prevent triggering the parent Pressable
+    try {
+      await toggleTaskCompletion(item);
+    } catch (error) {
+      console.error("Error toggling task completion:", error);
+    }
+  };
 
   return (
     <Pressable
@@ -227,6 +262,7 @@ export function TaskListItem({ item }: { item: Task }) {
     >
       <Pressable
         style={[styles.checkbox, item.completed && styles.checkboxChecked]}
+        onPress={handleToggleCompletion}
       >
         {item.completed && (
           <MaterialCommunityIcons
@@ -266,7 +302,22 @@ export function TaskList() {
   const { tasks } = useTaskContext();
 
   const taskList = useMemo(() => {
-    return tasks;
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+    // Filter tasks to show:
+    // 1. All incomplete tasks
+    // 2. Tasks completed within the last hour
+    return tasks
+      .filter((task) => {
+        if (!task.completed) return true;
+        if (!task.completedAt) return false;
+        const completionDate = new Date(task.completedAt);
+        return completionDate >= oneHourAgo && completionDate <= now;
+      })
+      .sort((a, b) => {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      });
   }, [tasks]);
 
   return (
@@ -278,153 +329,6 @@ export function TaskList() {
   );
 }
 
-export default function HabitAndTaskList() {
-  const { habits } = useHabitContext();
-  const { tasks } = useTaskContext();
-  const { homeScreenDisplayFrequence: frequence, filter } = useMenuContext();
-
-  const router = useRouter();
-
-  const {
-    startCurrentWeek,
-    endCurrentWeek,
-    startCurrentMonth,
-    endCurrentMonth,
-    nbOfDaysInCurrentMonth,
-    currentDate,
-    currentDay,
-  } = useMemo(() => {
-    const today = new Date();
-    const { startOfWeek, endOfWeek } = getWeekStartAndEnd(today);
-    const { startOfMonth, endOfMonth } = getMonthStartAndEnd(today);
-    const nbOfDaysInCurrentMonth: number = Number(
-      new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
-    );
-    const currentDay = today.getDay() as Day;
-    const currentDate = today.getDate() as DateType;
-
-    return {
-      startCurrentWeek: startOfWeek,
-      endCurrentWeek: endOfWeek,
-      startCurrentMonth: startOfMonth,
-      endCurrentMonth: endOfMonth,
-      nbOfDaysInCurrentMonth: nbOfDaysInCurrentMonth,
-      currentDate,
-      currentDay,
-    };
-  }, []);
-
-  const habitList = useMemo(() => {
-    if (!filter[0].checked) return [];
-    if (frequence === "Overall") {
-      return habits;
-    } else if (frequence === "Day") {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneToday(
-          h,
-          startCurrentWeek,
-          endCurrentWeek,
-          startCurrentMonth,
-          endCurrentMonth,
-          currentDay,
-          currentDate
-        )
-      );
-    } else if (frequence === "Week") {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneThisWeek(
-          h,
-          startCurrentWeek,
-          endCurrentWeek,
-          startCurrentMonth,
-          endCurrentMonth,
-          currentDay,
-          nbOfDaysInCurrentMonth
-        )
-      );
-    } else {
-      return habits.filter((h: Habit) =>
-        shouldHabitBeDoneThisMonth(
-          h,
-          startCurrentWeek,
-          endCurrentWeek,
-          startCurrentMonth,
-          endCurrentMonth,
-          currentDate
-        )
-      );
-    }
-  }, [habits, frequence, filter]);
-
-  const taskList = useMemo(() => {
-    if (!filter[1].checked) return [];
-    return tasks;
-  }, [tasks, filter]);
-
-  const habitsAndTaskList = [...habitList, ...taskList];
-
-  if (habitsAndTaskList.length < 1)
-    return <NoHabitOrTask frequence={frequence} />;
-
-  return (
-    <>
-      {habitsAndTaskList.map((doc) => {
-        const type = "frequency" in doc ? "habit" : "task";
-        const isOverdue =
-          type === "task" && new Date((doc as Task).dueDate) < new Date();
-
-        return (
-          <Pressable
-            key={doc.id}
-            style={{
-              backgroundColor: isOverdue
-                ? constants.colorWarning
-                : constants.colorSecondary,
-              padding: constants.padding * 2,
-              marginBottom: constants.padding * 2,
-              borderRadius: 10,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: constants.padding * 2,
-            }}
-            onPress={() => router.push(`/${type}?id=${doc.id}`)}
-          >
-            {type === "habit" ? (
-              <FontAwesome5
-                name="trophy"
-                size={20}
-                color={constants.colorTertiary}
-              />
-            ) : (
-              <Feather
-                name="target"
-                size={24}
-                color={constants.colorTertiary}
-              />
-            )}
-            <View
-              style={{
-                flex: 1,
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: constants.fontWeight,
-                  fontSize: constants.mediumFontSize,
-                  color: constants.colorTertiary,
-                  width: "100%",
-                }}
-              >
-                {doc.title}
-              </Text>
-            </View>
-          </Pressable>
-        );
-      })}
-    </>
-  );
-}
 const styles = StyleSheet.create({
   listItem: {
     flexDirection: "row",

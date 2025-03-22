@@ -1,5 +1,5 @@
 import { Habit } from "@/types";
-import { shouldHabitBeDoneToday } from "@/utility/habitList";
+import { shouldHabitBeDoneToday } from "@/utility/habit/habitList";
 
 const habitOne: Habit = {
     id: "12345678",

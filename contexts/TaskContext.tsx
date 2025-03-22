@@ -5,20 +5,21 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from 'react';
-import { useAuthContext } from './AuthContext';
+} from "react";
+import { useAuthContext } from "./AuthContext";
 import {
   collection,
-  getDocs,
   onSnapshot,
   query,
   where,
-} from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { EditHabitOrTaskForm, Task } from '@/types';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { editHabitOrTaskFormSchema } from '@/data';
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import { EditHabitOrTaskForm, Task } from "@/types";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { editHabitOrTaskFormSchema } from "@/data";
 
 type TaskContextType = {
   tasks: Task[];
@@ -28,6 +29,7 @@ type TaskContextType = {
     tasksCompletedOnTime: number;
     overdueTasks: number;
   };
+  toggleTaskCompletion: (task: Task) => Promise<void>;
 };
 
 const defaultContext: TaskContextType = {
@@ -38,6 +40,7 @@ const defaultContext: TaskContextType = {
     tasksCompletedOnTime: 0,
     overdueTasks: 0,
   },
+  toggleTaskCompletion: async () => {},
 };
 
 const TaskContext = createContext<TaskContextType>(defaultContext);
@@ -52,59 +55,55 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [archivedTasksCount, setArchivedTasksCount] = useState<number>(0);
-  const [
-    archivedTasksCompletedOnTimeCount,
-    setArchivedTasksCompletedOnTimeCount,
-  ] = useState<number>(0);
+
+  // Function to toggle task completion status
+  const toggleTaskCompletion = async (task: Task) => {
+    try {
+      const taskRef = doc(db, "task", task.id);
+
+      const now = new Date().toUTCString();
+
+      await updateDoc(taskRef, {
+        completed: !task.completed,
+        updatedAt: now,
+        completedAt: !task.completed ? now : null,
+      });
+    } catch (error) {
+      console.error("Error toggling task completion:", error);
+    }
+  };
 
   const tasksStats = useMemo(() => {
-    // Ongoing tasks that we should already have completed
+    const completedTasks = tasks.filter((t) => t.completed);
     const overdueTasks = tasks.filter(
-      (t) => new Date().getTime() > new Date(t.dueDate).getTime()
+      (t) =>
+        !t.completed && new Date().getTime() > new Date(t.dueDate).getTime()
     ).length;
 
+    const completedOnTime = completedTasks.filter((t) => {
+      if (!t.completedAt) return false;
+      return new Date(t.completedAt).getTime() <= new Date(t.dueDate).getTime();
+    }).length;
+
     return {
-      tasksCompleted: archivedTasksCount,
+      tasksCompleted: completedTasks.length,
       tasksCompletedOnTime:
-        (archivedTasksCompletedOnTimeCount /
-          (overdueTasks + archivedTasksCount)) *
-        100, // %
+        completedTasks.length > 0
+          ? (completedOnTime / (overdueTasks + completedTasks.length)) * 100
+          : 0,
       overdueTasks,
     };
-  }, [tasks, archivedTasksCount, archivedTasksCompletedOnTimeCount]);
+  }, [tasks]);
 
-  const taskCollectionRef = collection(db, 'task');
+  const taskCollectionRef = collection(db, "task");
   const tasksQuery = useMemo(() => {
     return query(
       taskCollectionRef,
-      where('userId', '==', user?.uid || 'random_user_id')
-    );
-  }, [user?.uid]);
-
-  const archivedTaskCollectionRef = collection(db, 'archivedTask');
-  const archivedTaskQuery = useMemo(() => {
-    return query(
-      archivedTaskCollectionRef,
-      where('userId', '==', user?.uid || 'random_user_id')
+      where("userId", "==", user?.uid || "random_user_id")
     );
   }, [user?.uid]);
 
   useEffect(() => {
-    if (user?.uid) {
-      getDocs(tasksQuery)
-        .then((querySnapshot) => {
-          const docs = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as Task[];
-          setTasks(docs);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    }
-
     const unsubscribeTasks = onSnapshot(tasksQuery, (querySnapshot) => {
       const docs = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -113,29 +112,8 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
       setTasks(docs);
     });
 
-    const unsubscribeArchivedTasks = onSnapshot(
-      archivedTaskQuery,
-      (querySnapshot) => {
-        const docs = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Task[];
-
-        setArchivedTasksCount(docs.length);
-        setArchivedTasksCompletedOnTimeCount(
-          docs.filter((t) => {
-            if (!t.completedAt) return;
-            return (
-              new Date(t.dueDate).getTime() < new Date(t.completedAt).getTime()
-            );
-          }).length
-        );
-      }
-    );
-
     return () => {
       unsubscribeTasks();
-      unsubscribeArchivedTasks();
     };
   }, [user?.uid]);
 
@@ -145,6 +123,7 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
         tasks,
         editTaskForm,
         tasksStats,
+        toggleTaskCompletion,
       }}
     >
       {children}

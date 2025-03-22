@@ -1,5 +1,10 @@
-import { calculateDaysBetweenDates, calculateMonthsBetweenDates, calculateWeeksBetweenDates, compareDates, countOccurrencesOfDay, getCompletionsInPeriod } from ".";
-import { DateType, Day, Habit } from "../types";
+import { calculateDaysBetweenDates, calculateMonthsBetweenDates, calculateWeeksBetweenDates, compareDates, countOccurrencesOfDay, getCompletionsInPeriod } from "..";
+import { DateType, Day, Habit } from "../../types";
+
+interface HabitStatus {
+  shouldBeDone: boolean;
+  recentlyCompleted: boolean;
+}
 
 export function shouldHabitBeDoneToday(
   habit: Habit,
@@ -9,7 +14,16 @@ export function shouldHabitBeDoneToday(
   endCurrentMonth: number,
   currentDay: Day,
   currentDate: DateType
-): boolean {
+): HabitStatus {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  
+  // Check for recent completion (within last hour)
+  const recentlyCompleted = habit.habitCompletions.some(c => {
+    const completionDate = new Date(c);
+    return completionDate >= oneHourAgo && completionDate <= now;
+  });
+
   const timesCompletedThisWeek = habit.habitCompletions.filter((c) => {
     const t = new Date(c).getTime();
     return t >= startCurrentWeek && t <= endCurrentWeek;
@@ -37,8 +51,10 @@ export function shouldHabitBeDoneToday(
       ? frequency.days.includes(currentDay)
       : frequency.days.includes(currentDate);
 
-    if (!isScheduledForToday || hasAlreadyBeenDoneToday) return false;
-    return true;
+    return {
+      shouldBeDone: isScheduledForToday && !hasAlreadyBeenDoneToday,
+      recentlyCompleted
+    };
   }
 
   // 'occurrences' -> weekly (0..7) ou monthly (1..30)
@@ -48,18 +64,27 @@ export function shouldHabitBeDoneToday(
         ? frequency.occurrences
         : calculateWeeksBetweenDates(freqUpdateTime, endCurrentWeek) * frequency.occurrences; // If this habit was started or updated in the middle of the week multiply the occurrences by the amount of weeks between the last update (or creation) and the end of the week. This "amount of weeks" should be between 0 and 1.
 
-      return timesCompletedThisWeek < timesAllowed && !hasAlreadyBeenDoneToday;
+      return {
+        shouldBeDone: timesCompletedThisWeek < timesAllowed && !hasAlreadyBeenDoneToday,
+        recentlyCompleted
+      };
     } else {
       // monthly
       const timesAllowed = startedBeforeMonth
         ? frequency.occurrences
         : calculateMonthsBetweenDates(freqUpdateTime, endCurrentMonth) * frequency.occurrences; // If this habit was started or updated in the middle of the month multiply the occurrences by the "amount of months" between the last update (or creation) and the end of the month. This "amount of months" should be between 0 and 1.
 
-      return timesCompletedThisMonth < timesAllowed && !hasAlreadyBeenDoneToday;
+      return {
+        shouldBeDone: timesCompletedThisMonth < timesAllowed && !hasAlreadyBeenDoneToday,
+        recentlyCompleted
+      };
     }
   }
 
-  return false;
+  return {
+    shouldBeDone: false,
+    recentlyCompleted
+  };
 }
 
 
@@ -71,7 +96,16 @@ export function shouldHabitBeDoneThisWeek(
   endCurrentMonth: number,
   currentDay: Day,
   nbOfDaysInTheCurrentMonth: number
-): boolean {
+): HabitStatus {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  
+  // Check for recent completion (within last hour)
+  const recentlyCompleted = habit.habitCompletions.some(c => {
+    const completionDate = new Date(c);
+    return completionDate >= oneHourAgo && completionDate <= now;
+  });
+
   const createdAt = new Date(habit.createdAt).getTime();
   const freqUpdate = new Date(habit.lastFrequencyUpdate).getTime();
 
@@ -142,9 +176,15 @@ export function shouldHabitBeDoneThisWeek(
   
 
   if (frequency.type === "weekly") {
-    return checkWeekly();
+    return {
+      shouldBeDone: checkWeekly(),
+      recentlyCompleted
+    };
   } else {
-    return checkMonthly();
+    return {
+      shouldBeDone: checkMonthly(),
+      recentlyCompleted
+    };
   }
 }
 
@@ -156,7 +196,20 @@ export function shouldHabitBeDoneThisMonth(
   startCurrentMonth: number,
   endCurrentMonth: number,
   currentDate: DateType
-): boolean {
+): HabitStatus {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  
+  // Check for recent completion (within last hour)
+  const recentlyCompleted = habit.habitCompletions.some(c => {
+    const completionDate = new Date(c);
+    return completionDate >= oneHourAgo && completionDate <= now;
+  });
+
+  const freqUpdate = new Date(habit.lastFrequencyUpdate).getTime();
+  const startMonthPeriod = Math.max(startCurrentMonth, freqUpdate)
+  const startWeekPeriod = Math.max(startCurrentWeek, freqUpdate)
+
   const completionsThisMonthPeriod = habit.habitCompletions.filter((c) => {
     const t = new Date(c).getTime();
     return t >= startMonthPeriod && t <= endCurrentMonth;
@@ -167,12 +220,8 @@ export function shouldHabitBeDoneThisMonth(
     return t >= startWeekPeriod && t <= endCurrentWeek;
   }).length;
 
-  const freqUpdate = new Date(habit.lastFrequencyUpdate).getTime();
-  const startMonthPeriod = Math.max(startCurrentMonth, freqUpdate)
-  const startWeekPeriod = Math.max(startCurrentWeek, freqUpdate)
-
   const frequency = habit.frequency;
-  let hasToBeDone = true;
+  let shouldBeDone = true;
 
   if (frequency.type === "weekly") {
     // Weekly habit
@@ -193,7 +242,7 @@ export function shouldHabitBeDoneThisMonth(
       // 2. Check if the habit has been done enough this month period
       const notDoneEnoughThisMonth = completionsThisMonthPeriod < timesToBeDoneThisMonth;
 
-      hasToBeDone = notDoneEnoughThisMonth || notDoneEnoughThisWeek; // If we have not done enough this month or this week we should still do it this month
+      shouldBeDone = notDoneEnoughThisMonth || notDoneEnoughThisWeek; // If we have not done enough this month or this week we should still do it this month
 
     } else if (frequency.occurrences) {
       // 1. Calculate the amount of days between the start of the week period and the end of the week
@@ -210,22 +259,25 @@ export function shouldHabitBeDoneThisMonth(
       // 3. Check if the habit has been done enough this month period
       const notDoneEnoughThisMonth = completionsThisMonthPeriod < timesToBeDoneThisMonthPeriod;
 
-      hasToBeDone = notDoneEnoughThisMonth || notDoneEnoughThisWeek; // If we have not done enough this month or this week we should still do it this month
+      shouldBeDone = notDoneEnoughThisMonth || notDoneEnoughThisWeek; // If we have not done enough this month or this week we should still do it this month
     }
   } else {
     // Monthly habit
     if (frequency.days) {
       const startPeriodDay = new Date(startMonthPeriod).getDate();
       const daysToDo = frequency.days.filter((d) => d >= startPeriodDay);
-      hasToBeDone =
+      shouldBeDone =
         completionsThisMonthPeriod < daysToDo.length &&
         daysToDo.some((d) => d <= currentDate);
     } else if (frequency.occurrences) {
       const monthsBetween = calculateMonthsBetweenDates(startMonthPeriod, endCurrentMonth);
       const totalNeeded = frequency.occurrences * monthsBetween;
-      hasToBeDone = totalNeeded > completionsThisMonthPeriod;
+      shouldBeDone = totalNeeded > completionsThisMonthPeriod;
     }
   }
 
-  return hasToBeDone;
+  return {
+    shouldBeDone,
+    recentlyCompleted
+  };
 }
