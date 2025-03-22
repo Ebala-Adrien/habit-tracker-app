@@ -56,7 +56,7 @@ export const tabScreens = {
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
           name={"home"}
-          color={focused ? constants.colorQuarternary : constants.colorSextary}
+          color={focused ? constants.colorPrimary : constants.colorSextary}
           size={24}
         />
       ),
