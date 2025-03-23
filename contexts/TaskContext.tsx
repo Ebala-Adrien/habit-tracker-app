@@ -43,6 +43,7 @@ type TaskContextType = {
   };
   taskInsights: TaskInsights;
   toggleTaskCompletion: (task: Task) => Promise<void>;
+  loadingTasks: boolean;
 };
 
 const defaultContext: TaskContextType = {
@@ -58,6 +59,7 @@ const defaultContext: TaskContextType = {
     mostOverdue: null,
   },
   toggleTaskCompletion: async () => {},
+  loadingTasks: false,
 };
 
 const TaskContext = createContext<TaskContextType>(defaultContext);
@@ -72,6 +74,7 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState(false);
 
   // Function to toggle task completion status
   const toggleTaskCompletion = async (task: Task) => {
@@ -166,12 +169,14 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
   }, [user?.uid]);
 
   useEffect(() => {
+    setLoadingTasks(true);
     const unsubscribeTasks = onSnapshot(tasksQuery, (querySnapshot) => {
       const docs = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Task[];
       setTasks(docs);
+      setLoadingTasks(false);
     });
 
     return () => {
@@ -187,6 +192,7 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
         tasksStats,
         taskInsights,
         toggleTaskCompletion,
+        loadingTasks,
       }}
     >
       {children}

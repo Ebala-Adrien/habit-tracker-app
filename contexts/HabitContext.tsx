@@ -48,6 +48,7 @@ type HabitContextType = {
   setDate: (date: Date) => void;
   setShowDeleteModal: (show: boolean) => void;
   setCurrentHabit: React.Dispatch<React.SetStateAction<Habit | null>>;
+  loadingHabits: boolean;
 };
 
 const defaultContext: HabitContextType = {
@@ -69,6 +70,7 @@ const defaultContext: HabitContextType = {
   setDate: () => {},
   setShowDeleteModal: () => {},
   setCurrentHabit: () => {},
+  loadingHabits: false,
 };
 
 const HabitContext = createContext<HabitContextType>(defaultContext);
@@ -84,6 +86,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   const [habits, setHabits] = useState<Habit[]>([]);
   const [currentHabit, setCurrentHabit] = useState<Habit | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingHabits, setLoadingHabits] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [date, setDate] = useState(new Date());
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -164,6 +167,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   }, [user?.uid]);
 
   useEffect(() => {
+    setLoadingHabits(true);
     if (user?.uid) {
       getDocs(q)
         .then((querySnapshot) => {
@@ -205,6 +209,8 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
       setHabitsCompletionsCount(
         docs.reduce((acc, curr) => acc + curr.habitCompletions.length, 0)
       );
+
+      setLoadingHabits(false);
     });
 
     return () => unsubscribe();
@@ -255,6 +261,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
         habitsCompletionsCount,
         habitsTimesToBeDone,
         habitStats,
+        loadingHabits,
         loadHabit,
         updateHabitCompletions,
         setDate,

@@ -30,7 +30,7 @@ export default StyleSheet.create({
     flexDirection: "row",
   },
   subtitle_part_two: {
-    color: constants.colorQuarternary,
+    color: constants.colorPrimary,
   },
   inputs_container: {
     gap: constants.padding,

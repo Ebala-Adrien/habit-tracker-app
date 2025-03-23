@@ -14,12 +14,14 @@ import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMenuContext } from "@/contexts/MenuContext";
+import { useTaskContext } from "@/contexts/TaskContext";
 import { displayFrequencies } from "@/data";
 
 import {
   HabitList,
   TaskList,
 } from "@/components/habitOrTask/display/HabitAndTaskList";
+import { useHabitContext } from "@/contexts/HabitContext";
 
 interface ListItem {
   id: string;
@@ -162,6 +164,8 @@ export default function HomeScreen() {
   } = useMenuContext();
   const { authCtxIsLoading } = useAuthContext();
   const { deleteHabitMsg } = useLocalSearchParams();
+  const { loadingHabits } = useHabitContext();
+  const { loadingTasks } = useTaskContext();
 
   useEffect(() => {
     if (deleteHabitMsg) {
@@ -176,7 +180,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {authCtxIsLoading ? (
+      {authCtxIsLoading || loadingHabits || loadingTasks ? (
         <LoadingComponent size={80} color={constants.colorPrimary} />
       ) : (
         <>
