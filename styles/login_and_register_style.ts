@@ -62,15 +62,15 @@ export default StyleSheet.create({
     justifyContent: "flex-end",
   },
   forgot_password_link: {  
-    color: constants.colorQuarternary,
+    color: constants.colorPrimary,
     fontWeight: constants.fontWeight,
   }
   ,
   login_button: {
     borderRadius: 5,
-    backgroundColor: constants.colorQuarternary,
+    backgroundColor: constants.colorPrimary,
     borderWidth: constants.borderWidth,
-    borderColor: constants.colorQuarternary,
+    borderColor: constants.colorPrimary,
     width: "100%",
     display: "flex",
     flexDirection: "row",
