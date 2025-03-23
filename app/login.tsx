@@ -49,7 +49,9 @@ export default function LoginPage() {
     const { email, password } = data;
 
     signInWithEmailAndPassword(auth, email, password)
-      .then((_) => {})
+      .then((_) => {
+        router.push("/(tabs)");
+      })
       .catch((error) => {
         console.log(error.message);
         if (error.code === "auth/invalid-credential") {

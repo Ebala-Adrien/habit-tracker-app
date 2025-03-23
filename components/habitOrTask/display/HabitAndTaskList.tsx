@@ -134,6 +134,7 @@ const HabitListItem = ({ item }: { item: Habit }) => {
 export function HabitList() {
   const { habits } = useHabitContext();
   const { homeScreenDisplayFrequence: frequence } = useMenuContext();
+  const router = useRouter();
 
   const {
     startCurrentWeek,
@@ -207,6 +208,25 @@ export function HabitList() {
       });
     }
   }, [habits, frequence]);
+
+  if (habitList.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <MaterialCommunityIcons
+          name="calendar-plus"
+          size={48}
+          color={constants.colorQuinary}
+        />
+        <Text style={styles.emptyText}>No habits yet</Text>
+        <Pressable
+          style={styles.createButton}
+          onPress={() => router.push("/createHabit")}
+        >
+          <Text style={styles.createButtonText}>Create your first habit</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -300,6 +320,7 @@ export function TaskListItem({ item }: { item: Task }) {
 
 export function TaskList() {
   const { tasks } = useTaskContext();
+  const router = useRouter();
 
   const taskList = useMemo(() => {
     const now = new Date();
@@ -319,6 +340,25 @@ export function TaskList() {
         return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
       });
   }, [tasks]);
+
+  if (taskList.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <MaterialCommunityIcons
+          name="checkbox-marked-outline"
+          size={48}
+          color={constants.colorQuinary}
+        />
+        <Text style={styles.emptyText}>No tasks yet</Text>
+        <Pressable
+          style={styles.createButton}
+          onPress={() => router.push("/createTask")}
+        >
+          <Text style={styles.createButtonText}>Create your first task</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -402,5 +442,39 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 2,
     marginLeft: 12,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: constants.padding * 2,
+    backgroundColor: constants.colorSecondary,
+    borderRadius: 12,
+    marginBottom: 8,
+    minHeight: 160,
+    shadowColor: constants.colorTertiary,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: constants.colorQuinary,
+    marginTop: constants.padding,
+    marginBottom: constants.padding * 1.5,
+  },
+  createButton: {
+    backgroundColor: `${constants.colorPrimary}15`,
+    paddingHorizontal: constants.padding * 1.5,
+    paddingVertical: constants.padding,
+    borderRadius: 20,
+  },
+  createButtonText: {
+    color: constants.colorPrimary,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

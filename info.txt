@@ -1,0 +1,2 @@
+App icon: https://www.svgrepo.com/svg/497576/task-square
+Generate app icons: https://icon.kitchen/
