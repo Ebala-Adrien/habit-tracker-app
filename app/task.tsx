@@ -1,17 +1,17 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Task } from '@/types';
-import { addDoc, collection, deleteDoc, doc, getDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import DeleteModal from '@/components/habitOrTask/modal/DeleteHabitOrTask';
-import LoadingComponent from '@/components/utility/Loading';
-import constants from '@/constants';
-import ErrorComponent from '@/components/utility/Error';
-import HeaderTask from '@/components/habitOrTask/HeaderHabitOrTaskPage';
-import styles from '@/components/habitOrTask/styles/habit_or_task_page';
-import TextBlock from '@/components/habitOrTask/display/TextBlock';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Task } from "@/types";
+import { addDoc, collection, deleteDoc, doc, getDoc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import DeleteModal from "@/components/habitOrTask/modal/DeleteHabitOrTask";
+import LoadingComponent from "@/components/utility/Loading";
+import constants from "@/constants";
+import ErrorComponent from "@/components/utility/Error";
+import HeaderTask from "@/components/habitOrTask/HeaderHabitOrTaskPage";
+import styles from "@/components/habitOrTask/styles/habit_or_task_page";
+import TextBlock from "@/components/habitOrTask/display/TextBlock";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TaskPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function TaskPage() {
   const [error, setError] = useState<Error | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const docRef = doc(db, 'task', id.toString());
+  const docRef = doc(db, "task", id.toString());
 
   useEffect(() => {
     getDoc(docRef)
@@ -30,7 +30,7 @@ export default function TaskPage() {
         if (doc.exists()) {
           setTask({ id: doc.id, ...doc.data() } as Task);
         } else {
-          setError(new Error('Task not found'));
+          setError(new Error("Task not found"));
         }
       })
       .catch((error) => {
@@ -44,7 +44,7 @@ export default function TaskPage() {
   const handleComplete = () => {
     if (!task) return;
 
-    addDoc(collection(db, 'archivedTask'), {
+    addDoc(collection(db, "archivedTask"), {
       ...task,
       updatedAt: new Date().toUTCString(),
       completedAt: new Date().toUTCString(),
@@ -52,7 +52,7 @@ export default function TaskPage() {
       .then(() => {
         deleteDoc(docRef)
           .then(() => {
-            router.push('/(tabs)');
+            router.push("/(tabs)");
           })
           .catch(() =>
             console.error(`Error: We couldn't delete the task ${task?.title}`)
@@ -64,7 +64,7 @@ export default function TaskPage() {
   };
 
   if (loading) {
-    return <LoadingComponent size={80} color={constants.colorSecondary} />;
+    return <LoadingComponent size={80} color={constants.colorPrimary} />;
   }
 
   if (error || !task) {
@@ -72,7 +72,7 @@ export default function TaskPage() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={["left", "right", "bottom"]}>
       <ScrollView style={styles.scrollView}>
         <HeaderTask
           id={id}
@@ -88,7 +88,7 @@ export default function TaskPage() {
               padding: constants.padding,
               margin: constants.padding,
               borderRadius: 10,
-              alignItems: 'center',
+              alignItems: "center",
             }}
             onPress={handleComplete}
           >

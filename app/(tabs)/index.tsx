@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  Animated,
 } from "react-native";
 import constants from "../../constants";
 import React, { useEffect } from "react";
@@ -13,69 +12,14 @@ import { useAuthContext } from "../../contexts/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
-import { Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMenuContext } from "@/contexts/MenuContext";
 import { displayFrequencies } from "@/data";
-import HabitAndTaskFilter from "@/components/habitOrTask/modal/HabitAndTaskFilter";
+
 import {
   HabitList,
   TaskList,
 } from "@/components/habitOrTask/display/HabitAndTaskList";
-// Placeholder data
-const placeholderData = {
-  habits: [
-    {
-      id: "1",
-      name: "Morning Meditation",
-      streak: 5,
-      completed: true,
-      type: "habit" as const,
-      time: "8:00 AM",
-    },
-    {
-      id: "2",
-      name: "Read 30 minutes",
-      streak: 3,
-      completed: false,
-      type: "habit" as const,
-      time: "9:00 AM",
-    },
-  ],
-  tasks: [
-    {
-      id: "3",
-      name: "Project Review",
-      priority: "high" as const,
-      completed: false,
-      type: "task" as const,
-      dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-    },
-    {
-      id: "4",
-      name: "Team Meeting",
-      priority: "medium" as const,
-      completed: true,
-      type: "task" as const,
-      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days from now
-    },
-    {
-      id: "5",
-      name: "Past Due Task",
-      priority: "high" as const,
-      completed: false,
-      type: "task" as const,
-      dueDate: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-    },
-    {
-      id: "6",
-      name: "Task due in 2 days",
-      priority: "high" as const,
-      completed: false,
-      type: "task" as const,
-      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from ago
-    },
-  ],
-};
 
 interface ListItem {
   id: string;
@@ -212,7 +156,6 @@ const ListItem = ({ item }: { item: ListItem }) => {
 
 export default function HomeScreen() {
   const {
-    showFilter,
     setShowCreateTaskOrHabitModal,
     homeScreenDisplayFrequence,
     setHomeScreenDisplayFrequence,
@@ -234,14 +177,12 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {authCtxIsLoading ? (
-        <LoadingComponent size={80} color={constants.colorQuarternary} />
+        <LoadingComponent size={80} color={constants.colorPrimary} />
       ) : (
         <>
-          {showFilter && <HabitAndTaskFilter />}
-
           {/* Header Section */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>My Day</Text>
+            <Text style={styles.headerTitle}>Overview</Text>
             <Text style={styles.headerDate}>
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
@@ -342,15 +283,18 @@ const styles = StyleSheet.create({
     maxHeight: 60,
   },
   frequencyContainer: {
-    paddingHorizontal: constants.padding * 2,
+    paddingHorizontal: constants.padding * 0.5,
     gap: constants.padding,
     paddingVertical: constants.padding,
   },
   frequencyButton: {
-    paddingHorizontal: constants.padding * 2,
+    paddingHorizontal: constants.padding,
     paddingVertical: constants.padding,
-    borderRadius: 25,
+    borderRadius: 30,
     backgroundColor: constants.colorQuinary,
+    minWidth: 100,
+    alignItems: "center",
+    justifyContent: "center",
   },
   frequencyButtonSelected: {
     backgroundColor: constants.colorPrimary,
@@ -359,6 +303,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: constants.colorSextary,
+    textAlign: "center",
   },
   frequencyTextSelected: {
     color: constants.colorSecondary,

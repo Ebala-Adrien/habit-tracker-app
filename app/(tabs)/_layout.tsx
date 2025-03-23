@@ -1,24 +1,16 @@
 import { Tabs } from "expo-router";
 import { SafeAreaView } from "react-native";
 import constants from "@/constants";
-import { useRouter } from "expo-router";
-import { useMenuContext } from "@/contexts/MenuContext";
 import { getTabScreenOptions, tabScreens } from "../navigation/tabConfig";
 
 export default function TabLayout() {
-  const router = useRouter();
-  const { setShowFilter, showFilter } = useMenuContext();
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: constants.colorPrimary }}>
       <Tabs
         screenOptions={{
-          ...getTabScreenOptions({
-            router,
-            setShowFilter,
-            showFilter,
-          }),
+          ...getTabScreenOptions(),
           tabBarShowLabel: false,
+          headerShown: false,
         }}
       >
         <Tabs.Screen
@@ -28,6 +20,10 @@ export default function TabLayout() {
         <Tabs.Screen
           name={tabScreens.stats.name}
           options={tabScreens.stats.options}
+        />
+        <Tabs.Screen
+          name={tabScreens.settings.name}
+          options={tabScreens.settings.options}
         />
       </Tabs>
     </SafeAreaView>

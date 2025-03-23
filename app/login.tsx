@@ -154,7 +154,7 @@ export default function LoginPage() {
 
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (
-            <LoadingComponent size={30} color={constants.colorSecondary} />
+            <LoadingComponent size={30} color={constants.colorPrimary} />
           ) : (
             <Text style={styles.login_button_text}>Login</Text>
           )}

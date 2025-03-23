@@ -21,6 +21,18 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { editHabitOrTaskFormSchema } from "@/data";
 
+interface TaskInsights {
+  oldestTask: {
+    name: string;
+    createdDays: number;
+  } | null;
+  mostOverdue: {
+    name: string;
+    overdueDays: number;
+    dueDate: string;
+  } | null;
+}
+
 type TaskContextType = {
   tasks: Task[];
   editTaskForm: EditHabitOrTaskForm;
@@ -29,6 +41,7 @@ type TaskContextType = {
     tasksCompletedOnTime: number;
     overdueTasks: number;
   };
+  taskInsights: TaskInsights;
   toggleTaskCompletion: (task: Task) => Promise<void>;
 };
 
@@ -39,6 +52,10 @@ const defaultContext: TaskContextType = {
     tasksCompleted: 0,
     tasksCompletedOnTime: 0,
     overdueTasks: 0,
+  },
+  taskInsights: {
+    oldestTask: null,
+    mostOverdue: null,
   },
   toggleTaskCompletion: async () => {},
 };
@@ -60,7 +77,6 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
   const toggleTaskCompletion = async (task: Task) => {
     try {
       const taskRef = doc(db, "task", task.id);
-
       const now = new Date().toUTCString();
 
       await updateDoc(taskRef, {
@@ -95,6 +111,52 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [tasks]);
 
+  const taskInsights = useMemo(() => {
+    const now = new Date();
+    const incompleteTasks = tasks.filter((t) => !t.completed);
+
+    // Find oldest task based on creation date
+    const oldestTask = incompleteTasks.reduce((oldest, current) => {
+      if (!oldest) return current;
+      return new Date(current.createdAt) < new Date(oldest.createdAt)
+        ? current
+        : oldest;
+    }, null as Task | null);
+
+    // Find most overdue task
+    const overdueTasks = incompleteTasks.filter(
+      (t) => new Date(t.dueDate) < now
+    );
+    const mostOverdueTask = overdueTasks.reduce((most, current) => {
+      if (!most) return current;
+      return new Date(current.dueDate) < new Date(most.dueDate)
+        ? current
+        : most;
+    }, null as Task | null);
+
+    return {
+      oldestTask: oldestTask
+        ? {
+            name: oldestTask.title,
+            createdDays: Math.floor(
+              (now.getTime() - new Date(oldestTask.createdAt).getTime()) /
+                (1000 * 60 * 60 * 24)
+            ),
+          }
+        : null,
+      mostOverdue: mostOverdueTask
+        ? {
+            name: mostOverdueTask.title,
+            overdueDays: Math.floor(
+              (now.getTime() - new Date(mostOverdueTask.dueDate).getTime()) /
+                (1000 * 60 * 60 * 24)
+            ),
+            dueDate: mostOverdueTask.dueDate,
+          }
+        : null,
+    };
+  }, [tasks]);
+
   const taskCollectionRef = collection(db, "task");
   const tasksQuery = useMemo(() => {
     return query(
@@ -123,6 +185,7 @@ const TaskContextProvider: React.FC<{ children: ReactNode }> = ({
         tasks,
         editTaskForm,
         tasksStats,
+        taskInsights,
         toggleTaskCompletion,
       }}
     >

@@ -1,11 +1,11 @@
 import { Pressable, View, Text, StyleSheet, ScrollView } from "react-native";
-import constants from "../constants";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { auth } from "@/firebaseConfig";
 import { signOut } from "firebase/auth";
 import Header from "@/components/utility/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons";
+import constants from "@/constants";
 
 type IconiconsNames = React.ComponentProps<typeof Ionicons>["name"];
 type MaterialIconNames = React.ComponentProps<

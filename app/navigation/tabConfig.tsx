@@ -2,7 +2,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Pressable } from "react-native";
 import constants from "@/constants";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import Header from "@/components/utility/Header";
 import { tabHeaderStyles } from "@/styles/tabHeader";
 
 interface TabHeaderProps {
@@ -27,18 +26,7 @@ export const TabHeader = ({
   </View>
 );
 
-export const getTabScreenOptions = ({
-  router,
-  setShowFilter,
-  showFilter,
-}: TabHeaderProps) => ({
-  header: () => (
-    <TabHeader
-      router={router}
-      setShowFilter={setShowFilter}
-      showFilter={showFilter}
-    />
-  ),
+export const getTabScreenOptions = () => ({
   tabBarActiveTintColor: constants.colorQuarternary,
   tabBarStyle: {
     borderWidth: 0,
@@ -65,12 +53,24 @@ export const tabScreens = {
   stats: {
     name: "stats" as const,
     options: {
-      header: () => <Header simple />,
       title: "Stats",
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
           name={"stats-chart"}
-          color={focused ? constants.colorQuarternary : constants.colorSextary}
+          color={focused ? constants.colorPrimary : constants.colorSextary}
+          size={24}
+        />
+      ),
+    },
+  },
+  settings: {
+    name: "settings" as const,
+    options: {
+      title: "Settings",
+      tabBarIcon: ({ focused }: { focused: boolean }) => (
+        <Ionicons
+          name={"settings"}
+          color={focused ? constants.colorPrimary : constants.colorSextary}
           size={24}
         />
       ),

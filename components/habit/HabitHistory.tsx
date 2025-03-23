@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { useMemo, useState } from "react";
+import { View, Text } from "react-native";
 import {
   HabitCompletionCalendar,
   DateSwitcher,
-} from '@/components/utility/Calendar';
-import getCalendarDays from '@/utility';
-import styles from '@/components/habitOrTask/styles/habit_or_task_page';
-import { useHabitContext } from '@/contexts/HabitContext';
+} from "@/components/utility/Calendar";
+import getCalendarDays from "@/utility";
+import { styles } from "@/app/habit";
+import { useHabitContext } from "@/contexts/HabitContext";
 
 export default function HabitHistory() {
   const [date, setDate] = useState<Date>(new Date());
@@ -28,9 +28,9 @@ export default function HabitHistory() {
   if (!currentHabit) return null;
 
   return (
-    <View style={styles.historyContainer}>
-      <View style={styles.historyHeader}>
-        <Text style={styles.subtitle_text}>History</Text>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>History</Text>
         <DateSwitcher month={month} year={year} date={date} setDate={setDate} />
       </View>
 

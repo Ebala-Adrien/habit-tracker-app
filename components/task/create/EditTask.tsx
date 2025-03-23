@@ -105,7 +105,7 @@ export default function EditTask({ id }: Props) {
   }, []);
 
   if (loading)
-    return <LoadingComponent size={80} color={constants.colorSecondary} />;
+    return <LoadingComponent size={80} color={constants.colorPrimary} />;
 
   return (
     <ScrollView>

@@ -6,8 +6,8 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
-} from 'react';
-import { EditHabitOrTaskForm, Habit } from '../types';
+} from "react";
+import { EditHabitOrTaskForm, Habit } from "../types";
 import {
   collection,
   getDocs,
@@ -17,13 +17,13 @@ import {
   doc,
   getDoc,
   updateDoc,
-} from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { useAuthContext } from './AuthContext';
-import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from '../utility';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { editHabitOrTaskFormSchema } from '@/data';
+} from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import { useAuthContext } from "./AuthContext";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "../utility";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { editHabitOrTaskFormSchema } from "@/data";
 
 type HabitContextType = {
   habits: Habit[];
@@ -35,6 +35,14 @@ type HabitContextType = {
   showDeleteModal: boolean;
   habitsCompletionsCount: number;
   habitsTimesToBeDone: number;
+  habitStats: {
+    leastFollowed: {
+      name: string;
+      completionRate: number;
+      daysMissed: number;
+    } | null;
+    needsImprovement: Array<{ name: string; completionRate: number }>;
+  };
   loadHabit: (id: string) => Promise<void>;
   updateHabitCompletions: (habit: Habit) => Promise<void>;
   setDate: (date: Date) => void;
@@ -52,6 +60,10 @@ const defaultContext: HabitContextType = {
   showDeleteModal: false,
   habitsCompletionsCount: 0,
   habitsTimesToBeDone: 0,
+  habitStats: {
+    leastFollowed: null,
+    needsImprovement: [],
+  },
   loadHabit: async () => {},
   updateHabitCompletions: async () => {},
   setDate: () => {},
@@ -78,11 +90,76 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
   const [habitsCompletionsCount, setHabitsCompletionsCount] = useState(0);
   const [habitsTimesToBeDone, setHabitsTimesToBeDone] = useState(0);
 
-  const habitCollectionRef = collection(db, 'habit');
+  // Function to calculate completion rate for a single habit
+  const getHabitCompletionRate = useCallback((habit: Habit) => {
+    const now = new Date();
+    const startDate = new Date(habit.createdAt);
+
+    const expectedCompletions =
+      calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+        habit,
+        startDate.getTime(),
+        now.getTime()
+      );
+
+    const actualCompletions = habit.habitCompletions.length;
+
+    return expectedCompletions > 0
+      ? (actualCompletions / expectedCompletions) * 100
+      : 0;
+  }, []);
+
+  // Calculate days missed for a habit
+  const getHabitDaysMissed = useCallback((habit: Habit) => {
+    const now = new Date();
+    const startDate = new Date(habit.createdAt);
+
+    const expectedCompletions =
+      calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+        habit,
+        startDate.getTime(),
+        now.getTime()
+      );
+
+    return Math.max(0, expectedCompletions - habit.habitCompletions.length);
+  }, []);
+
+  // Calculate habit statistics
+  const habitStats = useMemo(() => {
+    const habitsWithStats = habits.map((habit) => ({
+      name: habit.title,
+      completionRate: getHabitCompletionRate(habit),
+      daysMissed: getHabitDaysMissed(habit),
+    }));
+
+    const leastFollowed =
+      habitsWithStats.length > 0
+        ? habitsWithStats.reduce(
+            (min, curr) =>
+              curr.completionRate < (min?.completionRate ?? Infinity)
+                ? curr
+                : min,
+            null as {
+              name: string;
+              completionRate: number;
+              daysMissed: number;
+            } | null
+          )
+        : null;
+
+    const needsImprovement = habitsWithStats
+      .filter((h) => h.completionRate > 25 && h.completionRate < 50)
+      .sort((a, b) => a.completionRate - b.completionRate)
+      .slice(0, 2);
+
+    return { leastFollowed, needsImprovement };
+  }, [habits, getHabitCompletionRate, getHabitDaysMissed]);
+
+  const habitCollectionRef = collection(db, "habit");
   const q = useMemo(() => {
     return query(
       habitCollectionRef,
-      where('userId', '==', user?.uid || 'random_user_id')
+      where("userId", "==", user?.uid || "random_user_id")
     );
   }, [user?.uid]);
 
@@ -137,7 +214,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     setError(null);
     try {
-      const docRef = doc(db, 'habit', id);
+      const docRef = doc(db, "habit", id);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -146,7 +223,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
         throw new Error("The doc doesn't exist");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'An error occurred');
+      setError(e instanceof Error ? e.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -154,7 +231,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateHabitCompletions = useCallback(async (habit: Habit) => {
     try {
-      const docRef = doc(db, 'habit', habit.id);
+      const docRef = doc(db, "habit", habit.id);
       await updateDoc(docRef, {
         updatedAt: new Date(),
         habitCompletions: habit.habitCompletions,
@@ -177,6 +254,7 @@ const HabitContextProvider: React.FC<{ children: ReactNode }> = ({
         showDeleteModal,
         habitsCompletionsCount,
         habitsTimesToBeDone,
+        habitStats,
         loadHabit,
         updateHabitCompletions,
         setDate,

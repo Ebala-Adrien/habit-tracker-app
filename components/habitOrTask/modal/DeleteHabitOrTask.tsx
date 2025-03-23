@@ -1,10 +1,10 @@
-import constants from '@/constants';
-import { Text, View, StyleSheet, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { Habit, Task } from '@/types';
-import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from '@/utility';
+import constants from "@/constants";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import { Habit, Task } from "@/types";
+import { calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates } from "@/utility";
 
 type Props =
   | {
@@ -12,14 +12,14 @@ type Props =
       setShowModal: (show: boolean) => void;
       habit: Habit | null;
       task?: never;
-      type: 'habit';
+      type: "habit";
     }
   | {
       id: string;
       setShowModal: (show: boolean) => void;
       task: Task | null;
       habit?: never;
-      type: 'task';
+      type: "task";
     };
 
 export default function DeleteModal({
@@ -33,7 +33,7 @@ export default function DeleteModal({
   const document = habit || task;
 
   const handleDelete = () => {
-    if (!document) return console.error('Error: No document to delete');
+    if (!document) return console.error("Error: No document to delete");
 
     if (habit) {
       let timesDoneSinceLastUpdate =
@@ -51,7 +51,7 @@ export default function DeleteModal({
         habit.timesDoneBeforeFreqUpdate > 0
         // The habit should be archived because we can compute stats from it
       ) {
-        addDoc(collection(db, 'archivedHabit'), {
+        addDoc(collection(db, "archivedHabit"), {
           ...habit,
           lastFrequencyUpdate: new Date().toUTCString(),
           updatedAt: new Date().toUTCString(),
@@ -91,7 +91,7 @@ export default function DeleteModal({
             onPress={() => setShowModal(false)}
             style={[styles.button, styles.cancel_button]}
           >
-            <Text style={[styles.button_text, styles.cancel_text]}>Cancel</Text>
+            <Text style={[styles.button_text]}>Cancel</Text>
           </Pressable>
         </View>
       </View>
@@ -101,23 +101,23 @@ export default function DeleteModal({
 
 const styles = StyleSheet.create({
   modal: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modal_content_container: {
     backgroundColor: constants.colorSecondary,
     padding: constants.padding * 2,
     margin: constants.margin * 5,
-    display: 'flex',
+    display: "flex",
     gap: constants.padding,
     borderRadius: 10,
-    width: '80%',
+    width: "80%",
   },
   modal_title: {
     fontSize: constants.mediumFontSize,
@@ -133,12 +133,12 @@ const styles = StyleSheet.create({
     color: constants.colorQuarternary,
     borderRadius: 5,
     padding: constants.padding,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   delete_button: {
-    backgroundColor: constants.colorQuarternary,
+    backgroundColor: constants.colorError,
   },
   cancel_button: {
     backgroundColor: constants.colorQuinary,
@@ -149,8 +149,5 @@ const styles = StyleSheet.create({
   },
   delete_text: {
     color: constants.colorSecondary,
-  },
-  cancel_text: {
-    color: constants.colorQuarternary,
   },
 });

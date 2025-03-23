@@ -1,11 +1,11 @@
-import constants from '@/constants';
-import { daysMapping, monthObject } from '@/data';
-import { Day, Habit } from '@/types';
-import { compareDates } from '@/utility';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import React from 'react';
-import { Fragment } from 'react';
-import { View, Pressable, Text } from 'react-native';
+import constants from "@/constants";
+import { daysMapping, monthObject } from "@/data";
+import { Day, Habit } from "@/types";
+import { compareDates } from "@/utility";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import React from "react";
+import { Fragment } from "react";
+import { View, Pressable, Text } from "react-native";
 
 type DateSwitcherProps = {
   month: number;
@@ -23,9 +23,9 @@ export const DateSwitcher = ({
   return (
     <View
       style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
         gap: constants.margin,
       }}
     >
@@ -42,7 +42,7 @@ export const DateSwitcher = ({
           size={20}
           color={constants.colorTertiary}
           style={{
-            transform: [{ rotate: '180deg' }], // Rotate 45 degrees
+            transform: [{ rotate: "180deg" }], // Rotate 45 degrees
           }}
         />
       </Pressable>
@@ -76,9 +76,9 @@ export const CalendarDaysKeysDisplay = () => {
   return (
     <View
       style={{
-        flexDirection: 'row',
-        display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        display: "flex",
+        justifyContent: "space-between",
       }}
     >
       {Object.keys(daysMapping)
@@ -94,13 +94,13 @@ export const CalendarDaysKeysDisplay = () => {
               key={day}
               style={{
                 flex: 1,
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <Text
                 style={{
-                  textAlign: 'center',
+                  textAlign: "center",
                   fontWeight: constants.fontWeight,
                   color: constants.colorPrimary,
                 }}
@@ -136,23 +136,16 @@ export const HabitCompletionCalendar = ({
   setHabit,
 }: CompletionCalendarProps) => {
   return (
-    <View
-      style={{
-        backgroundColor: constants.colorSecondary,
-        borderRadius: 10,
-        padding: constants.padding,
-      }}
-    >
+    <View>
       <CalendarDaysKeysDisplay />
 
       <View
         style={{
-          flexDirection: 'row',
-          display: 'flex',
-          justifyContent: 'flex-start',
-          flexWrap: 'wrap',
-          marginTop: constants.padding * 2,
-          rowGap: constants.margin * 2,
+          flexDirection: "row",
+          flexWrap: "wrap",
+          width: "100%",
+          marginTop: constants.padding,
+          gap: 0,
         }}
       >
         {days.map((d, i) => {
@@ -192,11 +185,11 @@ export const HabitCompletionCalendar = ({
                 dateObject={d}
                 borderWidth={compareDates(d.date, new Date()) ? 2 : 0}
                 backgroundColor={
-                  occurred ? constants.colorQuinary : constants.colorSecondary
+                  occurred ? constants.colorPrimary : constants.colorSecondary
                 }
                 color={
                   futureDate || dateNotFromCurrentMonth
-                    ? constants.colorPrimary
+                    ? constants.colorSextary
                     : constants.colorTertiary
                 }
                 disabled={futureDate}
@@ -236,9 +229,9 @@ export const HabitStartDateCalendar = ({
     <>
       <View
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
           padding: constants.padding,
           paddingBottom: constants.padding * 2,
         }}
@@ -253,10 +246,10 @@ export const HabitStartDateCalendar = ({
       <CalendarDaysKeysDisplay />
       <View
         style={{
-          flexDirection: 'row',
-          display: 'flex',
-          justifyContent: 'flex-start',
-          flexWrap: 'wrap',
+          flexDirection: "row",
+          display: "flex",
+          justifyContent: "flex-start",
+          flexWrap: "wrap",
           marginTop: constants.padding * 2,
           rowGap: constants.margin * 2,
         }}
@@ -322,23 +315,18 @@ const CalendarDate = ({
   return (
     <View
       style={{
-        borderRadius: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: `${(1 / 7) * 100}%`,
-        height: 50,
+        width: "14.28%", // 1/7 of the width
+        aspectRatio: 1, // To keep the square
+        padding: 2,
       }}
     >
       <Pressable
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '85%',
-          height: '85%',
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
           borderWidth,
-          borderColor: constants.colorQuarternary,
+          borderColor: constants.colorPrimary,
           borderRadius: 50,
           backgroundColor,
         }}
@@ -347,7 +335,7 @@ const CalendarDate = ({
       >
         <Text
           style={{
-            textAlign: 'center',
+            textAlign: "center",
             color,
           }}
         >

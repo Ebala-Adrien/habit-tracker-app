@@ -57,7 +57,7 @@ export default function EditHabitInputs({}) {
 
 const styles = StyleSheet.create({
   title_input: {
-    backgroundColor: constants.colorPrimary,
+    backgroundColor: constants.colorSecondary,
     margin: constants.padding,
     padding: constants.padding,
     fontSize: constants.mediumFontSize,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   description_input: {
-    backgroundColor: constants.colorPrimary,
+    backgroundColor: constants.colorSecondary,
     margin: constants.padding,
     padding: constants.padding,
     fontSize: constants.mediumFontSize,

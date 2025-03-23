@@ -1,7 +1,7 @@
-import { Stack } from 'expo-router';
-import { useRouter } from 'expo-router';
-import Header from '@/components/utility/Header';
-import AppProviders from '@/contexts/AppProviders';
+import { Stack } from "expo-router";
+import { useRouter } from "expo-router";
+import Header from "@/components/utility/Header";
+import AppProviders from "@/contexts/AppProviders";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -11,25 +11,25 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="CreateHabit"
+          name="createHabit"
           options={{
             headerShown: true,
             header: () => (
               <Header
                 title="Create Habit"
-                onBackPress={() => router.push('/(tabs)')}
+                onBackPress={() => router.push("/(tabs)")}
               />
             ),
           }}
         />
         <Stack.Screen
-          name="CreateTask"
+          name="createTask"
           options={{
             headerShown: true,
             header: () => (
               <Header
                 title="Create Task"
-                onBackPress={() => router.push('/(tabs)')}
+                onBackPress={() => router.push("/(tabs)")}
               />
             ),
           }}
