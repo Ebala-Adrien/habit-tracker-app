@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: constants.smallFontSize,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
   },
   section: {
     marginBottom: constants.padding * 2,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   settingValue: {
     fontSize: constants.smallFontSize,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
   },
   footer: {
     padding: constants.padding * 2,

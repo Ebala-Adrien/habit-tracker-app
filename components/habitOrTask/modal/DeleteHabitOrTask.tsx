@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     gap: constants.padding,
   },
   button: {
-    color: constants.colorQuarternary,
+    color: constants.colorPrimary,
     borderRadius: 5,
     padding: constants.padding,
     display: "flex",
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: constants.colorError,
   },
   cancel_button: {
-    backgroundColor: constants.colorQuinary,
+    backgroundColor: constants.colorQuaternary,
   },
   button_text: {
     fontSize: constants.mediumFontSize,

@@ -189,7 +189,7 @@ export const HabitCompletionCalendar = ({
                 }
                 color={
                   futureDate || dateNotFromCurrentMonth
-                    ? constants.colorSextary
+                    ? constants.colorQuinary
                     : constants.colorTertiary
                 }
                 disabled={futureDate}
@@ -271,7 +271,7 @@ export const HabitStartDateCalendar = ({
                 borderWidth={0}
                 backgroundColor={
                   compareDates(d.date, customStartDate)
-                    ? constants.colorQuinary
+                    ? constants.colorQuaternary
                     : constants.colorSecondary
                 }
                 color={

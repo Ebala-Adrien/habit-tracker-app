@@ -23,7 +23,7 @@ export default function UpdateTask() {
         {/* Back Button */}
         <Pressable
           style={{ padding: constants.padding }}
-          onPress={() => router.push("/(tabs)")}
+          onPress={() => router.back()}
         >
           <Ionicons
             name="arrow-back"

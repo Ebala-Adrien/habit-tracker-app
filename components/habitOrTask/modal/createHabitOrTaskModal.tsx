@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 40,
     height: 4,
-    backgroundColor: constants.colorQuinary,
+    backgroundColor: constants.colorQuaternary,
     borderRadius: 2,
     alignSelf: "center",
     marginTop: 12,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
   itemButtonBorder: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: constants.colorQuinary,
+    borderTopColor: constants.colorQuaternary,
   },
   iconContainer: {
     width: 48,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   itemDescription: {
     fontSize: 14,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
     lineHeight: 20,
   },
 });

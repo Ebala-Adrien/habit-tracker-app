@@ -84,7 +84,7 @@ export default function TaskPage() {
           <TextBlock title="Description" text={task.description} />
           <Pressable
             style={{
-              backgroundColor: constants.colorQuarternary,
+              backgroundColor: constants.colorPrimary,
               padding: constants.padding,
               margin: constants.padding,
               borderRadius: 10,

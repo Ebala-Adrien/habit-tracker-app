@@ -132,4 +132,25 @@ export const styles = StyleSheet.create({
     color: constants.colorTertiary,
     lineHeight: 24,
   },
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
+  },
+  statsContainer: {
+    alignItems: "center",
+    padding: constants.padding,
+  },
+  statsNumber: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: constants.colorTertiary,
+    marginBottom: 4,
+  },
+  statsLabel: {
+    fontSize: 14,
+    color: constants.colorTertiary,
+    fontWeight: "500",
+  },
 });

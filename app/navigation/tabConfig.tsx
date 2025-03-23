@@ -27,7 +27,7 @@ export const TabHeader = ({
 );
 
 export const getTabScreenOptions = () => ({
-  tabBarActiveTintColor: constants.colorQuarternary,
+  tabBarActiveTintColor: constants.colorPrimary,
   tabBarStyle: {
     borderWidth: 0,
     height: 70,
@@ -44,7 +44,7 @@ export const tabScreens = {
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
           name={"home"}
-          color={focused ? constants.colorPrimary : constants.colorSextary}
+          color={focused ? constants.colorPrimary : constants.colorQuinary}
           size={24}
         />
       ),
@@ -57,7 +57,7 @@ export const tabScreens = {
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
           name={"stats-chart"}
-          color={focused ? constants.colorPrimary : constants.colorSextary}
+          color={focused ? constants.colorPrimary : constants.colorQuinary}
           size={24}
         />
       ),
@@ -70,7 +70,7 @@ export const tabScreens = {
       tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Ionicons
           name={"settings"}
-          color={focused ? constants.colorPrimary : constants.colorSextary}
+          color={focused ? constants.colorPrimary : constants.colorQuinary}
           size={24}
         />
       ),

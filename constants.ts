@@ -14,9 +14,8 @@ export default {
     colorPrimary: "#007AFF",       // Main brand color - vibrant blue
     colorSecondary: "#FFFFFF",     // White for backgrounds
     colorTertiary: "#1A1A1A",      // Near black for primary text
-    colorQuarternary: "#34C759",   // Success green
-    colorQuinary: "#F2F2F7",       // Light gray for backgrounds
-    colorSextary: "#8E8E93",       // Medium gray for secondary text
+    colorQuaternary: "#F2F2F7",       // Light gray for backgrounds
+    colorQuinary: "#8E8E93",       // Medium gray for secondary text
     
     // Status and UI colors
     colorError: "#FF3B30",         // Error/Danger red

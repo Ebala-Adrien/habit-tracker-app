@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   itemSubtext: {
     fontSize: 13,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
   },
   streakBadge: {
     flexDirection: "row",

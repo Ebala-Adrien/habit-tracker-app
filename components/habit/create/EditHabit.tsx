@@ -251,7 +251,7 @@ export default function EditHabit({ id }: Props) {
                         flexGrow: 1,
                         borderRadius: 5,
                         backgroundColor: repeat
-                          ? constants.colorQuarternary
+                          ? constants.colorPrimary
                           : constants.colorSecondary,
                         padding: constants.padding / 2,
                       }}
@@ -325,7 +325,7 @@ export default function EditHabit({ id }: Props) {
                     backgroundColor:
                       frequency === 1
                         ? constants.colorQuinary
-                        : constants.colorQuarternary,
+                        : constants.colorPrimary,
                     color: constants.colorSecondary,
                     padding: constants.padding,
                     borderRadius: 5,
@@ -363,7 +363,7 @@ export default function EditHabit({ id }: Props) {
                     fontWeight: "700",
                     backgroundColor: isMaxFrequency
                       ? constants.colorQuinary
-                      : constants.colorQuarternary,
+                      : constants.colorPrimary,
                     color: constants.colorSecondary,
                     padding: constants.padding,
                     borderRadius: 5,
@@ -388,8 +388,8 @@ export default function EditHabit({ id }: Props) {
               setHabitHasCustomStart(!habitHasCustomStart);
             }}
             trackColor={{
-              false: constants.colorPrimary,
-              true: constants.colorQuarternary,
+              false: constants.colorQuinary,
+              true: constants.colorPrimary,
             }}
             thumbColor={constants.colorSecondary}
           />
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     fontWeight: constants.fontWeight,
   },
   save_button: {
-    backgroundColor: constants.colorQuarternary,
+    backgroundColor: constants.colorPrimary,
     margin: constants.padding,
     borderRadius: 10,
     padding: constants.padding,

@@ -1,28 +1,53 @@
 {
   "expo": {
-    "name": "habit-tracker-app",
+    "name": "Habit Tracker",
     "slug": "habit-tracker-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.asesinosilencioso.habittrackerapp"
+      "bundleIdentifier": "com.asesinosilencioso.habittrackerapp",
+      "icon": "./assets/images/ios/icon.png",
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/android/res/mipmap-xxxhdpi/ic_launcher.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.asesinosilencioso.habittrackerapp"
+      "package": "com.asesinosilencioso.habittrackerapp",
+      "mipmap": {
+        "hdpi": "./assets/images/android/res/mipmap-hdpi/ic_launcher.png",
+        "mdpi": "./assets/images/android/res/mipmap-mdpi/ic_launcher.png",
+        "xhdpi": "./assets/images/android/res/mipmap-xhdpi/ic_launcher.png",
+        "xxhdpi": "./assets/images/android/res/mipmap-xxhdpi/ic_launcher.png",
+        "xxxhdpi": "./assets/images/android/res/mipmap-xxxhdpi/ic_launcher.png"
+      },
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/web/favicon.png",
+      "icons": {
+        "16": "./assets/images/web/icon-16.png",
+        "32": "./assets/images/web/icon-32.png",
+        "48": "./assets/images/web/icon-48.png",
+        "128": "./assets/images/web/icon-128.png",
+        "192": "./assets/images/web/icon-192.png",
+        "512": "./assets/images/web/icon-512.png"
+      }
     },
     "plugins": [
       "expo-router",

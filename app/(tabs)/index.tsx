@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   headerDate: {
     fontSize: 16,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
   },
   frequencyScrollView: {
     maxHeight: 60,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: constants.padding,
     paddingVertical: constants.padding,
     borderRadius: 30,
-    backgroundColor: constants.colorQuinary,
+    backgroundColor: constants.colorQuaternary,
     minWidth: 100,
     alignItems: "center",
     justifyContent: "center",
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   frequencyText: {
     fontSize: 15,
     fontWeight: "500",
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
     textAlign: "center",
   },
   frequencyTextSelected: {
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
     marginBottom: constants.padding,
   },
   listItem: {
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   },
   itemSubtext: {
     fontSize: 13,
-    color: constants.colorSextary,
+    color: constants.colorQuinary,
   },
   streakBadge: {
     flexDirection: "row",
