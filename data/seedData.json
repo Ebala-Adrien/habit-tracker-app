@@ -1,0 +1,213 @@
+{
+  "habits": [
+    {
+      "title": "Morning Meditation",
+      "description": "15 minutes of mindfulness meditation",
+      "frequency": {
+        "type": "weekly",
+        "occurrences": 7
+      },
+      "lastFrequencyUpdate": "2025-03-23T20:38:00.955Z",
+      "habitCompletions": [
+        "2025-03-23T20:38:00.955Z",
+        "2025-03-22T20:38:00.955Z",
+        "2025-03-21T20:38:00.955Z",
+        "2025-03-20T20:38:00.955Z",
+        "2025-03-19T20:38:00.955Z",
+        "2025-03-18T20:38:00.955Z",
+        "2025-03-17T20:38:00.955Z",
+        "2025-03-16T20:38:00.955Z",
+        "2025-03-15T20:38:00.955Z",
+        "2025-03-14T20:38:00.955Z",
+        "2025-03-13T20:38:00.955Z",
+        "2025-03-12T20:38:00.955Z",
+        "2025-03-11T20:38:00.955Z",
+        "2025-03-10T20:38:00.955Z",
+        "2025-03-09T20:38:00.955Z",
+        "2025-03-08T20:38:00.955Z"
+      ],
+      "timesDoneBeforeFreqUpdate": 0,
+      "createdAt": "2025-02-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Exercise",
+      "description": "30 minutes of physical activity",
+      "frequency": {
+        "type": "weekly",
+        "occurrences": 5
+      },
+      "lastFrequencyUpdate": "2025-03-23T20:38:00.955Z",
+      "habitCompletions": [
+        "2025-03-23T20:38:00.955Z",
+        "2025-03-22T20:38:00.955Z",
+        "2025-03-21T20:38:00.955Z",
+        "2025-03-20T20:38:00.955Z",
+        "2025-03-19T20:38:00.955Z",
+        "2025-03-18T20:38:00.955Z",
+        "2025-03-17T20:38:00.955Z",
+        "2025-03-16T20:38:00.955Z",
+        "2025-03-15T20:38:00.955Z",
+        "2025-03-14T20:38:00.955Z",
+        "2025-03-13T20:38:00.955Z"
+      ],
+      "timesDoneBeforeFreqUpdate": 0,
+      "createdAt": "2025-02-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Reading",
+      "description": "Read 20 pages of a book",
+      "frequency": {
+        "type": "weekly",
+        "occurrences": 7
+      },
+      "lastFrequencyUpdate": "2025-03-23T20:38:00.955Z",
+      "habitCompletions": [
+        "2025-03-23T20:38:00.955Z",
+        "2025-03-22T20:38:00.955Z",
+        "2025-03-21T20:38:00.955Z",
+        "2025-03-20T20:38:00.955Z",
+        "2025-03-19T20:38:00.955Z",
+        "2025-03-18T20:38:00.955Z"
+      ],
+      "timesDoneBeforeFreqUpdate": 0,
+      "createdAt": "2025-02-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Journaling",
+      "description": "Write in personal journal",
+      "frequency": {
+        "type": "weekly",
+        "occurrences": 7
+      },
+      "lastFrequencyUpdate": "2025-03-23T20:38:00.955Z",
+      "habitCompletions": [
+        "2025-03-23T20:38:00.955Z",
+        "2025-03-22T20:38:00.955Z",
+        "2025-03-21T20:38:00.955Z",
+        "2025-03-20T20:38:00.955Z",
+        "2025-03-19T20:38:00.955Z",
+        "2025-03-18T20:38:00.955Z",
+        "2025-03-17T20:38:00.955Z",
+        "2025-03-16T20:38:00.955Z",
+        "2025-03-15T20:38:00.955Z",
+        "2025-03-14T20:38:00.955Z",
+        "2025-03-13T20:38:00.955Z",
+        "2025-03-12T20:38:00.955Z",
+        "2025-03-11T20:38:00.955Z",
+        "2025-03-10T20:38:00.955Z",
+        "2025-03-09T20:38:00.955Z",
+        "2025-03-08T20:38:00.955Z",
+        "2025-03-07T20:38:00.955Z",
+        "2025-03-06T20:38:00.955Z",
+        "2025-03-05T20:38:00.955Z",
+        "2025-03-04T20:38:00.955Z",
+        "2025-03-03T20:38:00.955Z",
+        "2025-03-02T20:38:00.955Z",
+        "2025-03-01T20:38:00.955Z",
+        "2025-02-28T20:38:00.955Z",
+        "2025-02-27T20:38:00.955Z",
+        "2025-02-26T20:38:00.955Z",
+        "2025-02-25T20:38:00.955Z",
+        "2025-02-24T20:38:00.955Z",
+        "2025-02-23T20:38:00.955Z",
+        "2025-02-22T20:38:00.955Z",
+        "2025-02-21T20:38:00.955Z"
+      ],
+      "timesDoneBeforeFreqUpdate": 0,
+      "createdAt": "2025-02-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Drink Water",
+      "description": "Drink 8 glasses of water",
+      "frequency": {
+        "type": "weekly",
+        "occurrences": 7
+      },
+      "lastFrequencyUpdate": "2025-03-23T20:38:00.955Z",
+      "habitCompletions": [
+        "2025-03-23T20:38:00.955Z",
+        "2025-03-22T20:38:00.955Z",
+        "2025-03-21T20:38:00.955Z",
+        "2025-03-20T20:38:00.955Z",
+        "2025-03-19T20:38:00.955Z",
+        "2025-03-18T20:38:00.955Z",
+        "2025-03-17T20:38:00.955Z",
+        "2025-03-16T20:38:00.955Z",
+        "2025-03-15T20:38:00.955Z",
+        "2025-03-14T20:38:00.955Z",
+        "2025-03-13T20:38:00.955Z",
+        "2025-03-12T20:38:00.955Z",
+        "2025-03-11T20:38:00.955Z",
+        "2025-03-10T20:38:00.955Z",
+        "2025-03-09T20:38:00.955Z",
+        "2025-03-08T20:38:00.955Z",
+        "2025-03-07T20:38:00.955Z",
+        "2025-03-06T20:38:00.955Z",
+        "2025-03-05T20:38:00.955Z",
+        "2025-03-04T20:38:00.955Z",
+        "2025-03-03T20:38:00.955Z",
+        "2025-03-02T20:38:00.955Z",
+        "2025-03-01T20:38:00.955Z",
+        "2025-02-28T20:38:00.955Z",
+        "2025-02-27T20:38:00.955Z",
+        "2025-02-26T20:38:00.955Z",
+        "2025-02-25T20:38:00.955Z",
+        "2025-02-24T20:38:00.955Z",
+        "2025-02-23T20:38:00.955Z",
+        "2025-02-22T20:38:00.955Z",
+        "2025-02-21T20:38:00.955Z"
+      ],
+      "timesDoneBeforeFreqUpdate": 0,
+      "createdAt": "2025-02-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    }
+  ],
+  "tasks": [
+    {
+      "title": "Complete Project Presentation",
+      "description": "Prepare and rehearse project presentation for next week",
+      "dueDate": "2025-03-16T20:38:00.955Z",
+      "completed": true,
+      "completedAt": "2025-03-17T20:38:00.955Z",
+      "createdAt": "2025-03-09T20:38:00.955Z",
+      "updatedAt": "2025-03-17T20:38:00.955Z"
+    },
+    {
+      "title": "Review Meeting Notes",
+      "description": "Review and summarize yesterday's team meeting notes",
+      "dueDate": "2025-03-21T20:38:00.955Z",
+      "completed": false,
+      "createdAt": "2025-03-20T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Submit Monthly Report",
+      "description": "Prepare and submit monthly progress report",
+      "dueDate": "2025-03-18T20:38:00.955Z",
+      "completed": false,
+      "createdAt": "2025-03-13T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    },
+    {
+      "title": "Schedule Doctor Appointment",
+      "description": "Call and schedule annual check-up",
+      "dueDate": "2025-03-22T20:38:00.955Z",
+      "completed": true,
+      "completedAt": "2025-03-22T20:38:00.955Z",
+      "createdAt": "2025-03-20T20:38:00.955Z",
+      "updatedAt": "2025-03-22T20:38:00.955Z"
+    },
+    {
+      "title": "Buy Groceries",
+      "description": "Purchase weekly groceries and household items",
+      "dueDate": "2025-03-23T20:38:00.955Z",
+      "completed": false,
+      "createdAt": "2025-03-21T20:38:00.955Z",
+      "updatedAt": "2025-03-23T20:38:00.955Z"
+    }
+  ]
+}

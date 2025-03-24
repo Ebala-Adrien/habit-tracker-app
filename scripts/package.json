@@ -1,0 +1,20 @@
+{
+  "name": "habit-tracker-seed-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for seeding the habit tracker database",
+  "main": "dist/seed.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/seed.js",
+    "seed": "npm run build && npm run start",
+    "delete": "npm run build && node dist/delete.js"
+  },
+  "dependencies": {
+    "firebase": "^10.8.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "typescript": "^5.3.3"
+  }
+} 
