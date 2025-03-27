@@ -32,6 +32,7 @@ export default function HabitPage() {
   if (error || !currentHabit) {
     return <ErrorComponent />;
   }
+  console.log("currentHabit: ", currentHabit);
   return (
     <>
       <ScrollView style={styles.container}>

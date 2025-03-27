@@ -153,7 +153,7 @@ export const HabitCompletionCalendar = ({
           const occurred = habit.habitCompletions?.find((o: string) => {
             return compareDates(new Date(o), d.date);
           });
-          if (occurred !== undefined) console.log("occurred: ", occurred);
+
           const dateNotFromCurrentMonth =
             d.date.getMonth() !== new Date(year, month, 10).getMonth();
           const futureDate = d.date.getTime() > new Date().getTime();

@@ -22,6 +22,15 @@ export default function HabitStats({ habit }: HabitStatsProps) {
     return ((habitCount / toBeDoneCount) * 100).toFixed(2);
   }, [habit]);
 
+  console.log(
+    "Times to be done: ",
+    calculateHowManyTimesDidAHabitHaveToBeDoneBetweenTwoDates(
+      habit,
+      habit.lastFrequencyUpdate,
+      new Date().toUTCString()
+    ) + habit.timesDoneBeforeFreqUpdate
+  );
+
   const currentStreak = useMemo(() => {
     return calculateStreak(habit);
   }, [habit]);

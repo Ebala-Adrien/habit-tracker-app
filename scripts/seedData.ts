@@ -27,7 +27,7 @@ const habits = [
       occurrences: 7,
       days: [1, 2, 3, 4, 5, 6, 0]
     },
-    lastFrequencyUpdate: now,
+    lastFrequencyUpdate: createDate(30),
     habitCompletions: [
       createDate(10), createDate(11), createDate(12), createDate(13),
       createDate(14), createDate(15), createDate(16), createDate(17),
@@ -47,7 +47,7 @@ const habits = [
       occurrences: 5,
       days: [1, 3, 5, 6, 0],
     },
-    lastFrequencyUpdate: now,
+    lastFrequencyUpdate: createDate(30),
     habitCompletions: [
       createDate(0), createDate(1), createDate(2), createDate(3),
       createDate(4), createDate(5), createDate(6), createDate(7),
@@ -66,7 +66,7 @@ const habits = [
       occurrences: 7,
       days: [1, 2, 3, 4, 5, 6, 0] // Lunes a domingo
     },
-    lastFrequencyUpdate: now,
+    lastFrequencyUpdate: createDate(30),
     habitCompletions: [
       createDate(0), createDate(1), createDate(2), createDate(3),
       createDate(4), createDate(5), createDate(6), createDate(7),
@@ -90,7 +90,7 @@ const habits = [
       occurrences: 7,
       days: [1, 2, 3, 4, 5, 6, 0]
     },
-    lastFrequencyUpdate: now,
+    lastFrequencyUpdate: createDate(30),
     habitCompletions: [
       createDate(0), createDate(1), createDate(2), createDate(3),
       createDate(4), createDate(5), createDate(6), createDate(7),
@@ -114,9 +114,9 @@ const habits = [
       occurrences: 7,
       days: [1, 2, 3, 4, 5, 6, 0]
     },
-    lastFrequencyUpdate: now,
+    lastFrequencyUpdate: createDate(30),
     habitCompletions: [
-      createDate(0), createDate(1), createDate(2), createDate(3),
+      createDate(0), createDate(1),
       createDate(4), createDate(5), createDate(6), createDate(7),
       createDate(8), createDate(9), createDate(10), createDate(11),
       createDate(12), createDate(13), createDate(14), createDate(15),
