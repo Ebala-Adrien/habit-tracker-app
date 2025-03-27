@@ -13,6 +13,7 @@ import { useState } from "react";
 import styles from "../styles/login_and_register_style";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import React from "react";
+// import ThreeDotsLoading from "@/components/utility/ThreeDotsLoading";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),
@@ -53,7 +54,7 @@ export default function LoginPage() {
         router.push("/(tabs)");
       })
       .catch((error) => {
-        console.log(error.message);
+        console.error(error.message);
         if (error.code === "auth/invalid-credential") {
           setErrorMessage("Either the email address or password is not valid.");
         } else {
@@ -156,7 +157,7 @@ export default function LoginPage() {
 
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (
-            <LoadingComponent size={30} color={constants.colorPrimary} />
+            <LoadingComponent size={30} color={constants.colorSecondary} />
           ) : (
             <Text style={styles.login_button_text}>Login</Text>
           )}

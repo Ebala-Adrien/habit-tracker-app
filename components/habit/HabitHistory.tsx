@@ -8,9 +8,9 @@ import getCalendarDays from "@/utility";
 import { styles } from "@/app/habit";
 import { useHabitContext } from "@/contexts/HabitContext";
 
-export default function HabitHistory() {
+export default function HabitHistory({ habitId }: { habitId: string }) {
   const [date, setDate] = useState<Date>(new Date());
-  const { currentHabit, setCurrentHabit } = useHabitContext();
+  const { currentHabit } = useHabitContext();
 
   const { month, year } = useMemo(
     () => ({
@@ -39,7 +39,7 @@ export default function HabitHistory() {
         year={year}
         month={month}
         habit={currentHabit}
-        setHabit={setCurrentHabit}
+        habitId={habitId}
       />
     </View>
   );

@@ -39,7 +39,7 @@ export default function ForgotPassword() {
         );
       })
       .catch((error) => {
-        console.log(error.message);
+        console.error(error.message);
         setErrorMessage(
           "An error occurred while trying to login. Please try again."
         );
@@ -103,7 +103,7 @@ export default function ForgotPassword() {
 
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (
-            <LoadingComponent size={30} color={constants.colorPrimary} />
+            <LoadingComponent size={30} color={constants.colorSecondary} />
           ) : (
             <Text style={styles.login_button_text}>Reset Password</Text>
           )}

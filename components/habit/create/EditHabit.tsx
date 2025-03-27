@@ -183,7 +183,7 @@ export default function EditHabit({ id }: Props) {
           }
         })
         .catch((e) => {
-          console.log(e.message);
+          console.error(e.message);
         })
         .finally(() => {
           setLoading(false);

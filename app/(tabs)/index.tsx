@@ -293,10 +293,11 @@ const styles = StyleSheet.create({
   },
   frequencyButton: {
     paddingHorizontal: constants.padding,
-    paddingVertical: constants.padding,
+    paddingVertical: constants.padding * 0.75,
     borderRadius: 30,
     backgroundColor: constants.colorQuaternary,
     minWidth: 100,
+    minHeight: 40,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -308,6 +309,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: constants.colorQuinary,
     textAlign: "center",
+    includeFontPadding: false,
   },
   frequencyTextSelected: {
     color: constants.colorSecondary,

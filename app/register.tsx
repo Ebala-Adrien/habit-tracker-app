@@ -194,7 +194,7 @@ export default function RegisterPage() {
 
         <Pressable style={styles.login_button} onPress={handleSubmit(onSubmit)}>
           {authCtxIsLoading ? (
-            <LoadingComponent size={30} color={constants.colorPrimary} />
+            <LoadingComponent size={30} color={constants.colorSecondary} />
           ) : (
             <Text style={styles.login_button_text}>Register</Text>
           )}

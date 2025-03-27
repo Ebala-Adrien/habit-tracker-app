@@ -57,7 +57,7 @@ export default function HabitPage() {
           </View>
 
           {/* History Section */}
-          <HabitHistory />
+          <HabitHistory habitId={id} />
 
           {/* Description Card */}
           {currentHabit.description && (

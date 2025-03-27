@@ -45,6 +45,7 @@ export function shouldHabitBeDoneToday(
   );
 
   const frequency = habit.frequency;
+
   if (frequency.days) {
     // 'days' -> weekly (0..6) ou monthly (1..31)
     const isScheduledForToday = frequency.type === "weekly"

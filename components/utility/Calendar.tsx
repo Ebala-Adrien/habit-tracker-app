@@ -6,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Fragment } from "react";
 import { View, Pressable, Text } from "react-native";
-
+import { useHabitContext } from "@/contexts/HabitContext";
 type DateSwitcherProps = {
   month: number;
   year: number;
@@ -125,7 +125,7 @@ type CompletionCalendarProps = {
     isCurrentMonth: boolean;
   }[];
   habit: Habit;
-  setHabit: React.Dispatch<React.SetStateAction<Habit | null>>;
+  habitId: string;
 };
 
 export const HabitCompletionCalendar = ({
@@ -133,8 +133,9 @@ export const HabitCompletionCalendar = ({
   habit,
   year,
   month,
-  setHabit,
+  habitId,
 }: CompletionCalendarProps) => {
+  const { updateHabitCompletions } = useHabitContext();
   return (
     <View>
       <CalendarDaysKeysDisplay />
@@ -152,30 +153,31 @@ export const HabitCompletionCalendar = ({
           const occurred = habit.habitCompletions?.find((o: string) => {
             return compareDates(new Date(o), d.date);
           });
-
+          if (occurred !== undefined) console.log("occurred: ", occurred);
           const dateNotFromCurrentMonth =
             d.date.getMonth() !== new Date(year, month, 10).getMonth();
           const futureDate = d.date.getTime() > new Date().getTime();
 
-          const handlePress = () => {
-            if (occurred) {
-              setHabit({
-                ...habit,
-                habitCompletions: [...habit.habitCompletions].filter(
-                  (o) => !compareDates(new Date(o), d.date)
-                ),
-              });
-            } else {
-              setHabit({
-                ...habit,
-                habitCompletions: [
-                  ...habit.habitCompletions,
-                  d.date.toUTCString(),
-                ].sort(
-                  (d1, d2) => new Date(d1).valueOf() - new Date(d2).valueOf()
-                ),
-              });
-            }
+          const handlePress = async () => {
+            const updatedHabit = occurred
+              ? {
+                  ...habit,
+                  id: habitId,
+                  habitCompletions: [...habit.habitCompletions].filter(
+                    (o) => !compareDates(new Date(o), d.date)
+                  ),
+                }
+              : {
+                  ...habit,
+                  id: habitId,
+                  habitCompletions: [
+                    ...habit.habitCompletions,
+                    d.date.toUTCString(),
+                  ].sort(
+                    (d1, d2) => new Date(d1).valueOf() - new Date(d2).valueOf()
+                  ),
+                };
+            await updateHabitCompletions(updatedHabit);
           };
 
           return (
