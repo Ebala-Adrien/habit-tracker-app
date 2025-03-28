@@ -89,7 +89,7 @@ A habit and task tracking application that allows you to:
 
 ### Android (APK)
 
-[APK download link](https://expo.dev/artifacts/eas/4ERtk3Gib7mbEpcfrtbt95.apk)
+[APK download link](https://expo.dev/artifacts/eas/kCqfLP1au5cTejZgnBCWPJ.apk)
 
 **Important Note**: The downloadable APK is for demonstration purposes only, allowing you to test the app's functionality. The data in this demo version is cleaned weekly, so it's not suitable for long-term personal use. If you want to use the app for your personal tracking:
 
