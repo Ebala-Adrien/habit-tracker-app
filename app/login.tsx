@@ -1,19 +1,18 @@
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 // import GoogleIcon from "./components/icons/GoogleIcon";
-import constants from "../constants";
+import styles from "@/styles/login_and_register_style";
+import constants from "@/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { Link, useRouter } from "expo-router";
-import LoadingComponent from "../components/utility/Loading";
-import { useAuthContext } from "../contexts/AuthContext";
+import LoadingComponent from "@/components/utility/Loading";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useState } from "react";
-import styles from "../styles/login_and_register_style";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import React from "react";
-// import ThreeDotsLoading from "@/components/utility/ThreeDotsLoading";
 
 const schema = Yup.object().shape({
   email: Yup.string().email().required(),

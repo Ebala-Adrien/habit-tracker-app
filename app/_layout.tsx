@@ -1,5 +1,4 @@
-import { Stack } from "expo-router";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import Header from "@/components/utility/Header";
 import AppProviders from "@/contexts/AppProviders";
 
@@ -38,7 +37,6 @@ export default function RootLayout() {
         <Stack.Screen name="UpdateTask" />
         <Stack.Screen name="Habit" />
         <Stack.Screen name="Task" />
-        <Stack.Screen name="Test" />
         <Stack.Screen name="Login" />
         <Stack.Screen name="ForgotPassword" />
         <Stack.Screen name="Register" />

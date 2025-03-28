@@ -1,6 +1,6 @@
 import constants from "@/constants";
 import { ScrollView, View, Text, Pressable, TextInput } from "react-native";
-import styles from "../styles/login_and_register_style";
+import styles from "@/styles/login_and_register_style";
 import { useAuthContext } from "@/contexts/AuthContext";
 import React, { useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";

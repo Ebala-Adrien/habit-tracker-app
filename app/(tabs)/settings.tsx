@@ -6,6 +6,7 @@ import Header from "@/components/utility/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons";
 import constants from "@/constants";
+import { useRouter } from "expo-router";
 
 type IconiconsNames = React.ComponentProps<typeof Ionicons>["name"];
 type MaterialIconNames = React.ComponentProps<
@@ -26,6 +27,7 @@ interface SettingSection {
 
 export default function SettingsPage() {
   const { user } = useAuthContext();
+  const router = useRouter();
 
   const settingsSections: SettingSection[] = [
     {
@@ -88,7 +90,8 @@ export default function SettingsPage() {
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
-        // Sign-out successful.
+        // Clear navigation history and redirect to login
+        router.replace("/login");
       })
       .catch((_) => {});
   };
