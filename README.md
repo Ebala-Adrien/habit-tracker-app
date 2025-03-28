@@ -1,6 +1,24 @@
 # Habit Tracker App
 
-## 📱 About the App
+## 📑 Table of Contents
+
+- [About the App](#-about-the-app)
+  - [Why I Built This](#why-i-built-this)
+  - [Features](#features)
+- [Demo](#-demo)
+  - [Screenshots](#screenshots)
+  - [Demo Video](#demo-video)
+- [Download](#️-download)
+  - [Android (APK)](#android-apk)
+- [Running Locally](#-running-locally)
+  - [Prerequisites](#prerequisites)
+  - [Firebase Setup](#firebase-setup)
+  - [Installation Steps](#installation-steps)
+- [Technologies Used](#️-technologies-used)
+- [Contributions](#-contributions)
+- [Important Notice](#️-important-notice)
+
+## �� About the App
 
 ### Why I Built This
 
