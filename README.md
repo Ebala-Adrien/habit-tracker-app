@@ -25,11 +25,47 @@ A habit and task tracking application that allows you to:
 
 ### Screenshots
 
-[Add your app screenshots here]
+#### Authentication Flow
+
+<div align="center">
+  <img src="assets/screenshots/1.register.jpeg" alt="Register Screen" width="200" />
+  <img src="assets/screenshots/2.login.jpeg" alt="Login Screen" width="200" />
+  <img src="assets/screenshots/3.password-forgotten.jpeg" alt="Password Forgotten Screen" width="200" />
+</div>
+
+#### Main App Flow
+
+<div align="center">
+  <img src="assets/screenshots/4.homepage-empty.jpeg" alt="Empty Homepage" width="200" />
+  <img src="assets/screenshots/5.homepage-filled-1.jpeg" alt="Filled Homepage 1" width="200" />
+  <img src="assets/screenshots/5.homepage-filled-2.jpeg" alt="Filled Homepage 2" width="200" />
+</div>
+
+#### Habit Management
+
+<div align="center">
+  <img src="assets/screenshots/6.habit-page-1.jpeg" alt="Habit Page 1" width="200" />
+  <img src="assets/screenshots/6.habit-page-2-delete.jpeg" alt="Habit Page Delete" width="200" />
+</div>
+
+#### Task Management
+
+<div align="center">
+  <img src="assets/screenshots/7.task-page-1.jpeg" alt="Task Page 1" width="200" />
+  <img src="assets/screenshots/7.task-page-2-edit.jpeg" alt="Task Page Edit" width="200" />
+</div>
+
+#### Statistics & Settings
+
+<div align="center">
+  <img src="assets/screenshots/8.stats-1.jpeg" alt="Stats Page 1" width="200" />
+  <img src="assets/screenshots/8.stats-2.jpeg" alt="Stats Page 2" width="200" />
+  <img src="assets/screenshots/9.settings.jpeg" alt="Settings Page" width="200" />
+</div>
 
 ### Demo Video
 
-[Add a link to your demo video here]
+[Add a link to the demo video here]
 
 ## ⬇️ Download
 
