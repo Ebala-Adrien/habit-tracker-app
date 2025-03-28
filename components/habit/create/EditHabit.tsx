@@ -195,46 +195,38 @@ export default function EditHabit({ id }: Props) {
     return <LoadingComponent size={80} color={constants.colorPrimary} />;
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       <EditHabitInputs />
 
-      {/* Repetition */}
-      <View style={styles.page_block}>
-        <View style={styles.repeat_block_title_container}>
-          <Text style={styles.repeat_block_title}>Repeat</Text>
-        </View>
-        <View style={styles.repeat_block_switch_container}>
+      {/* Repetition Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Repeat</Text>
+        <View style={styles.repeatTypeContainer}>
           {repetitions.map((f) => (
             <Pressable
               key={f}
               onPress={() => setRepetition(f)}
-              style={{
-                flexGrow: 1,
-                margin: constants.margin,
-                backgroundColor:
-                  f === repetition
-                    ? constants.colorSecondary
-                    : constants.colorPrimary,
-                borderRadius: 10,
-                padding: constants.padding / 2,
-              }}
+              style={[
+                styles.repeatTypeButton,
+                f === repetition && styles.repeatTypeButtonActive,
+              ]}
             >
-              <Text style={styles.repeat_switch_option_text}>{f}</Text>
+              <Text
+                style={[
+                  styles.repeatTypeText,
+                  f === repetition && styles.repeatTypeTextActive,
+                ]}
+              >
+                {f}
+              </Text>
             </Pressable>
           ))}
         </View>
 
         {repetition === "Weekly" ? (
-          <View style={styles.weekly_rep_block_container}>
-            <Text style={styles.bold_text}>On these days</Text>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                gap: constants.padding * 1.5,
-              }}
-            >
+          <View style={styles.weeklyContainer}>
+            <Text style={styles.subsectionTitle}>Select Days</Text>
+            <View style={styles.daysContainer}>
               {Object.keys(daysMapping)
                 .map((k) => Number(k) as Day)
                 .sort((a: Day, b: Day) => {
@@ -247,14 +239,10 @@ export default function EditHabit({ id }: Props) {
                   return (
                     <Pressable
                       key={d.toString()}
-                      style={{
-                        flexGrow: 1,
-                        borderRadius: 5,
-                        backgroundColor: repeat
-                          ? constants.colorPrimary
-                          : constants.colorSecondary,
-                        padding: constants.padding / 2,
-                      }}
+                      style={[
+                        styles.dayButton,
+                        repeat && styles.dayButtonActive,
+                      ]}
                       onPress={() => {
                         let daysCopy = _.clone(daysState) as Day[];
                         if (repeat) {
@@ -266,12 +254,10 @@ export default function EditHabit({ id }: Props) {
                       }}
                     >
                       <Text
-                        style={{
-                          textAlign: "center",
-                          color: repeat
-                            ? constants.colorSecondary
-                            : constants.colorTertiary,
-                        }}
+                        style={[
+                          styles.dayButtonText,
+                          repeat && styles.dayButtonTextActive,
+                        ]}
                       >
                         {key}
                       </Text>
@@ -281,107 +267,44 @@ export default function EditHabit({ id }: Props) {
             </View>
           </View>
         ) : (
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: constants.padding,
-              }}
-            >
-              <Text style={styles.bold_text}>Frequency</Text>
-              <Text>
-                {isMaxFrequency
-                  ? "Everyday"
-                  : `${frequency} times per ${"month"}`}
+          <View style={styles.monthlyContainer}>
+            <Text style={styles.subsectionTitle}>Frequency</Text>
+            <View style={styles.frequencyContainer}>
+              <Text style={styles.frequencyText}>
+                {isMaxFrequency ? "Everyday" : `${frequency} times per month`}
               </Text>
-            </View>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                borderColor: "transparent", // The element is spaced correctly when I add a border
-                borderWidth: 0.1,
-                gap: constants.padding,
-              }}
-            >
-              <Pressable
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                disabled={frequency === 1}
-                onPress={() => setFrequency(frequency - 1)}
-              >
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    backgroundColor:
-                      frequency === 1
-                        ? constants.colorQuinary
-                        : constants.colorPrimary,
-                    color: constants.colorSecondary,
-                    padding: constants.padding,
-                    borderRadius: 5,
-                    textAlign: "center",
-                    minWidth: constants.padding * 3,
-                  }}
+              <View style={styles.frequencyControls}>
+                <Pressable
+                  style={[
+                    styles.frequencyButton,
+                    frequency === 1 && styles.frequencyButtonDisabled,
+                  ]}
+                  disabled={frequency === 1}
+                  onPress={() => setFrequency(frequency - 1)}
                 >
-                  -
-                </Text>
-              </Pressable>
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: constants.mediumFontSize,
-                  }}
+                  <Text style={styles.frequencyButtonText}>-</Text>
+                </Pressable>
+                <Text style={styles.frequencyValue}>{frequency}</Text>
+                <Pressable
+                  style={[
+                    styles.frequencyButton,
+                    isMaxFrequency && styles.frequencyButtonDisabled,
+                  ]}
+                  disabled={isMaxFrequency}
+                  onPress={() => setFrequency(frequency + 1)}
                 >
-                  {frequency}
-                </Text>
+                  <Text style={styles.frequencyButtonText}>+</Text>
+                </Pressable>
               </View>
-              <Pressable
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                disabled={isMaxFrequency}
-                onPress={() => setFrequency(frequency + 1)}
-              >
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    backgroundColor: isMaxFrequency
-                      ? constants.colorQuinary
-                      : constants.colorPrimary,
-                    color: constants.colorSecondary,
-                    padding: constants.padding,
-                    borderRadius: 5,
-                    textAlign: "center",
-                    minWidth: constants.padding * 3,
-                  }}
-                >
-                  +
-                </Text>
-              </Pressable>
             </View>
           </View>
         )}
       </View>
 
-      <View style={styles.page_block}>
-        <View style={styles.habit_start_text_container}>
-          <Text style={styles.habit_start_text}>Habit to start now?</Text>
+      {/* Start Date Section */}
+      <View style={styles.section}>
+        <View style={styles.startDateHeader}>
+          <Text style={styles.sectionTitle}>Start Date</Text>
           <Switch
             value={habitHasCustomStart}
             onValueChange={() => {
@@ -406,72 +329,154 @@ export default function EditHabit({ id }: Props) {
         )}
       </View>
 
-      {/*Submit button*/}
-      <Pressable style={styles.save_button} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.save_button_text}>Save</Text>
+      <Pressable style={styles.saveButton} onPress={handleSubmit(onSubmit)}>
+        <Text style={styles.saveButtonText}>Save Habit</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page_block: {
+  container: {
+    flex: 1,
+    backgroundColor: constants.colorQuaternary,
+  },
+  section: {
     backgroundColor: constants.colorSecondary,
     margin: constants.padding,
-    padding: constants.padding,
-    borderRadius: 10,
+    padding: constants.padding * 1.5,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  repeat_block_title_container: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: constants.padding,
+  sectionTitle: {
+    fontSize: constants.mediumFontSize * 1.1,
+    fontWeight: "700",
+    marginBottom: constants.padding * 1.5,
+    color: constants.colorTertiary,
   },
-  repeat_block_title: {
+  subsectionTitle: {
     fontSize: constants.mediumFontSize,
-    fontWeight: constants.fontWeight,
+    fontWeight: "600",
+    marginBottom: constants.padding,
+    color: constants.colorTertiary,
   },
-  repeat_block_switch_container: {
-    display: "flex",
-    width: "100%",
+  repeatTypeContainer: {
+    flexDirection: "row",
+    backgroundColor: constants.colorQuaternary,
+    borderRadius: 12,
+    padding: 4,
+  },
+  repeatTypeButton: {
+    flex: 1,
+    paddingVertical: constants.padding,
+    borderRadius: 10,
+  },
+  repeatTypeButtonActive: {
+    backgroundColor: constants.colorPrimary,
+  },
+  repeatTypeText: {
+    textAlign: "center",
+    fontWeight: "600",
+    color: constants.colorTertiary,
+  },
+  repeatTypeTextActive: {
+    color: constants.colorSecondary,
+  },
+  weeklyContainer: {
+    marginTop: constants.padding * 2,
+  },
+  daysContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: constants.colorPrimary,
-    borderRadius: 10,
-    marginBottom: constants.padding * 3,
-  },
-  repeat_switch_option_text: {
-    fontWeight: constants.fontWeight,
-    textAlign: "center",
-  },
-  weekly_rep_block_container: {
-    display: "flex",
-    gap: constants.margin * 5,
-  },
-  bold_text: {
-    fontWeight: constants.fontWeight,
-  },
-  habit_start_text_container: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
-    gap: constants.padding,
+    gap: 6,
   },
-  habit_start_text: {
-    fontWeight: constants.fontWeight,
+  dayButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: constants.colorQuaternary,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  save_button: {
+  dayButtonActive: {
+    backgroundColor: constants.colorPrimary,
+  },
+  dayButtonText: {
+    fontWeight: "600",
+    color: constants.colorTertiary,
+    textAlign: "center",
+    fontSize: constants.smallFontSize,
+  },
+  dayButtonTextActive: {
+    color: constants.colorSecondary,
+  },
+  monthlyContainer: {
+    marginTop: constants.padding * 2,
+  },
+  frequencyContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  frequencyText: {
+    fontSize: constants.mediumFontSize,
+    color: constants.colorTertiary,
+  },
+  frequencyControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: constants.colorQuaternary,
+    borderRadius: 10,
+    padding: 4,
+  },
+  frequencyButton: {
+    backgroundColor: constants.colorPrimary,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  frequencyButtonDisabled: {
+    backgroundColor: constants.colorQuinary,
+    opacity: 0.5,
+  },
+  frequencyButtonText: {
+    color: constants.colorSecondary,
+    fontSize: constants.mediumFontSize,
+    fontWeight: "700",
+  },
+  frequencyValue: {
+    fontSize: constants.mediumFontSize,
+    fontWeight: "600",
+    marginHorizontal: constants.padding * 1.5,
+    color: constants.colorTertiary,
+  },
+  startDateHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  saveButton: {
     backgroundColor: constants.colorPrimary,
     margin: constants.padding,
-    borderRadius: 10,
-    padding: constants.padding,
+    marginBottom: constants.padding * 2,
+    borderRadius: 15,
+    padding: constants.padding * 1.2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  save_button_text: {
+  saveButtonText: {
     textAlign: "center",
-    fontWeight: constants.fontWeight,
+    fontWeight: "700",
     fontSize: constants.mediumFontSize,
     color: constants.colorSecondary,
   },

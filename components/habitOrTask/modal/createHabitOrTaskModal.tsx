@@ -31,7 +31,7 @@ export default function CreateHabitOrTaskModal() {
     {
       id: 2,
       title: "Task",
-      href: "/CreateTask",
+      href: "/createTask",
       description: "Single instance activity.",
       icon: (
         <AntDesign

@@ -108,147 +108,152 @@ export default function EditTask({ id }: Props) {
     return <LoadingComponent size={80} color={constants.colorPrimary} />;
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       <EditTaskInputs />
 
-      <View style={styles.page_block}>
-        <View style={styles.due_date_block_title_container}>
-          <Text style={styles.due_date_block_title}>Due date</Text>
+      {/* Due Date Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Due Date</Text>
+        <View style={styles.dueDateContainer}>
+          <TouchableOpacity
+            style={styles.dateTimeButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateTimeText}>
+              {dueDate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
 
-          <View style={styles.due_date_display_container}>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <View>
-                <Text style={[styles.due_date_text, styles.due_date_date_text]}>
-                  {dueDate.toLocaleDateString()}
-                </Text>
-              </View>
-              {showDatePicker && (
-                <DateTimePicker
-                  onChange={(e) => {
-                    const { timestamp } = e.nativeEvent;
-                    const newDateYear = new Date(timestamp).getFullYear();
-                    const newDateMonth = new Date(timestamp).getMonth();
-                    const newDateDay = new Date(timestamp).getDate();
-                    const oldDateHours = dueDate.getHours();
-                    const oldDateMinutes = dueDate.getMinutes();
-
-                    const newDate = new Date(
-                      newDateYear,
-                      newDateMonth,
-                      newDateDay,
-                      oldDateHours,
-                      oldDateMinutes,
-                      0,
-                      0
-                    );
-
-                    setDueDate(newDate);
-                    setShowDatePicker(false);
-                  }}
-                  mode="date"
-                  value={dueDate}
-                  minimumDate={new Date()}
-                />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)}>
-              <View>
-                <Text style={[styles.due_date_text, styles.due_date_time_text]}>
-                  {dueDate.toLocaleTimeString()}
-                </Text>
-              </View>
-              {showTimePicker && (
-                <DateTimePicker
-                  onChange={(e) => {
-                    const { timestamp } = e.nativeEvent;
-                    const oldDateYear = dueDate.getFullYear();
-                    const oldDateMonth = dueDate.getMonth();
-                    const oldDateDay = dueDate.getDate();
-                    const newDateHours = new Date(timestamp).getHours();
-                    const newDateMinutes = new Date(timestamp).getMinutes();
-
-                    const newDate = new Date(
-                      oldDateYear,
-                      oldDateMonth,
-                      oldDateDay,
-                      newDateHours,
-                      newDateMinutes,
-                      0,
-                      0
-                    );
-
-                    setDueDate(newDate);
-                    setShowTimePicker(false);
-                  }}
-                  mode="time"
-                  value={dueDate}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.dateTimeButton}
+            onPress={() => setShowTimePicker(true)}
+          >
+            <Text style={styles.dateTimeText}>
+              {dueDate.toLocaleTimeString()}
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {showDatePicker && (
+          <DateTimePicker
+            onChange={(e) => {
+              const { timestamp } = e.nativeEvent;
+              const newDateYear = new Date(timestamp).getFullYear();
+              const newDateMonth = new Date(timestamp).getMonth();
+              const newDateDay = new Date(timestamp).getDate();
+              const oldDateHours = dueDate.getHours();
+              const oldDateMinutes = dueDate.getMinutes();
+
+              const newDate = new Date(
+                newDateYear,
+                newDateMonth,
+                newDateDay,
+                oldDateHours,
+                oldDateMinutes,
+                0,
+                0
+              );
+
+              setDueDate(newDate);
+              setShowDatePicker(false);
+            }}
+            mode="date"
+            value={dueDate}
+            minimumDate={new Date()}
+          />
+        )}
+
+        {showTimePicker && (
+          <DateTimePicker
+            onChange={(e) => {
+              const { timestamp } = e.nativeEvent;
+              const oldDateYear = dueDate.getFullYear();
+              const oldDateMonth = dueDate.getMonth();
+              const oldDateDay = dueDate.getDate();
+              const newDateHours = new Date(timestamp).getHours();
+              const newDateMinutes = new Date(timestamp).getMinutes();
+
+              const newDate = new Date(
+                oldDateYear,
+                oldDateMonth,
+                oldDateDay,
+                newDateHours,
+                newDateMinutes,
+                0,
+                0
+              );
+
+              setDueDate(newDate);
+              setShowTimePicker(false);
+            }}
+            mode="time"
+            value={dueDate}
+          />
+        )}
       </View>
 
-      <Pressable style={styles.save_button} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.save_button_text}>Save</Text>
+      <Pressable style={styles.saveButton} onPress={handleSubmit(onSubmit)}>
+        <Text style={styles.saveButtonText}>Save Task</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page_block: {
+  container: {
+    flex: 1,
+    backgroundColor: constants.colorQuaternary,
+  },
+  section: {
     backgroundColor: constants.colorSecondary,
     margin: constants.padding,
-    padding: constants.padding,
-    borderRadius: 10,
+    padding: constants.padding * 1.5,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  due_date_block_title_container: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: constants.padding,
-  },
-  due_date_block_title: {
-    fontSize: constants.mediumFontSize,
-    fontWeight: constants.fontWeight,
-  },
-  due_date_display_container: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  due_date_text: {
-    backgroundColor: constants.colorQuaternary,
-    padding: constants.padding,
+  sectionTitle: {
+    fontSize: constants.mediumFontSize * 1.1,
+    fontWeight: "700",
+    marginBottom: constants.padding * 1.5,
     color: constants.colorTertiary,
-    fontSize: constants.smallFontSize,
-    fontWeight: "500",
   },
-  due_date_date_text: {
-    paddingRight: constants.padding / 2,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+  dueDateContainer: {
+    flexDirection: "row",
+    gap: constants.padding,
+  },
+  dateTimeButton: {
+    flex: 1,
+    backgroundColor: constants.colorQuaternary,
+    borderRadius: 10,
+    padding: constants.padding,
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: constants.colorBorder,
+    borderColor: constants.colorPrimary,
   },
-  due_date_time_text: {
-    paddingLeft: constants.padding / 2,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    borderWidth: 1,
-    borderColor: constants.colorBorder,
+  dateTimeText: {
+    fontSize: constants.mediumFontSize,
+    color: constants.colorTertiary,
+    fontWeight: "600",
   },
-  save_button: {
+  saveButton: {
     backgroundColor: constants.colorPrimary,
     margin: constants.padding,
-    borderRadius: 10,
-    padding: constants.padding,
+    marginBottom: constants.padding * 2,
+    borderRadius: 15,
+    padding: constants.padding * 1.2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  save_button_text: {
+  saveButtonText: {
     textAlign: "center",
-    fontWeight: constants.fontWeight,
+    fontWeight: "700",
     fontSize: constants.mediumFontSize,
     color: constants.colorSecondary,
   },

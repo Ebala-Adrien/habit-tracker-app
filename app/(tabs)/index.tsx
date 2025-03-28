@@ -7,15 +7,15 @@ import {
   SafeAreaView,
 } from "react-native";
 import constants from "../../constants";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useLocalSearchParams } from "expo-router";
-import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/utility/Loading";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMenuContext } from "@/contexts/MenuContext";
 import { useTaskContext } from "@/contexts/TaskContext";
 import { displayFrequencies } from "@/data";
+import ConfirmationMessage from "@/components/utility/ConfirmationMessage";
 
 import {
   HabitList,
@@ -166,15 +166,13 @@ export default function HomeScreen() {
   const { deleteHabitMsg } = useLocalSearchParams();
   const { loadingHabits } = useHabitContext();
   const { loadingTasks } = useTaskContext();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   useEffect(() => {
     if (deleteHabitMsg) {
-      Toast.show({
-        text1: deleteHabitMsg.toString(),
-        position: "bottom",
-        bottomOffset: 60,
-        type: "deletedHabitToast",
-      });
+      setConfirmationMessage(deleteHabitMsg.toString());
+      setShowConfirmation(true);
     }
   }, [deleteHabitMsg]);
 
@@ -184,6 +182,12 @@ export default function HomeScreen() {
         <LoadingComponent size={80} color={constants.colorPrimary} />
       ) : (
         <>
+          {showConfirmation && (
+            <ConfirmationMessage
+              message={confirmationMessage}
+              onClose={() => setShowConfirmation(false)}
+            />
+          )}
           {/* Header Section */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Overview</Text>
