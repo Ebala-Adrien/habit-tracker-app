@@ -2,7 +2,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Task } from "@/types";
-import { addDoc, collection, deleteDoc, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import DeleteModal from "@/components/habitOrTask/modal/DeleteHabitOrTask";
 import LoadingComponent from "@/components/utility/Loading";
@@ -44,22 +44,16 @@ export default function TaskPage() {
   const handleComplete = () => {
     if (!task) return;
 
-    addDoc(collection(db, "archivedTask"), {
-      ...task,
-      updatedAt: new Date().toUTCString(),
+    updateDoc(docRef, {
+      completed: true,
       completedAt: new Date().toUTCString(),
+      updatedAt: new Date().toUTCString(),
     })
       .then(() => {
-        deleteDoc(docRef)
-          .then(() => {
-            router.push("/(tabs)");
-          })
-          .catch(() =>
-            console.error(`Error: We couldn't delete the task ${task?.title}`)
-          );
+        router.push("/(tabs)");
       })
       .catch(() =>
-        console.error(`Error: We couldn't archive the task ${task?.title}`)
+        console.error(`Error: We couldn't update the task ${task?.title}`)
       );
   };
 
